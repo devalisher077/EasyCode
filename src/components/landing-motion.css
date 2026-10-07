@@ -1,0 +1,546 @@
+/* Original, dependency-free motion treatment inspired by React Bits. */
+.lp-hero h1 > .lp-title-line {
+  display: block;
+  color: #f5f2fa;
+  white-space: nowrap;
+}
+.lp-letter {
+  display: inline-block;
+}
+.lp-hero h1 > .lp-title-accent {
+  color: #b46bf7;
+  background: linear-gradient(
+    110deg,
+    #9e42f5 10%,
+    #bc79ff 36%,
+    #eed4ff 48%,
+    #b463f5 60%,
+    #9747ed 90%
+  );
+  background-size: 240% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.lp-motion-on .lp-letter {
+  animation: lp-letter-in 850ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(70ms + var(--letter) * 24ms);
+}
+.lp-motion-on .lp-title-accent {
+  animation:
+    lp-title-in 950ms 180ms cubic-bezier(0.16, 1, 0.3, 1) both,
+    lp-text-sheen 9s 1.5s linear infinite;
+}
+.lp-motion-on .lp-announcement {
+  animation: lp-title-in 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.lp-motion-on .lp-hero-copy > p {
+  animation: lp-title-in 850ms 220ms both;
+}
+.lp-motion-on .lp-hero-buttons {
+  animation: lp-title-in 850ms 320ms both;
+}
+.lp-motion-on .lp-proof {
+  animation: lp-title-in 850ms 440ms both;
+}
+.lp-motion-on .lp-hero-demo {
+  animation: lp-demo-in 1100ms 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.lp-hero-demo {
+  position: relative;
+  border-radius: 20px;
+}
+.lp-hero-demo::before {
+  content: "";
+  position: absolute;
+  inset: -34px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse, #a855f732, transparent 68%);
+}
+.lp-motion-on .lp-hero-demo::before {
+  animation: lp-halo-breathe 7s ease-in-out infinite alternate;
+}
+.lp-energy-canvas {
+  opacity: 1;
+}
+.lp-intro {
+  display: flow-root;
+  min-height: max(850px, 100svh);
+}
+.lp-atmosphere {
+  background:
+    radial-gradient(ellipse at 12% 20%, #7031ad1a, transparent 55%),
+    radial-gradient(ellipse at 85% 75%, #7334b32e, transparent 65%), #120f17;
+}
+.lp-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Local contrast, not an edge mask: the moving field remains full-bleed. */
+  background: radial-gradient(ellipse at 28% 45%, #120f173d, transparent 65%);
+}
+.lp-header {
+  border: 1px solid #ffffff0c;
+  border-radius: 18px;
+  background: #120f17bf;
+  backdrop-filter: blur(14px);
+  height: 76px;
+  margin: 20px auto 0;
+  width: calc(100% - 64px);
+  max-width: 1380px;
+  padding: 0 24px;
+}
+.lp-nav a {
+  position: relative;
+}
+.lp-nav a::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: #bc76f8;
+  transition: transform 220ms ease;
+}
+.lp-nav a:hover::after,
+.lp-nav a:focus-visible::after {
+  transform: scaleX(1);
+}
+.lp-primary,
+.lp-glow-button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.lp-primary::after,
+.lp-glow-button::after {
+  content: "";
+  position: absolute;
+  inset: -60% -20%;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    #fff3 50%,
+    transparent 65%
+  );
+  transform: translateX(-110%);
+}
+.lp-motion-on .lp-primary::after,
+.lp-motion-on .lp-glow-button::after {
+  animation: lp-button-sheen 7s 2s ease-in-out infinite;
+}
+.lp button > svg {
+  transition: transform 220ms ease;
+}
+.lp-primary:hover > svg,
+.lp-secondary:hover > svg,
+.lp-glow-button:hover > svg {
+  transform: translateX(3px);
+}
+.lp-motion-toggle:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.lp-motion-on .lp-discover button > svg {
+  animation: lp-down-cue 2.5s ease-in-out infinite;
+}
+
+/* Progressive enhancement: text is never hidden unless the observer is ready. */
+.lp [data-reveal] {
+  transition:
+    opacity 700ms ease,
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 250ms;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.lp-motion-on .lp-reveal-pending {
+  opacity: 0;
+  transform: translateY(26px);
+}
+.lp-feature-card:nth-child(3n + 2) {
+  --reveal-delay: 65ms;
+}
+.lp-feature-card:nth-child(3n) {
+  --reveal-delay: 130ms;
+}
+.lp-feature-card {
+  position: relative;
+  isolation: isolate;
+  transform-style: preserve-3d;
+}
+.lp-feature-card::before,
+.lp-teacher-window::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    #ae64ff23,
+    transparent 65%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 350ms ease;
+  z-index: -1;
+}
+.lp-motion-on [data-pointer-active]::before {
+  opacity: 1;
+}
+@media (hover: hover) and (pointer: fine) {
+  .lp-motion-on .lp-feature-card:hover {
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg))
+      rotateY(var(--tilt-y, 0deg)) translateY(-5px);
+    transition-duration: 160ms;
+    transition-delay: 0ms;
+    border-color: #b572f070;
+    box-shadow:
+      0 15px 40px #08050d55,
+      inset 0 1px #dca4ff12;
+  }
+}
+
+.lp-topic-ribbon {
+  display: block;
+  overflow: hidden;
+  padding: 15px 0 33px;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 4%,
+    #000 96%,
+    transparent
+  );
+}
+.lp-ribbon-track {
+  display: flex;
+  width: max-content;
+}
+.lp-ribbon-group {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding-right: 26px;
+  flex-shrink: 0;
+}
+.lp-ribbon-group > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  color: #bba4cf;
+  font-size: 13px;
+}
+.lp-ribbon-divider {
+  width: 1px;
+  height: 14px;
+  background: #8b50b966;
+  margin-left: 14px;
+}
+.lp-motion-on .lp-ribbon-track {
+  animation: lp-ribbon-travel 38s linear infinite;
+}
+.lp-topic-ribbon:hover .lp-ribbon-track {
+  animation-play-state: paused;
+}
+
+/* Small, thematic demos make the cards feel alive without loading an editor. */
+.lp-motion-on .lp-block-visual > div:nth-child(2) {
+  animation: lp-block-connect 7s ease-in-out infinite;
+}
+.lp-motion-on .lp-block-visual > div:nth-child(3) {
+  animation: lp-block-connect 7s 140ms ease-in-out infinite;
+}
+.lp-motion-on .lp-path-visual > svg > path:first-child {
+  animation: lp-route-flow 2s linear infinite;
+}
+.lp-motion-on .lp-path-chip {
+  animation: lp-chip-rise 6s ease-in-out infinite;
+}
+.lp-motion-on .lp-hint-visual > span {
+  animation: lp-icon-glow 5s ease-in-out infinite;
+}
+.lp-motion-on .lp-hint-visual i {
+  animation: lp-hint-dots 1.5s linear infinite;
+}
+.lp-motion-on .lp-faq-list div:not([hidden]) > p {
+  animation: lp-title-in 300ms ease both;
+}
+.lp-motion-on .lp-cta-orbit {
+  animation: lp-orbit-breathe 9s ease-in-out infinite;
+}
+.lp-final-cta > :not(.lp-cta-orbit) {
+  position: relative;
+}
+.lp-motion-on [data-loop][data-in-view="false"],
+.lp-motion-on [data-loop][data-in-view="false"] *,
+.lp-motion-on [data-loop][data-in-view="false"] *::before,
+.lp-motion-on [data-loop][data-in-view="false"] *::after {
+  animation-play-state: paused !important;
+}
+
+@keyframes lp-letter-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) rotateX(-65deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes lp-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes lp-demo-in {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) translateY(24px) rotateY(-9deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1000px) translateY(0) rotateY(0);
+  }
+}
+@keyframes lp-text-sheen {
+  from {
+    background-position: 200% 50%;
+  }
+  to {
+    background-position: -40% 50%;
+  }
+}
+@keyframes lp-halo-breathe {
+  from {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 0.9;
+    transform: scale(1.07);
+  }
+}
+@keyframes lp-button-sheen {
+  0%,
+  70% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(110%);
+  }
+}
+@keyframes lp-down-cue {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+@keyframes lp-ribbon-travel {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes lp-block-connect {
+  0%,
+  65%,
+  100% {
+    transform: translate(0, 0);
+  }
+  78% {
+    transform: translate(10px, 3px);
+  }
+  90% {
+    transform: translate(0, 0);
+  }
+}
+@keyframes lp-route-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+@keyframes lp-chip-rise {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes lp-icon-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 #a855f700;
+  }
+  50% {
+    box-shadow: 0 0 24px #a855f730;
+  }
+}
+@keyframes lp-hint-dots {
+  to {
+    background-position: 9px 0;
+  }
+}
+@keyframes lp-orbit-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+}
+
+/* Pause means no decorative motion, not frozen half-visible text. */
+.lp-motion-off *,
+.lp-motion-off *::before,
+.lp-motion-off *::after {
+  animation: none !important;
+  transition: none !important;
+}
+.lp-motion-off .lp-ribbon-track {
+  width: 100%;
+  transform: none;
+}
+.lp-motion-off .lp-ribbon-group {
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-right: 0;
+  gap: 18px;
+}
+.lp-motion-off .lp-ribbon-group[aria-hidden="true"] {
+  display: none;
+}
+.lp-motion-off .lp-topic-ribbon {
+  mask-image: none;
+}
+.lp-motion-off .lp-reveal-pending {
+  opacity: 1;
+  transform: none;
+}
+.lp-motion-off .lp-feature-card:hover {
+  transform: none;
+}
+
+@media (max-width: 1150px) {
+  .lp-header {
+    width: calc(100% - 40px);
+    padding: 0 20px;
+  }
+}
+@media (max-width: 900px) {
+  .lp-header {
+    height: 70px;
+  }
+  .lp-feature-card:nth-child(n) {
+    --reveal-delay: 0ms;
+  }
+}
+@media (max-width: 600px) {
+  .lp-header {
+    width: calc(100% - 24px);
+    margin-top: 12px;
+    padding: 0 12px;
+    height: 64px;
+    border-radius: 13px;
+  }
+  .lp-header-actions {
+    gap: 7px;
+  }
+  .lp-header .lp-motion-toggle {
+    display: flex;
+    width: 32px;
+    min-height: 36px;
+  }
+  .lp-header .lp-login {
+    padding: 8px 10px;
+    gap: 5px;
+  }
+  .lp-header .lp-brand {
+    font-size: 21px;
+    gap: 6px;
+  }
+  .lp-header .lp-brand-mark {
+    width: 29px;
+    height: 29px;
+  }
+  .lp-header .lp-menu-toggle {
+    width: 32px;
+    min-height: 36px;
+  }
+  .lp-header .lp-nav-open {
+    left: 0;
+    right: 0;
+    top: 72px;
+  }
+  .lp-energy-canvas {
+    opacity: 0.85;
+  }
+  .lp-ribbon-group {
+    gap: 20px;
+    padding-right: 20px;
+  }
+  .lp-ribbon-group > span {
+    font-size: 12px;
+  }
+  .lp-motion-on .lp-ribbon-track {
+    animation-duration: 46s;
+  }
+}
+@media (max-width: 360px) {
+  .lp-header .lp-brand {
+    font-size: 19px;
+  }
+  .lp-header .lp-login > svg {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp *,
+  .lp *::before,
+  .lp *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .lp .lp-reveal-pending {
+    opacity: 1;
+    transform: none;
+  }
+  .lp .lp-ribbon-track {
+    width: 100%;
+    transform: none;
+  }
+  .lp .lp-ribbon-group {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-right: 0;
+  }
+  .lp .lp-ribbon-group[aria-hidden="true"] {
+    display: none;
+  }
+  .lp .lp-topic-ribbon {
+    mask-image: none;
+  }
+  .lp .lp-feature-card:hover {
+    transform: none;
+  }
+}

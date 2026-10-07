@@ -1,0 +1,48 @@
+.classroom-empty-action {
+  margin-top: 18px;
+}
+
+.large-empty > .classroom-empty-action {
+  margin-inline: auto;
+}
+
+.lesson-linked-tasks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #3a2a45;
+}
+
+.lesson-linked-tasks > span,
+.assignment-lesson {
+  color: #b59ac5;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.assignment-lesson {
+  display: block;
+  margin-bottom: 12px;
+  overflow-wrap: anywhere;
+}
+
+.classroom-lesson-action {
+  margin-top: 18px;
+}
+
+.lesson-linked-tasks .text-button,
+.classroom-lesson-action {
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.lesson-linked-tasks .text-button svg {
+  flex-shrink: 0;
+}
+
+.classroom-content-error .text-button {
+  margin-top: 14px;
+}

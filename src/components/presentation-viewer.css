@@ -1,0 +1,338 @@
+.presentation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #08060dda;
+  backdrop-filter: blur(10px);
+}
+.presentation-viewer {
+  width: min(1180px, 100%);
+  height: min(900px, calc(100dvh - 48px));
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #17121f;
+  border: 1px solid #42314f;
+  border-radius: 16px;
+  box-shadow: 0 24px 100px #0008;
+  color: #f1eaf7;
+}
+.presentation-viewer.is-expanded,
+.presentation-viewer:fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  max-height: none;
+  border-radius: 0;
+}
+.presentation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px 16px;
+  flex-shrink: 0;
+}
+.presentation-header > div {
+  min-width: 0;
+}
+.presentation-eyebrow {
+  color: #b59bcb;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+.presentation-header h2 {
+  margin: 6px 0 0;
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.presentation-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 10px 24px;
+  background: #21192b;
+  border-block: 1px solid #33283f;
+  flex-shrink: 0;
+}
+.presentation-control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.presentation-page-count {
+  width: 122px;
+  text-align: center;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.presentation-zoom-label {
+  width: 42px;
+  text-align: center;
+  font-size: 11px;
+}
+.presentation-viewer button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #51405e;
+  background: #2b2138;
+  color: #efe6f7;
+  border-radius: 7px;
+  padding: 9px 13px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.presentation-viewer .presentation-icon-button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+.presentation-viewer button:hover:not(:disabled) {
+  background: #41304f;
+  border-color: #a97cce;
+}
+.presentation-viewer button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+.presentation-viewer :is(button, summary, [tabindex]):focus-visible {
+  outline: 2px solid #c79af4;
+  outline-offset: 3px;
+}
+.presentation-fullscreen {
+  margin-left: auto;
+}
+.presentation-stage {
+  flex: 1;
+  min-height: 120px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: #0e0b13;
+  position: relative;
+}
+.presentation-slide-wrap {
+  position: relative;
+  width: max-content;
+  min-width: 100%;
+  min-height: 100%;
+  display: grid;
+  place-items: start center;
+  align-content: center;
+  padding: 16px;
+}
+.presentation-slide-wrap canvas {
+  display: block;
+  background: #fff;
+  box-shadow: 0 4px 24px #0007;
+}
+.presentation-state {
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 30px;
+  text-align: center;
+}
+.presentation-state h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+.presentation-state p {
+  margin: 0;
+  color: #bbb0c5;
+  font-size: 13px;
+  line-height: 1.7;
+  max-width: 600px;
+  overflow-wrap: anywhere;
+}
+.presentation-render-status {
+  position: absolute;
+  inset: 20px 0 auto;
+  text-align: center;
+  color: #bbb0c5;
+  font-size: 12px;
+}
+.presentation-transcript {
+  border-top: 1px solid #33283f;
+  flex-shrink: 0;
+}
+.presentation-transcript summary {
+  padding: 12px 24px;
+  font-size: 11px;
+  color: #cfb8e3;
+  cursor: pointer;
+}
+.presentation-transcript > div {
+  max-height: 140px;
+  overflow: auto;
+  padding: 0 24px 16px;
+  white-space: pre-wrap;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #e3d9ec;
+}
+.presentation-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0;
+  padding: 12px 24px;
+  border-top: 1px solid #33283f;
+  flex-shrink: 0;
+}
+.presentation-footer p {
+  margin: 0;
+  color: #a999b6;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.presentation-loader {
+  animation: presentation-spin 1s linear infinite;
+}
+@keyframes presentation-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .presentation-loader {
+    animation: none;
+  }
+}
+@media (max-width: 640px) {
+  .presentation-overlay {
+    padding: 0;
+  }
+  .presentation-viewer {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+  }
+  .presentation-header {
+    padding: 16px;
+    gap: 10px;
+  }
+  .presentation-header h2 {
+    font-size: 14px;
+  }
+  .presentation-toolbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .presentation-control-group {
+    gap: 3px;
+  }
+  .presentation-page-count {
+    width: 104px;
+    font-size: 11px;
+  }
+  .presentation-zoom-controls {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-left: 0;
+    justify-content: center;
+  }
+  .presentation-viewer .presentation-icon-button {
+    width: 34px;
+    height: 34px;
+  }
+  .presentation-fullscreen {
+    grid-column: 2;
+    grid-row: 1;
+    margin-left: 0;
+  }
+  .presentation-footer {
+    padding: 10px 16px;
+    flex-wrap: wrap;
+  }
+  .presentation-footer p {
+    flex: 1 1 160px;
+  }
+  .presentation-footer button {
+    font-size: 11px;
+  }
+  .presentation-transcript summary {
+    padding: 10px 16px;
+  }
+  .presentation-transcript > div {
+    max-height: 100px;
+    padding-inline: 16px;
+  }
+}
+@media (max-height: 520px) {
+  .presentation-overlay {
+    padding: 0;
+  }
+  .presentation-viewer {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+    /* In extremely short windows, every control remains reachable by scroll. */
+    overflow-y: auto;
+  }
+  .presentation-header {
+    padding: 6px 12px;
+  }
+  .presentation-eyebrow {
+    display: none;
+  }
+  .presentation-header h2 {
+    margin: 0;
+    font-size: 14px;
+  }
+  .presentation-toolbar {
+    gap: 4px 8px;
+    padding: 4px 12px;
+  }
+  .presentation-viewer .presentation-icon-button {
+    width: 32px;
+    height: 32px;
+  }
+  .presentation-stage {
+    min-height: 80px;
+  }
+  .presentation-state {
+    min-height: 120px;
+    padding: 16px;
+  }
+  .presentation-transcript summary {
+    padding: 6px 12px;
+  }
+  .presentation-transcript > div {
+    max-height: 64px;
+    padding: 0 12px 8px;
+  }
+  .presentation-footer {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 6px 12px;
+  }
+  .presentation-footer p {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 9px;
+    line-height: 1.35;
+  }
+  .presentation-footer button {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+}

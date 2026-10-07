@@ -1,0 +1,131 @@
+.course-progress {
+  border: 1px solid #513164;
+  background:
+    radial-gradient(ellipse at 94% 10%, #a855f714, transparent 60%), #1b1522;
+  border-radius: 15px;
+  padding: 25px 28px;
+  margin: 12px 0 30px;
+}
+.course-progress-heading {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.course-progress-icon {
+  width: 45px;
+  height: 45px;
+  display: grid;
+  place-items: center;
+  color: #c59ae8;
+  border: 1px solid #6a408338;
+  border-radius: 12px;
+  background: #a855f71a;
+}
+.course-progress .eyebrow {
+  font-size: 9px;
+  color: #b68bcf;
+  letter-spacing: 1.5px;
+}
+.course-progress h2 {
+  font-size: 21px;
+  margin-top: 7px;
+  letter-spacing: -0.5px;
+}
+.course-progress-heading > strong {
+  margin-left: auto;
+  font-size: 37px;
+  font-weight: 500;
+  color: #d4b2f1;
+}
+.course-progress-heading > strong > span {
+  font-size: 16px;
+  margin-left: 3px;
+  color: #9e81b4;
+}
+.course-progress-track,
+.section-progress-track {
+  height: 5px;
+  border-radius: 8px;
+  background: #35253f;
+  overflow: hidden;
+}
+.course-progress-track {
+  margin: 21px 0 17px;
+  height: 7px;
+}
+.course-progress-track > span,
+.section-progress-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #9451d4, #ce9afe);
+  transition: width 0.25s ease;
+}
+.course-progress-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.course-progress-footer > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #a692b6;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.course-progress-footer .text-button {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.course-progress-warning {
+  color: #c7ae8c;
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 16px;
+  overflow-wrap: anywhere;
+}
+.topic-links .topic-done {
+  color: #a2d7b8;
+  margin-left: auto;
+}
+.topic-progress-value {
+  color: #c395e5;
+  margin-left: auto;
+  font-size: 10px;
+}
+.section-progress-track {
+  margin: 17px 0 0;
+  height: 3px;
+}
+@media (max-width: 700px) {
+  .course-progress {
+    padding: 21px 18px;
+  }
+  .course-progress h2 {
+    font-size: 18px;
+  }
+  .course-progress-heading {
+    gap: 10px;
+  }
+  .course-progress-icon {
+    width: 37px;
+    height: 37px;
+  }
+  .course-progress-heading > strong {
+    font-size: 29px;
+  }
+  .course-progress-footer {
+    align-items: flex-start;
+  }
+  .course-progress-footer > span {
+    font-size: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .course-progress-track > span,
+  .section-progress-track > span {
+    transition: none;
+  }
+}

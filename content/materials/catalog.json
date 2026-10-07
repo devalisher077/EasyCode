@@ -1,0 +1,153 @@
+{
+  "course": {
+    "title": "Основы программирования",
+    "product": "EasyCode AI",
+    "target_grades": "3-6",
+    "section_count": 6,
+    "topic_count": 12
+  },
+  "sections": [
+    {
+      "number": 1,
+      "title": "Основы алгоритмов",
+      "practical_work_required": true,
+      "topics": [
+        {
+          "number": "1.1",
+          "title": "Что такое алгоритм?",
+          "materials": [
+            {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "section-01/topic-01/Презентация.pptx"
+            },
+            {
+              "type": "teacher_notes",
+              "audience": "teacher",
+              "path": "section-01/topic-01/Конспект для учителя.docx"
+            }
+          ]
+        },
+        {
+          "number": "1.2",
+          "title": "Команды и последовательность действий",
+          "materials": [
+            {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "section-01/topic-02/Презентация.pptx"
+            },
+            {
+              "type": "teacher_notes",
+              "audience": "teacher",
+              "path": "section-01/topic-02/Конспект для учителя.docx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title": "Основы блочного программирования",
+      "practical_work_required": true,
+      "topics": [
+        {
+          "number": "2.1",
+          "title": "Знакомство со средой блочного программирования",
+          "materials": [
+            {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "section-02/topic-01/Презентация.pptx"
+            }
+          ]
+        },
+        {
+          "number": "2.2",
+          "title": "Создание первой программы из блоков",
+          "materials": [
+            {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "section-02/topic-02/Презентация.pptx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Циклы и повторения",
+      "practical_work_required": true,
+      "topics": [
+        {
+          "number": "3.1",
+          "title": "Что такое цикл и зачем он нужен?",
+          "materials": [
+            {
+              "type": "teacher_notes",
+              "audience": "teacher",
+              "path": "section-03/topic-01/Конспект для учителя.docx"
+            }
+          ]
+        },
+        {
+          "number": "3.2",
+          "title": "Создание алгоритмов с повторениями",
+          "materials": []
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Условия и принятие решений",
+      "practical_work_required": true,
+      "topics": [
+        {
+          "number": "4.1",
+          "title": "Условие и блок «если»",
+          "materials": []
+        },
+        {
+          "number": "4.2",
+          "title": "Конструкции «если — иначе» и несколько условий",
+          "materials": []
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Электронные компоненты и программирование",
+      "practical_work_required": true,
+      "topics": [
+        {
+          "number": "5.1",
+          "title": "Основные электронные компоненты и их назначение",
+          "materials": []
+        },
+        {
+          "number": "5.2",
+          "title": "Управление электронными компонентами с помощью блоков",
+          "materials": []
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "title": "Создание собственного проекта",
+      "practical_work_required": true,
+      "topics": [
+        {
+          "number": "6.1",
+          "title": "Планирование и разработка проекта",
+          "materials": []
+        },
+        {
+          "number": "6.2",
+          "title": "Тестирование, отладка и улучшение проекта",
+          "materials": []
+        }
+      ]
+    }
+  ]
+}
