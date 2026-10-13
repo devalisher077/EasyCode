@@ -114,6 +114,45 @@ npm run build
 
 Сборка API находится в `build/server/index.js`. Запускайте `npm start` из корня репозитория: сервер читает исходные материалы и PDF-копии для просмотра из `content/materials/` относительно рабочей папки. При переносе API на сервер эту папку нужно включить в поставку; напрямую публиковать её как статические файлы нельзя.
 
+### Деплой сайта и API на Vercel
+
+В репозитории есть `vercel.json` и серверная функция `api/index.ts`. Vercel
+собирает сайт в `dist/`, а `/api/*` направляет в существующий Fastify API.
+Функция не запускает `listen()` и не требует отдельного сервера на порту 3001.
+Материалы из `content/materials/` включаются только в серверный пакет;
+проверки роли и доступа к файлам сохраняются.
+
+1. Отправьте изменения, включая `api/`, `vercel.json` и учебные материалы, в
+   Git-репозиторий, подключённый к Vercel. Redeploy старого коммита новые файлы не добавит.
+2. Root Directory — корень проекта, Framework Preset — **Vite**,
+   Build Command — `npm run build`, Output Directory — `dist`.
+3. В Environment Variables для **Production** задайте:
+
+   | Переменная | Тип | Значение |
+   |---|---|---|
+   | `DEMO_MODE` | Config | `false` |
+   | `FRONTEND_ORIGIN` | Config | `https://easy-code-nu.vercel.app` (или ваш домен) |
+   | `VITE_SUPABASE_URL` | Config | URL проекта Supabase |
+   | `VITE_SUPABASE_ANON_KEY` | Config | Публичный anon-ключ этого проекта |
+   | `SUPABASE_URL` | Config | Тот же URL Supabase |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Secret | Сервисный ключ; без префикса `VITE_` |
+
+   Необязательные AI-настройки остаются серверными: `OPENAI_API_KEY` — Secret,
+   `OPENAI_MODEL` — Config. `HOST`, `PORT` и `EASYCODE_API_PROXY` на Vercel не нужны.
+   Не загружайте `.env` в Git. Preview должен использовать отдельную тестовую базу
+   и свой точный `FRONTEND_ORIGIN`; произвольные домены `*.vercel.app` не разрешаются.
+4. В Supabase Authentication → URL Configuration укажите production Site URL
+   и разрешённые redirect URL для используемого сценария подтверждения входа.
+   Убедитесь, что SQL-миграции проекта применены к этой базе.
+5. Запустите новый production deployment. Проверьте `/api/health`: должен вернуться
+   JSON с `"mode":"supabase"`, а не 404 или HTML. Это проверка запуска API,
+   не соединения с базой: после неё проверьте вход, создание класса и сохранение прогресса.
+
+При 503 смотрите Vercel Runtime Logs и проверьте серверные переменные, `DEMO_MODE`
+и наличие `content/materials/catalog.json` в поставке. После изменения ENV нужен
+новый deployment. Лимитер запросов работает в памяти одного экземпляра функции;
+для единого глобального лимита при масштабировании нужен общий внешний store.
+
 ### Проверки в браузере
 
 Сначала запустите `npm run dev` с `DEMO_MODE=true`. Во втором терминале:
