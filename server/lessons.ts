@@ -1,5 +1,5 @@
 import { lessons } from "../content/lessons/index.js";
-import localizedFeedback from './locales/lesson-feedback.json';
+import localizedFeedback from './locales/lesson-feedback.json' with { type: "json" };
 import type { Lesson, LessonDefinition, LessonProgress, QuizResult } from "../shared/lessons.js";
 
 export class LessonProgressUnavailable extends Error {

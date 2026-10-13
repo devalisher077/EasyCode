@@ -1,8 +1,8 @@
-import ui from "./locales/ui.json";
-import workspace from "./locales/workspace.json";
-import landing from "./locales/landing.json";
-import learning from "./locales/learning-ui.json";
-import errors from "./locales/errors.json";
+import ui from "./locales/ui.json" with { type: "json" };
+import workspace from "./locales/workspace.json" with { type: "json" };
+import landing from "./locales/landing.json" with { type: "json" };
+import learning from "./locales/learning-ui.json" with { type: "json" };
+import errors from "./locales/errors.json" with { type: "json" };
 
 export type Language = "ru" | "kk" | "en";
 export const languages: readonly Language[] = ["ru", "kk", "en"];

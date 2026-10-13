@@ -1,7 +1,7 @@
 import type { Lesson, QuizResult } from "./lessons";
 import { translate, type Language } from "./i18n";
-import en from "./locales/lessons-en.json";
-import kk from "./locales/lessons-kk.json";
+import en from "./locales/lessons-en.json" with { type: "json" };
+import kk from "./locales/lessons-kk.json" with { type: "json" };
 
 export interface LessonCopy {
   description: string;

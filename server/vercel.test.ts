@@ -4,7 +4,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { createApp } from "./app.js";
 import { loadConfig, type AppConfig } from "./config.js";
 import { lessons } from "../content/lessons/index.js";
-import deployment from "../vercel.json";
+import deployment from "../vercel.json" with { type: "json" };
 
 vi.mock("./config.js", async (original) => ({
   ...await original<typeof import("./config.js")>(),
