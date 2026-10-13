@@ -83,10 +83,10 @@ export function LandingAtmosphere({ active }: Props) {
             -Math.pow((nx - 0.25) / 0.3, 4) - Math.pow((ny - 0.39) / 0.28, 4),
           );
           const alpha = (0.055 + flowing * 0.057) * (1 - quietText * 0.42);
-          ctx.strokeStyle = `rgba(179, 120, 225, ${alpha})`;
+          ctx.strokeStyle = `rgba(105, 170, 245, ${alpha})`;
           ctx.strokeRect(x + 0.5, y + 0.5, cellSize - 1, cellSize - 1);
           if ((row * 13 + column * 7) % 23 === 0 && quietText < 0.3) {
-            ctx.fillStyle = `rgba(160, 75, 235, ${0.012 + flowing * 0.026})`;
+            ctx.fillStyle = `rgba(59, 130, 246, ${0.012 + flowing * 0.026})`;
             ctx.fillRect(x + 1, y + 1, cellSize - 2, cellSize - 2);
           }
         }
@@ -101,9 +101,9 @@ export function LandingAtmosphere({ active }: Props) {
         );
         ctx.scale(width * 0.8, height * 0.26);
         const halo = ctx.createRadialGradient(0, 0, 0.04, 0, 0, 1);
-        halo.addColorStop(0, "rgba(135, 46, 224, 0.074)");
-        halo.addColorStop(0.5, "rgba(111, 36, 182, 0.032)");
-        halo.addColorStop(1, "rgba(96, 28, 174, 0)");
+        halo.addColorStop(0, "rgba(37, 99, 235, 0.074)");
+        halo.addColorStop(0.5, "rgba(29, 78, 216, 0.032)");
+        halo.addColorStop(1, "rgba(30, 64, 175, 0)");
         ctx.fillStyle = halo;
         ctx.fillRect(-1, -1, 2, 2);
         ctx.restore();
@@ -118,7 +118,7 @@ export function LandingAtmosphere({ active }: Props) {
       for (let lane = 0; lane < 3; lane++) {
         for (let index = 0; index < strandsPerLane; index++) {
           const strand = (index / (strandsPerLane - 1) - 0.5) * 2;
-          const hue = 263 + lane * 7 + index * 1.5;
+          const hue = 202 + lane * 5 + index * 1.2;
           const opacity =
             0.27 + Math.sin(index * 1.4 + phase * 0.13 + lane) * 0.045;
           const leftStrength = lane === 1 ? 0.3 : 0.63;

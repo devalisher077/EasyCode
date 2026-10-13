@@ -1,3 +1,4 @@
+import { t } from "../lib/i18n";
 import {
   ArrowDown,
   ArrowRight,
@@ -19,6 +20,14 @@ import type { Catalog, Topic } from "../lib/types";
 import { lessonPercent, type LessonProgress } from "../../shared/lessons";
 import "./course-progress.css";
 const icons = [Route, Layers3, Repeat2, GitBranch, CircuitBoard, Flag];
+const coverCommands = [
+  "start → move → finish",
+  "when start → move(5)",
+  "repeat(3) { move() }",
+  "if path_clear: move()",
+  "sensor → code → action",
+  "build → run → improve",
+];
 const descriptions = [
   "Алгоритмы, команды и последовательность действий.",
   "Создание и запуск программ в блочной среде.",
@@ -68,7 +77,7 @@ export function Course({
     topics.find((topic) => topic.lesson && topicPercent(topic) < 100) ||
     topics[0];
   const filtered = catalog?.sections.filter((s) =>
-    `${s.title} ${s.topics.map((t) => t.title).join(" ")}`
+    `${t(s.title)} ${s.title} ${s.topics.map((topic) => `${t(topic.title)} ${topic.title}`).join(" ")}`
       .toLowerCase()
       .includes(query.toLowerCase()),
   );
@@ -78,12 +87,13 @@ export function Course({
         <div className="hero-copy">
           <span className="eyebrow">
             <span className="purple-dash" />
-            ОСНОВЫ ПРОГРАММИРОВАНИЯ
+            {t("ОСНОВЫ ПРОГРАММИРОВАНИЯ")}
           </span>
-          <h1>Учебный курс</h1>
+          <h1>{t("Учебный курс")}</h1>
           <p>
-            Теория, примеры и практические задания по основам программирования.
-            Создание алгоритмов с помощью блоков и текстового кода.
+            {t(
+              "Теория, примеры и практические задания по основам программирования. Создание алгоритмов с помощью блоков и текстового кода.",
+            )}
           </p>
           <div className="hero-actions">
             <button
@@ -91,7 +101,12 @@ export function Course({
               disabled={!continueTopic}
               onClick={() => continueTopic && onTopic(continueTopic)}
             >
-              {coursePercent > 0 ? "Продолжить обучение" : "Начать первую тему"}{" "}
+              {t(
+                coursePercent > 0
+                  ? "Продолжить обучение"
+                  : "Начать первую тему",
+              )}
+              {t(" ")}
               <ArrowRight size={17} />
             </button>
             <button
@@ -102,43 +117,45 @@ export function Course({
                   ?.scrollIntoView({ behavior: "smooth" })
               }
             >
-              Программа курса <ArrowDown size={16} />
+              {t("Программа курса ")}
+              <ArrowDown size={16} />
             </button>
           </div>
           <div className="hero-facts">
             <span>
-              <BookOpen size={14} />6 разделов
+              <BookOpen size={14} />
+              {t("6 разделов")}
             </span>
             <span>
               <Layers3 size={14} />
-              12 тем
+              {t("12 тем")}
             </span>
             <span>
               <Braces size={14} />
-              Блоки + код
+              {t("Блоки + код")}
             </span>
           </div>
         </div>
         <div
           className="hero-visual"
-          aria-label="Иллюстрация: команды управляют машиной"
+          aria-label={t("Иллюстрация: команды управляют машиной")}
         >
           <div className="floating-label">
             <span className="status-dot" />
-            Пример программы
+            {t("Пример программы")}
           </div>
           <div className="visual-grid">
             <svg viewBox="0 0 420 310" className="route-art" aria-hidden="true">
               <defs>
                 <linearGradient id="route-gradient" x1="0" y1="1" x2="1" y2="0">
-                  <stop stopColor="#a855f7" />
-                  <stop offset="1" stopColor="#e6d4ff" />
+                  <stop stopColor="#3b82f6" />
+                  <stop offset="1" stopColor="#d4e8ff" />
                 </linearGradient>
               </defs>
               <path
                 d="M72 241 H275 Q298 241 298 218 V90"
                 fill="none"
-                stroke="#a855f7"
+                stroke="#3b82f6"
                 strokeWidth="36"
                 opacity=".08"
               />
@@ -149,20 +166,20 @@ export function Course({
                 strokeWidth="3"
                 strokeDasharray="7 7"
               />
-              <circle cx="72" cy="241" r="7" fill="#a855f7" />
+              <circle cx="72" cy="241" r="7" fill="#3b82f6" />
               <rect
                 x="284"
                 y="71"
                 width="29"
                 height="29"
                 rx="9"
-                fill="#392649"
-                stroke="#b879fc"
+                fill="#263649"
+                stroke="#79b6fc"
               />
               <path
                 d="m292 85 5 5 8-10"
                 fill="none"
-                stroke="#d4a8ff"
+                stroke="#a8d1ff"
                 strokeWidth="2"
               />
             </svg>
@@ -188,31 +205,35 @@ export function Course({
               <em>robot</em>.forward(<b>3</b>)
             </code>
             <span className="code-caption">
-              <Play size={10} fill="currentColor" /> Управление движением
+              <Play size={10} fill="currentColor" />
+              {t(" Управление движением")}
             </span>
           </div>
         </div>
       </section>
-      <section className="course-progress" aria-label="Прогресс обучения">
+      <section className="course-progress" aria-label={t("Прогресс обучения")}>
         <div className="course-progress-heading">
           <span className="course-progress-icon">
             <BookOpen size={21} />
           </span>
           <div>
-            <span className="eyebrow">МОЙ ПРОГРЕСС</span>
+            <span className="eyebrow">{t("МОЙ ПРОГРЕСС")}</span>
             <h2>
-              {completed} из {topics.length || 12} тем пройдено
+              {t(completed)}
+              {t(" из ")}
+              {t(topics.length || 12)}
+              {t(" тем пройдено")}
             </h2>
           </div>
           <strong>
-            {coursePercent}
+            {t(coursePercent)}
             <span>%</span>
           </strong>
         </div>
         <div
           className="course-progress-track"
           role="progressbar"
-          aria-label="Прогресс всего курса"
+          aria-label={t("Прогресс всего курса")}
           aria-valuenow={coursePercent}
           aria-valuemin={0}
           aria-valuemax={100}
@@ -222,29 +243,36 @@ export function Course({
         <div className="course-progress-footer">
           <span>
             <Cloud size={14} />
-            {storage === "loading"
-              ? "Загружаем прогресс…"
-              : storage === "cloud"
-                ? "Прогресс сохранён в аккаунте"
-                : storage === "unavailable"
-                  ? "Прогресс доступен только до обновления страницы"
-                  : storageError
-                    ? "Прогресс хранится только в этом браузере"
-                    : "Гостевой прогресс хранится в этом браузере"}
+            {t(
+              storage === "loading"
+                ? "Загружаем прогресс…"
+                : storage === "cloud"
+                  ? "Прогресс сохранён в аккаунте"
+                  : storage === "unavailable"
+                    ? "Прогресс доступен только до обновления страницы"
+                    : storageError
+                      ? "Прогресс хранится только в этом браузере"
+                      : "Гостевой прогресс хранится в этом браузере",
+            )}
           </span>
-          {continueTopic && (
-            <button
-              className="text-button"
-              onClick={() => onTopic(continueTopic)}
-            >
-              Тема {continueTopic.number} <ArrowRight size={14} />
-            </button>
+          {t(
+            continueTopic && (
+              <button
+                className="text-button"
+                onClick={() => onTopic(continueTopic)}
+              >
+                {t("Тема ")}
+                {t(continueTopic.number)} <ArrowRight size={14} />
+              </button>
+            ),
           )}
         </div>
-        {storageError && (
-          <p className="course-progress-warning" role="status">
-            {storageError}
-          </p>
+        {t(
+          storageError && (
+            <p className="course-progress-warning" role="status">
+              {t(storageError)}
+            </p>
+          ),
         )}
       </section>
       <div className="course-strip">
@@ -252,119 +280,154 @@ export function Course({
           <Terminal size={20} />
         </span>
         <div>
-          <strong>Практическая среда</strong>
-          <span>Редактор блоков, текстовый код и проверка программ.</span>
+          <strong>{t("Практическая среда")}</strong>
+          <span>
+            {t("Редактор блоков, текстовый код и проверка программ.")}
+          </span>
         </div>
         <button className="text-button" onClick={onPractice}>
-          Открыть среду <ArrowUpRightIcon />
+          {t("Открыть среду ")}
+          <ArrowUpRightIcon />
         </button>
       </div>
       <section id="curriculum" className="curriculum">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">СОДЕРЖАНИЕ</span>
-            <h2>Программа курса</h2>
+            <span className="eyebrow">{t("СОДЕРЖАНИЕ")}</span>
+            <h2>{t("Программа курса")}</h2>
           </div>
           <span className="count-chip">
-            6 разделов <span>·</span> 12 тем
+            {t("6 разделов ")}
+            <span>·</span>
+            {t(" 12 тем")}
           </span>
         </div>
-        {!catalog && <div className="empty-state">Загружаем учебный план…</div>}
-        {filtered?.length === 0 && (
-          <div className="empty-state">
-            По запросу «{query}» ничего не найдено.
-          </div>
+        {t(
+          !catalog && (
+            <div className="empty-state">{t("Загружаем учебный план…")}</div>
+          ),
+        )}
+        {t(
+          filtered?.length === 0 && (
+            <div className="empty-state">
+              {t("По запросу «")}
+              {t(query)}
+              {t("» ничего не найдено.")}
+            </div>
+          ),
         )}
         <div className="course-grid">
-          {filtered?.map((section) => {
-            const Icon = icons[section.number - 1];
-            const available = section.topics.every((t) => t.lesson);
-            const sectionDone = section.topics.filter(
-              (topic) => topicPercent(topic) === 100,
-            ).length;
-            const sectionPercent = Math.round(
-              section.topics.reduce(
-                (sum, topic) => sum + topicPercent(topic),
-                0,
-              ) / section.topics.length,
-            );
-            return (
-              <article
-                className="course-card"
-                id={`section-${section.number}`}
-                key={section.number}
-              >
-                <div className="card-top">
-                  <span className="course-icon">
-                    <Icon size={23} />
-                  </span>
-                  <span className="section-number">
-                    РАЗДЕЛ {String(section.number).padStart(2, "0")}
-                  </span>
-                  <span className={`availability ${available ? "ready" : ""}`}>
-                    {sectionDone === section.topics.length
-                      ? "Пройдено"
-                      : available
-                        ? "Доступно"
-                        : "В плане"}
-                  </span>
-                </div>
-                <h3>{section.title}</h3>
-                <p>{descriptions[section.number - 1]}</p>
-                <div className="topic-links">
-                  {section.topics.map((topic) => (
-                    <button
-                      key={topic.number}
-                      aria-label={`${topic.number} ${topic.title}`}
-                      onClick={() => onTopic(topic)}
-                    >
-                      <span>{topic.number}</span>
-                      {topic.title}
-                      {topicPercent(topic) === 100 ? (
-                        <Check className="topic-done" size={16} />
-                      ) : topicPercent(topic) > 0 ? (
-                        <small className="topic-progress-value">
-                          {topicPercent(topic)}%
-                        </small>
-                      ) : (
-                        <ChevronRight size={14} />
-                      )}
-                    </button>
-                  ))}
-                </div>
-                <div
-                  className="section-progress-track"
-                  role="progressbar"
-                  aria-label={`Прогресс раздела ${section.number}`}
-                  aria-valuenow={sectionPercent}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
+          {t(
+            filtered?.map((section) => {
+              const Icon = icons[section.number - 1];
+              const available = section.topics.every((t) => t.lesson);
+              const sectionDone = section.topics.filter(
+                (topic) => topicPercent(topic) === 100,
+              ).length;
+              const sectionPercent = Math.round(
+                section.topics.reduce(
+                  (sum, topic) => sum + topicPercent(topic),
+                  0,
+                ) / section.topics.length,
+              );
+              return (
+                <article
+                  className="course-card"
+                  id={`section-${section.number}`}
+                  key={section.number}
                 >
-                  <span style={{ width: `${sectionPercent}%` }} />
-                </div>
-                <div className="card-bottom">
-                  <span>
-                    <BookOpen size={13} />
-                    {sectionDone} / {section.topics.length} пройдено
-                  </span>
-                  <button
-                    onClick={() =>
-                      onTopic(
-                        section.topics.find(
-                          (topic) => topicPercent(topic) < 100,
-                        ) || section.topics[0],
-                      )
-                    }
+                  <div className="course-cover" aria-hidden="true">
+                    <span className="course-cover-label">
+                      {t("БЛОКИ / PYTHON")}
+                    </span>
+                    <Icon size={48} strokeWidth={1.5} />
+                    <code>{coverCommands[section.number - 1]}</code>
+                    <span className="course-cover-number">
+                      {t(String(section.number).padStart(2, "0"))}
+                    </span>
+                  </div>
+                  <div className="card-top">
+                    <span className="section-number">
+                      {t("РАЗДЕЛ ")}
+                      {t(String(section.number).padStart(2, "0"))}
+                    </span>
+                    <span
+                      className={`availability ${available ? "ready" : ""}`}
+                    >
+                      {t(
+                        sectionDone === section.topics.length
+                          ? "Пройдено"
+                          : available
+                            ? "Доступно"
+                            : "В плане",
+                      )}
+                    </span>
+                  </div>
+                  <h3>{t(section.title)}</h3>
+                  <p>{t(descriptions[section.number - 1])}</p>
+                  <div className="topic-links">
+                    {t(
+                      section.topics.map((topic) => (
+                        <button
+                          key={topic.number}
+                          aria-label={`${topic.number} ${t(topic.title)}`}
+                          onClick={() => onTopic(topic)}
+                        >
+                          <span>{t(topic.number)}</span>
+                          {t(topic.title)}
+                          {t(
+                            topicPercent(topic) === 100 ? (
+                              <Check className="topic-done" size={16} />
+                            ) : topicPercent(topic) > 0 ? (
+                              <small className="topic-progress-value">
+                                {t(topicPercent(topic))}%
+                              </small>
+                            ) : (
+                              <ChevronRight size={14} />
+                            ),
+                          )}
+                        </button>
+                      )),
+                    )}
+                  </div>
+                  <div
+                    className="section-progress-track"
+                    role="progressbar"
+                    aria-label={t(`Прогресс раздела ${section.number}`)}
+                    aria-valuenow={sectionPercent}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
                   >
-                    {sectionDone > 0 && sectionDone < section.topics.length
-                      ? "Продолжить"
-                      : "Открыть раздел"}{" "}
-                    <ArrowRight size={14} />
-                  </button>
-                </div>
-              </article>
-            );
-          })}
+                    <span style={{ width: `${sectionPercent}%` }} />
+                  </div>
+                  <div className="card-bottom">
+                    <span>
+                      <BookOpen size={13} />
+                      {t(sectionDone)} / {t(section.topics.length)}
+                      {t(" пройдено")}
+                    </span>
+                    <button
+                      onClick={() =>
+                        onTopic(
+                          section.topics.find(
+                            (topic) => topicPercent(topic) < 100,
+                          ) || section.topics[0],
+                        )
+                      }
+                    >
+                      {t(
+                        sectionDone > 0 && sectionDone < section.topics.length
+                          ? "Продолжить"
+                          : "Открыть раздел",
+                      )}
+                      {t(" ")}
+                      <ArrowRight size={14} />
+                    </button>
+                  </div>
+                </article>
+              );
+            }),
+          )}
         </div>
       </section>
       <section className="bottom-cta">
@@ -372,11 +435,14 @@ export function Course({
           <Terminal size={25} />
         </span>
         <div>
-          <h3>Практика программирования</h3>
-          <p>Составление алгоритмов и проверка маршрутов в симуляторе.</p>
+          <h3>{t("Практика программирования")}</h3>
+          <p>
+            {t("Составление алгоритмов и проверка маршрутов в симуляторе.")}
+          </p>
         </div>
         <button className="secondary-button" onClick={onPractice}>
-          Перейти к практике <ArrowRight size={16} />
+          {t("Перейти к практике ")}
+          <ArrowRight size={16} />
         </button>
       </section>
     </div>

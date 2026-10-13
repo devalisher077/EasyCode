@@ -28,6 +28,37 @@ afterEach(async () => {
 });
 
 describe("API access control and local workflow", () => {
+  it("returns hints in the selected language and rejects unsupported languages", async () => {
+    const app = await setup();
+    for (const [language, fragment] of [["en", "Check the car's direction"], ["kk", "Көлік бағытын"], ["ru", "Проверь направление"]]) {
+      const response = await app.inject({ method: 'POST', url: '/api/hints', payload: {code: 'robot.forward(1)', language} });
+      expect(response.statusCode).toBe(200);
+      expect(response.json().source).toBe('local');
+      expect(response.json().hint).toContain(fragment);
+    }
+    expect((await app.inject({ method: 'POST', url: '/api/hints', payload: {code: '', language: 'invalid'} })).statusCode).toBe(400);
+  });
+  it("accepts local aliases in Supabase mode but still requires authentication for class writes", async () => {
+    const app = await createApp({ ...config, demo: false,
+      supabaseUrl: "https://example.supabase.co", supabaseServiceRoleKey: "test-server-key" });
+    apps.push(app);
+    for (const origin of ["http://localhost:5173", "http://127.0.0.1:5173", "http://[::1]:5173"]) {
+      const preflight = await app.inject({ method: "OPTIONS", url: "/api/classes",
+        headers: { origin, "access-control-request-method": "POST",
+          "access-control-request-headers": "content-type,authorization" } });
+      expect(preflight.statusCode).toBe(204);
+      expect(preflight.headers["access-control-allow-origin"]).toBe(origin);
+      for (const url of ["/api/classes", "/api/classes/join"]) {
+        const response = await app.inject({ method: "POST", url,
+          headers: { origin }, payload: {} });
+        expect(response.statusCode).toBe(401);
+        expect(response.json().error).toBe("Войдите в аккаунт.");
+      }
+    }
+    const rejected = await app.inject({ method: "POST", url: "/api/classes",
+      headers: { origin: "http://localhost.evil.example:5173" }, payload: {} });
+    expect(rejected.statusCode).toBe(403);
+  });
   it("identifies explicit demo mode and rejects unsafe demo configuration", async () => {
     const app = await setup();
     expect((await app.inject("/api/health")).json()).toEqual({

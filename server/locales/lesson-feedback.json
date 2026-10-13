@@ -1,0 +1,146 @@
+{
+  "5.1-q1": {
+    "en": "A battery supplies power. Decisions come from the program executed by the controller.",
+    "kk": "Батарея қуат береді. Шешімді контроллер орындайтын бағдарлама анықтайды."
+  },
+  "5.1-q2": {
+    "en": "A sensor reports light level. The LED and buzzer are outputs in this model.",
+    "kk": "Датчик жарық деңгейін хабарлайды. Жарықдиод пен зуммер бұл модельде шығысқа жатады."
+  },
+  "5.1-q3": {
+    "en": "A resistor affects current in the circuit. This is a physical role, not a programming block function.",
+    "kk": "Резистор тізбектегі токқа әсер етеді. Бұл — бағдарламалық блок емес, бөлшектің физикалық қызметі."
+  },
+  "5.2-q1": {
+    "en": "Dark is false, so the explicit else branch turns the light off.",
+    "kk": "«Қараңғы» шарты дұрыс емес, сондықтан нақты берілген else тармағы жарықты өшіреді."
+  },
+  "5.2-q2": {
+    "en": "Use paper or the virtual lab, not real wiring. Conceptual phrases are not car-editor commands.",
+    "kk": "Қағазды немесе виртуалды зертхананы қолдан, нақты сымдарды қоспа. Мағыналық сөздер көлік редакторының командасы емес."
+  },
+  "5.2-q3": {
+    "en": "Both situations matter: one tests if, the other tests else. This reveals swapped actions.",
+    "kk": "Бір жағдай if-ті, екіншісі else-ті тексереді. Бұл ауысқан әрекеттерді табуға көмектеседі."
+  },
+  "6.1-q1": {
+    "en": "The second goal has an observable result: finish reached without movement errors.",
+    "kk": "Екінші мақсаттың көрінетін нәтижесі бар: қозғалыс қатесінсіз мәреге жету."
+  },
+  "6.1-q2": {
+    "en": "Small parts are easier to understand and test. Retest the full route after adding a part.",
+    "kk": "Шағын бөлікті түсіну және тексеру оңай. Жаңа бөлік қосылғаннан кейін толық жолды қайта тексер."
+  },
+  "6.1-q3": {
+    "en": "A technique should solve a clear problem. An unnecessary loop may not help and can break the route.",
+    "kk": "Тәсіл нақты міндет атқаруы керек. Қажетсіз цикл көмектеспеуі немесе бағытты бұзуы мүмкін."
+  },
+  "6.2-q1": {
+    "en": "A test compares expected and actual results under known conditions.",
+    "kk": "Тест белгілі жағдайда күтілетін және нақты нәтижені салыстырады."
+  },
+  "6.2-q2": {
+    "en": "A collision concerns the route. Compare position and direction after each command with the map.",
+    "kk": "Соқтығыс жолға байланысты. Әр командадан кейінгі орын мен бағытты картамен салыстыр."
+  },
+  "6.2-q3": {
+    "en": "Even a useful edit can change the route through a wrong count or loop body. Retest the result.",
+    "kk": "Пайдалы түзету де қате сан не цикл денесі арқылы бағытты өзгертуі мүмкін. Нәтижені қайта тексер."
+  },
+  "3.1-q1": {
+    "en": "Each repetition adds one cell: 1 + 1 + 1 + 1 = 4.",
+    "kk": "Әр қайталау бір тор қосады: 1 + 1 + 1 + 1 = 4."
+  },
+  "3.1-q2": {
+    "en": "The body is the repeated part. Commands after the loop execute separately.",
+    "kk": "Дене — циклдің қайталанатын бөлігі. Одан кейінгі командалар бөлек орындалады."
+  },
+  "3.1-q3": {
+    "en": "A loop reduces repeated writing. It does not increase speed or prevent collisions.",
+    "kk": "Цикл қайталанатын жазуды қысқартады. Жылдамдықты арттырмайды және соқтығысты жоймайды."
+  },
+  "3.2-q1": {
+    "en": "Two cells repeated three times gives 2 + 2 + 2 = 6.",
+    "kk": "Екі тор үш рет қайталанады: 2 + 2 + 2 = 6."
+  },
+  "3.2-q2": {
+    "en": "The inner loop makes three turns in each of two outer repetitions: 2 × 3 = 6.",
+    "kk": "Екі сыртқы қайталаудың әрқайсысында үш бұрылу бар: 2 × 3 = 6."
+  },
+  "3.2-q3": {
+    "en": "The learning language supports fixed counts with for ... in range(...), not while or unspecified counts.",
+    "kk": "Оқу тілі for ... in range(...) арқылы белгілі санды қолдайды. while және белгісіз сан қолдау таппайды."
+  },
+  "4.1-q1": {
+    "en": "A plain if runs its body only when the condition is true. Otherwise execution continues.",
+    "kk": "Қарапайым if денесін тек шарт дұрыс болса орындайды. Әйтпесе бағдарлама жалғасады."
+  },
+  "4.1-q2": {
+    "en": "It checks only the next position in the current direction, not the entire future route.",
+    "kk": "Ол ағымдағы бағыттағы ең жақын орынды ғана тексереді, бүкіл болашақ жолды емес."
+  },
+  "4.1-q3": {
+    "en": "Later cells may contain obstacles. The check only concerns the cell immediately ahead.",
+    "kk": "Кейінгі торларда кедергі болуы мүмкін. Тексеру тек дәл алдағы торға қатысты."
+  },
+  "4.2-q1": {
+    "en": "A true condition selects the if body. Else is for a false condition.",
+    "kk": "Дұрыс шарт if денесін таңдайды. else дұрыс емес шартқа арналған."
+  },
+  "4.2-q2": {
+    "en": "Every check runs again using the current direction, including changes from a turn.",
+    "kk": "Әр тексеру қайта орындалып, бұрылудан кейінгі ағымдағы бағытты ескереді."
+  },
+  "4.2-q3": {
+    "en": "The first branch is selected. The step in else is skipped.",
+    "kk": "Бірінші тармақ таңдалды. else ішіндегі қадам өткізіледі."
+  },
+  "1.1-q1": {
+    "en": "An algorithm has understandable actions and an order. A goal alone is not enough.",
+    "kk": "Алгоритмде түсінікті әрекеттер және олардың орындалу реті болады. Тек мақсат жеткіліксіз."
+  },
+  "1.1-q2": {
+    "en": "The executor performs the commands. Here, it is the virtual car.",
+    "kk": "Орындаушы командаларды орындайды. Мұнда ол — виртуалды көлік."
+  },
+  "1.1-q3": {
+    "en": "Turning changes direction. A movement command is needed to enter another cell.",
+    "kk": "Бұрылу бағытты өзгертеді. Басқа торға өту үшін қозғалыс командасы қажет."
+  },
+  "1.2-q1": {
+    "en": "A precise command gives the action and cell count. The car does not have to guess.",
+    "kk": "Нақты командада әрекет пен тор саны көрсетіледі. Көлікке болжаудың қажеті жоқ."
+  },
+  "1.2-q2": {
+    "en": "Turns are relative to the car. From facing right, turning left points it up.",
+    "kk": "Бұрылу көлікке қатысты орындалады. Оңға қарап тұрған көлік солға бұрылса, жоғары қарайды."
+  },
+  "1.2-q3": {
+    "en": "Step-by-step comparison finds the cause. One change at a time shows what affected the result.",
+    "kk": "Қадамдап салыстыру себепті табуға көмектеседі. Бір өзгеріс нәтижеге не әсер еткенін көрсетеді."
+  },
+  "2.1-q1": {
+    "en": "The workspace is where you assemble an algorithm. The stage or field shows execution.",
+    "kk": "Жұмыс аймағында алгоритм құрылады. Сахнада немесе алаңда оның орындалуы көрінеді."
+  },
+  "2.1-q2": {
+    "en": "EasyCode uses grid cells. Scratch's pixel steps belong to a different environment.",
+    "kk": "EasyCode қозғалысы торлармен беріледі. Scratch-тағы пиксельдік қадамдар басқа ортаға жатады."
+  },
+  "2.1-q3": {
+    "en": "The car workspace supports movement, turns, loops and conditions, but not sound.",
+    "kk": "Көлік ортасы қозғалысты, бұрылуды, циклді және шартты қолдайды, бірақ дыбысты қолдамайды."
+  },
+  "2.2-q1": {
+    "en": "A goal and plan guide your choices. Block count and color do not solve the task.",
+    "kk": "Мақсат пен жоспар қажетті әрекеттерді таңдауға көмектеседі. Блок саны мен түсі тапсырманы шешпейді."
+  },
+  "2.2-q2": {
+    "en": "It is a Scratch start event. EasyCode's car workspace uses a separate Run button.",
+    "kk": "Бұл — Scratch-та іске қосу оқиғасы. EasyCode көлік ортасында бөлек іске қосу батырмасы бар."
+  },
+  "2.2-q3": {
+    "en": "Connected blocks do not guarantee the right route. Check their meaning and parameters.",
+    "kk": "Блоктардың қосылуы дұрыс жолға кепіл емес. Олардың мағынасы мен параметрлерін тексер."
+  }
+}

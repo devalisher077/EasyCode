@@ -49,7 +49,12 @@ export interface QuizResult {
   score: number;
   total: number;
   passed: boolean;
-  feedback: { questionId: string; correct: boolean; explanation: string }[];
+  feedback: {
+    questionId: string;
+    correct: boolean;
+    explanation: string;
+    translations?: { en: string; kk: string };
+  }[];
 }
 
 export interface LessonCheckResponse {

@@ -9,6 +9,7 @@ import "@fontsource/geist/cyrillic-500.css";
 import "@fontsource/geist/cyrillic-600.css";
 import "@fontsource/geist-mono/latin-400.css";
 import "./styles.css";
+import "./platform-design.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

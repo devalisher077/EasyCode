@@ -1,9 +1,9 @@
+import { t, useLanguage } from "./lib/i18n";
 import { lazy, Suspense, useEffect, useState } from "react";
 import {
-  ArrowUpRight,
   BookOpen,
+  CircuitBoard,
   ChevronRight,
-  Code2,
   GraduationCap,
   Menu,
   Search,
@@ -19,9 +19,13 @@ import { Course } from "./components/Course";
 import { Practice } from "./components/Practice";
 import { Classroom } from "./components/Classroom";
 import { AuthPanel } from "./components/AuthPanel";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { useDialog } from "./lib/useDialog";
 import { LessonPage } from "./components/LessonPage";
 import { useLessonProgress } from "./lib/useLessonProgress";
+import "./components/electronics.css";
+
+const Electronics = lazy(() => import("./components/Electronics"));
 
 const PresentationViewer = lazy(() =>
   import("./components/PresentationViewer").then((module) => ({
@@ -42,6 +46,7 @@ export default function App({
   onNavigate?: (path: string) => void;
 }) {
   const routePath = route.split("?")[0];
+  const language = useLanguage();
   const routeQuery = new URLSearchParams(route.split("?")[1]);
   const lessonId = routePath.startsWith("/learn/topic/")
     ? routePath.slice("/learn/topic/".length)
@@ -56,7 +61,7 @@ export default function App({
           : "course";
   const { mode, profile, ready: identityReady } = account;
   const role = profile?.role ?? "student";
-  const name = profile?.name ?? "Гость";
+  const name = profile?.name ?? t("Гость");
   const userId = profile?.id ?? "";
   const signedIn = Boolean(profile);
   const [catalog, setCatalog] = useState<Catalog | null>(null);
@@ -98,8 +103,9 @@ export default function App({
     enabled: identityReady && !account.error,
   });
   useEffect(() => {
-    if (page !== "lesson") document.title = "EasyCode — учебное пространство";
-  }, [page]);
+    if (page !== "lesson")
+      document.title = t("EasyCode — учебное пространство");
+  }, [page, language]);
   useEffect(() => {
     // A previously opened deck must not reappear when returning to an account,
     // role or route after its protected viewer has been dismissed.
@@ -231,23 +237,21 @@ export default function App({
             setSelectedPresentation(undefined);
             onHome();
           }}
-          aria-label="EasyCode, главная"
+          aria-label={t("EasyCode, главная")}
         >
-          <span className="brand-icon">
-            <Code2 size={23} />
-          </span>
-          easycode<span className="brand-dot">.</span>
+          easycode
         </a>
         <div className="workspace-label">
           <span className="workspace-icon">
             <GraduationCap size={18} />
           </span>
           <div>
-            Учебная платформа<small>Основы программирования</small>
+            {t("Учебная платформа")}
+            <small>{t("Основы программирования")}</small>
           </div>
         </div>
-        <div className="nav-label">ОБУЧЕНИЕ</div>
-        <nav aria-label="Главное меню">
+        <div className="nav-label">{t("ОБУЧЕНИЕ")}</div>
+        <nav aria-label={t("Главное меню")}>
           <button
             className={
               page === "course" || page === "lesson"
@@ -257,14 +261,15 @@ export default function App({
             onClick={() => navigate("course")}
           >
             <BookOpen size={18} />
-            Мой курс<span className="nav-count">6</span>
+            {t("Мой курс")}
+            <span className="nav-count">6</span>
           </button>
           <button
             className={page === "practice" ? "nav-item active" : "nav-item"}
             onClick={() => openPractice()}
           >
             <Terminal size={18} />
-            Практическая среда
+            {t("Практическая среда")}
             <span className="tiny-dot" />
           </button>
           <button
@@ -272,241 +277,297 @@ export default function App({
             onClick={() => navigate("classroom")}
           >
             <Users size={18} />
-            {role === "teacher" ? "Кабинет учителя" : "Мой класс"}
+            {t(role === "teacher" ? "Кабинет учителя" : "Мой класс")}
           </button>
         </nav>
-        <div className="nav-label section-label">РАЗДЕЛЫ КУРСА</div>
-        <nav className="section-nav" aria-label="Разделы курса">
-          {catalog?.sections.map((s) => (
-            <button
-              key={s.number}
-              onClick={() => {
-                navigate("course");
-                setTimeout(
-                  () =>
-                    document
-                      .getElementById(`section-${s.number}`)
-                      ?.scrollIntoView({ behavior: "smooth", block: "center" }),
-                  30,
-                );
-              }}
-            >
-              <span>{String(s.number).padStart(2, "0")}</span>
-              {s.title}
-            </button>
-          ))}
-        </nav>
         <div className="sidebar-bottom">
-          <div className="build-card">
-            <Terminal size={20} />
-            <strong>Практическая среда</strong>
-            <p>Редактор программ и симулятор выполнения команд.</p>
-            <button onClick={() => openPractice()}>
-              Создать программу <ArrowUpRight size={16} />
-            </button>
-          </div>
           <span className="version">
-            EasyCode <span>версия 0.1</span>
+            EasyCode <span>{t("версия 0.1")}</span>
           </span>
         </div>
       </aside>
-      {mobileMenu && (
-        <button
-          className="sidebar-scrim"
-          aria-label="Закрыть меню"
-          onClick={() => setMobileMenu(false)}
-        />
+      {t(
+        mobileMenu && (
+          <button
+            className="sidebar-scrim"
+            aria-label={t("Закрыть меню")}
+            onClick={() => setMobileMenu(false)}
+          />
+        ),
       )}
       <div className="main-shell">
         <header className="topbar">
           <div className="breadcrumbs">
             <button
               className="icon-button mobile-toggle"
-              aria-label="Открыть меню"
+              aria-label={t("Открыть меню")}
               onClick={() => setMobileMenu(true)}
             >
               <Menu size={20} />
             </button>
-            <span>Платформа</span>
+            <span>{t("Платформа")}</span>
             <ChevronRight size={14} />
             <strong>
-              {page === "course"
-                ? "Мой курс"
-                : page === "lesson"
-                  ? `Тема ${lessonId}`
-                  : page === "practice"
-                    ? "Практическая среда"
-                    : role === "teacher"
-                      ? "Кабинет учителя"
-                      : "Мой класс"}
+              {t(
+                page === "course"
+                  ? "Мой курс"
+                  : page === "lesson"
+                    ? `Тема ${lessonId}`
+                    : page === "practice"
+                      ? "Практическая среда"
+                      : role === "teacher"
+                        ? "Кабинет учителя"
+                        : "Мой класс",
+              )}
             </strong>
           </div>
           <div className="header-actions">
-            {page === "course" && (
-              <label className="search">
-                <Search size={16} />
-                <input
-                  aria-label="Найти тему"
-                  placeholder="Найти тему..."
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-                <kbd>/</kbd>
-              </label>
+            <LanguageSwitcher />
+            {t(
+              page === "course" && (
+                <label className="search">
+                  <Search size={16} />
+                  <input
+                    aria-label={t("Найти тему")}
+                    placeholder={t("Найти тему...")}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                  <kbd>/</kbd>
+                </label>
+              ),
             )}
-            <span className="edition">3–6 класс</span>
-            {signedIn && (
-              <button className="account-label" onClick={openAccount}>
-                <strong>{name}</strong>
-                <span>{role === "teacher" ? "Учитель" : "Ученик"}</span>
-              </button>
+            <span className="edition">{t("3–6 класс")}</span>
+            {t(
+              signedIn && (
+                <button className="account-label" onClick={openAccount}>
+                  <strong>{name}</strong>
+                  <span>{t(role === "teacher" ? "Учитель" : "Ученик")}</span>
+                </button>
+              ),
             )}
             <button
               className="avatar"
-              title={signedIn ? name : "Войти"}
+              title={signedIn ? name : t("Войти")}
               onClick={openAccount}
             >
-              {signedIn ? name.slice(0, 1).toUpperCase() : <Users size={16} />}
+              {t(
+                signedIn ? name.slice(0, 1).toUpperCase() : <Users size={16} />,
+              )}
             </button>
           </div>
         </header>
-        {mode === "demo" && (
-          <div className="demo-bar">
-            <span>
-              <span className="status-dot" />
-              Локальный деморежим{" "}
-              <span className="demo-explainer">
-                · данные сбросятся при перезапуске сервера
-              </span>
-            </span>
-            <label>
-              Смотреть как
-              <select
-                aria-label="Роль в деморежиме"
-                value={role}
-                onChange={(e) => changeRole(e.target.value as Role)}
-              >
-                <option value="student">Ученик</option>
-                <option value="teacher">Учитель</option>
-              </select>
-            </label>
-          </div>
-        )}
-        {account.error && (
-          <div className="demo-bar" role="alert">
-            <span>{account.error}</span>
-            <button className="text-button" onClick={account.refresh}>
-              Повторить
-            </button>
-          </div>
-        )}
-        {mode === "supabase" &&
-          identityReady &&
-          !account.sessionUserId &&
-          !signedIn && (
+        {t(
+          mode === "demo" && (
             <div className="demo-bar">
-              <span>Для классов и сохранения результатов нужен вход.</span>
-              <button className="text-button" onClick={openAccount}>
-                Войти в аккаунт <ChevronRight size={14} />
+              <span>
+                <span className="status-dot" />
+                {t("Локальный деморежим")}
+                {t(" ")}
+                <span className="demo-explainer">
+                  {t("· данные сбросятся при перезапуске сервера")}
+                </span>
+              </span>
+              <label>
+                {t("Смотреть как")}
+                <select
+                  aria-label={t("Роль в деморежиме")}
+                  value={role}
+                  onChange={(e) => changeRole(e.target.value as Role)}
+                >
+                  <option value="student">{t("Ученик")}</option>
+                  <option value="teacher">{t("Учитель")}</option>
+                </select>
+              </label>
+            </div>
+          ),
+        )}
+        {t(
+          account.error && (
+            <div className="demo-bar" role="alert">
+              <span>{t(account.error)}</span>
+              <button className="text-button" onClick={account.refresh}>
+                {t("Повторить")}
               </button>
             </div>
-          )}
+          ),
+        )}
+        {t(
+          mode === "supabase" &&
+            identityReady &&
+            !account.sessionUserId &&
+            !signedIn && (
+              <div className="demo-bar">
+                <span>
+                  {t("Для классов и сохранения результатов нужен вход.")}
+                </span>
+                <button className="text-button" onClick={openAccount}>
+                  {t("Войти в аккаунт ")}
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            ),
+        )}
         <main key={`${userId}-${role}-${page}`}>
-          {page === "course" && (
-            <Course
-              catalog={catalog}
-              query={query}
-              onTopic={(selected) =>
-                onNavigate(`/learn/topic/${selected.number}`)
-              }
-              onPractice={() => openPractice()}
-              progress={learning.progress}
-              storage={learning.storage}
-              storageError={learning.error}
-            />
+          {t(
+            page === "course" && (
+              <Course
+                catalog={catalog}
+                query={query}
+                onTopic={(selected) =>
+                  onNavigate(`/learn/topic/${selected.number}`)
+                }
+                onPractice={() => openPractice()}
+                progress={learning.progress}
+                storage={learning.storage}
+                storageError={learning.error}
+              />
+            ),
           )}
-          {page === "lesson" && (
-            <LessonPage
-              key={lessonId}
-              lessonId={lessonId!}
-              progress={learning.progress[lessonId!]}
-              storage={learning.storage}
-              storageError={learning.error}
-              onReadStep={learning.markStep}
-              onCheckQuiz={learning.checkQuiz}
-              onBack={() => navigate("course")}
-              onNavigateLesson={(id) => onNavigate(`/learn/topic/${id}`)}
-              onPractice={() => openPractice()}
-              onSignIn={openAccount}
-              materials={
-                catalog?.sections
-                  .flatMap((section) => section.topics)
-                  .find((item) => item.number === lessonId)?.materials || []
-              }
-              onPreview={openPresentation}
-              onDownload={downloadLessonMaterial}
-            />
+          {t(
+            page === "lesson" && (
+              <LessonPage
+                key={lessonId}
+                lessonId={lessonId!}
+                progress={learning.progress[lessonId!]}
+                storage={learning.storage}
+                storageError={learning.error}
+                onReadStep={learning.markStep}
+                onCheckQuiz={learning.checkQuiz}
+                onBack={() => navigate("course")}
+                onNavigateLesson={(id) => onNavigate(`/learn/topic/${id}`)}
+                onPractice={() =>
+                  lessonId?.startsWith("5.")
+                    ? onNavigate("/learn?practice=1&environment=electronics")
+                    : openPractice()
+                }
+                onSignIn={openAccount}
+                materials={
+                  catalog?.sections
+                    .flatMap((section) => section.topics)
+                    .find((item) => item.number === lessonId)?.materials || []
+                }
+                onPreview={openPresentation}
+                onDownload={downloadLessonMaterial}
+              />
+            ),
           )}
-          {page === "practice" && (
-            <Practice
-              key={task?.id || "intro-route"}
-              draftOwner={userId || "guest"}
-              initialTask={task}
-              onNotice={setNotice}
-              canUseCloud={signedIn || mode === "demo"}
-              onRequireAuth={openAccount}
-            />
+          {t(
+            page === "practice" && (
+              <>
+                <nav
+                  className="practice-environments"
+                  aria-label={t("Практические среды")}
+                >
+                  <button
+                    aria-pressed={
+                      routeQuery.get("environment") !== "electronics"
+                    }
+                    onClick={() => onNavigate("/learn?practice=1")}
+                  >
+                    <Terminal size={17} />
+                    {t("Карта и машина")}
+                  </button>
+                  <button
+                    aria-pressed={
+                      routeQuery.get("environment") === "electronics"
+                    }
+                    onClick={() =>
+                      onNavigate("/learn?practice=1&environment=electronics")
+                    }
+                  >
+                    <CircuitBoard size={17} />
+                    {t("Электроника")}
+                  </button>
+                </nav>
+                {t(
+                  routeQuery.get("environment") === "electronics" ? (
+                    <Suspense
+                      fallback={
+                        <div className="empty-state">
+                          {t("Загружаем лабораторию…")}
+                        </div>
+                      }
+                    >
+                      <Electronics
+                        key={userId || "guest"}
+                        draftOwner={userId || "guest"}
+                        onNotice={setNotice}
+                      />
+                    </Suspense>
+                  ) : (
+                    <Practice
+                      key={task?.id || "intro-route"}
+                      draftOwner={userId || "guest"}
+                      initialTask={task}
+                      onNotice={setNotice}
+                      canUseCloud={signedIn || mode === "demo"}
+                      onRequireAuth={openAccount}
+                    />
+                  ),
+                )}
+              </>
+            ),
           )}
-          {page === "classroom" && !identityReady && (
-            <div className="empty-state">Загружаем кабинет…</div>
+          {t(
+            page === "classroom" && !identityReady && (
+              <div className="empty-state">{t("Загружаем кабинет…")}</div>
+            ),
           )}
-          {page === "classroom" && identityReady && !signedIn && (
-            <div className="large-empty">
-              <h2>Личный кабинет</h2>
-              <p>
-                Войдите как учитель для управления классами и уроками или как
-                ученик для доступа к заданиям своего класса.
-              </p>
-              <button className="primary-button" onClick={openAccount}>
-                Войти в аккаунт
-              </button>
-            </div>
+          {t(
+            page === "classroom" && identityReady && !signedIn && (
+              <div className="large-empty">
+                <h2>{t("Личный кабинет")}</h2>
+                <p>
+                  {t(
+                    "Войдите как учитель для управления классами и уроками или как ученик для доступа к заданиям своего класса.",
+                  )}
+                </p>
+                <button className="primary-button" onClick={openAccount}>
+                  {t("Войти в аккаунт")}
+                </button>
+              </div>
+            ),
           )}
-          {page === "classroom" && identityReady && signedIn && (
-            <Classroom
-              role={role}
-              onNotice={setNotice}
-              onPractice={openPractice}
-            />
+          {t(
+            page === "classroom" && identityReady && signedIn && (
+              <Classroom
+                role={role}
+                onNotice={setNotice}
+                onPractice={openPractice}
+              />
+            ),
           )}
         </main>
         <footer>
-          <span>EasyCode · Образовательная платформа</span>
-          <span>Основы программирования</span>
+          <span>{t("EasyCode · Образовательная платформа")}</span>
+          <span>{t("Основы программирования")}</span>
         </footer>
       </div>
-      {notice && (
-        <div className="toast" role="status">
-          {notice}
-          <button
-            className="icon-button"
-            aria-label="Закрыть уведомление"
-            onClick={() => setNotice("")}
-          >
-            <X size={16} />
-          </button>
-        </div>
+      {t(
+        notice && (
+          <div className="toast" role="status">
+            {t(notice)}
+            <button
+              className="icon-button"
+              aria-label={t("Закрыть уведомление")}
+              onClick={() => setNotice("")}
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ),
       )}
       {presentation && (
         <Suspense
           fallback={
             <div className="toast" role="status">
-              Загрузка просмотра презентации…
+              {t("Загрузка просмотра презентации…")}
               <button
                 className="text-button"
                 onClick={() => setSelectedPresentation(undefined)}
               >
-                Отменить
+                {t("Отменить")}
               </button>
             </div>
           }
@@ -521,84 +582,97 @@ export default function App({
           />
         </Suspense>
       )}
-      {authOpen && (
-        <div className="modal-overlay" onClick={() => setAuthOpen(false)}>
-          <section
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Аккаунт"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="modal-close icon-button"
-              aria-label="Закрыть"
-              onClick={() => setAuthOpen(false)}
+      {t(
+        authOpen && (
+          <div className="modal-overlay" onClick={() => setAuthOpen(false)}>
+            <section
+              className="modal"
+              role="dialog"
+              aria-modal="true"
+              aria-label={t("Аккаунт")}
+              onClick={(e) => e.stopPropagation()}
             >
-              <X size={20} />
-            </button>
-            {mode === "demo" ? (
-              <>
-                <h2>Демонстрационный режим</h2>
-                <p>
-                  В меню сверху можно переключиться между учеником и учителем.
-                  Для настоящих аккаунтов заполните настройки Supabase в файле
-                  .env.
-                </p>
-                <button
-                  className="primary-button"
-                  onClick={() => setAuthOpen(false)}
-                >
-                  Понятно
-                </button>
-              </>
-            ) : signedIn && !authFormActive ? (
-              <>
-                <h2>{name}</h2>
-                <p>
-                  {role === "teacher" ? "Кабинет учителя" : "Аккаунт ученика"}
-                </p>
-                <button
-                  className="primary-button"
-                  onClick={() => {
-                    setAuthOpen(false);
-                    navigate("classroom");
-                  }}
-                >
-                  <Users size={16} />
-                  {role === "teacher"
-                    ? "Открыть кабинет учителя"
-                    : "Открыть мой класс"}
-                </button>
-                <button
-                  className="secondary-button account-signout"
-                  onClick={async () => {
-                    const result = await supabase?.auth.signOut({
-                      scope: "local",
-                    });
-                    if (result?.error) {
-                      setNotice("Не удалось выйти. Повторите попытку.");
-                      return;
-                    }
-                    setAuthOpen(false);
-                  }}
-                >
-                  <LogOut size={16} />
-                  Выйти
-                </button>
-              </>
-            ) : (
-              <AuthPanel
-                onComplete={(user) => {
-                  setAuthOpen(false);
-                  account.refresh();
-                  if (user.role === "teacher") navigate("classroom");
-                }}
-                onNotice={setNotice}
-              />
-            )}
-          </section>
-        </div>
+              <div className="auth-language-row">
+                <LanguageSwitcher />
+              </div>
+              <button
+                className="modal-close icon-button"
+                aria-label={t("Закрыть")}
+                onClick={() => setAuthOpen(false)}
+              >
+                <X size={20} />
+              </button>
+              {t(
+                mode === "demo" ? (
+                  <>
+                    <h2>{t("Демонстрационный режим")}</h2>
+                    <p>
+                      {t(
+                        "В меню сверху можно переключиться между учеником и учителем. Для настоящих аккаунтов заполните настройки Supabase в файле .env.",
+                      )}
+                    </p>
+                    <button
+                      className="primary-button"
+                      onClick={() => setAuthOpen(false)}
+                    >
+                      {t("Понятно")}
+                    </button>
+                  </>
+                ) : signedIn && !authFormActive ? (
+                  <>
+                    <h2>{name}</h2>
+                    <p>
+                      {t(
+                        role === "teacher"
+                          ? "Кабинет учителя"
+                          : "Аккаунт ученика",
+                      )}
+                    </p>
+                    <button
+                      className="primary-button"
+                      onClick={() => {
+                        setAuthOpen(false);
+                        navigate("classroom");
+                      }}
+                    >
+                      <Users size={16} />
+                      {t(
+                        role === "teacher"
+                          ? "Открыть кабинет учителя"
+                          : "Открыть мой класс",
+                      )}
+                    </button>
+                    <button
+                      className="secondary-button account-signout"
+                      onClick={async () => {
+                        const result = await supabase?.auth.signOut({
+                          scope: "local",
+                        });
+                        if (result?.error) {
+                          setNotice("Не удалось выйти. Повторите попытку.");
+                          return;
+                        }
+                        setAuthOpen(false);
+                      }}
+                    >
+                      <LogOut size={16} />
+                      {t("Выйти")}
+                    </button>
+                  </>
+                ) : (
+                  <AuthPanel
+                    onComplete={(user) => {
+                      setAuthOpen(false);
+                      account.refresh();
+                      if (user.role === "teacher") navigate("classroom");
+                    }}
+                    onNotice={setNotice}
+                  />
+                ),
+              )}
+            </section>
+          </div>
+        ),
       )}
     </div>
   );

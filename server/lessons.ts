@@ -1,4 +1,5 @@
 import { lessons } from "../content/lessons/index.js";
+import localizedFeedback from './locales/lesson-feedback.json';
 import type { Lesson, LessonDefinition, LessonProgress, QuizResult } from "../shared/lessons.js";
 
 export class LessonProgressUnavailable extends Error {
@@ -25,7 +26,7 @@ export function validQuizAnswers(lesson: LessonDefinition, answers: Record<strin
 
 export function assessLesson(lesson: LessonDefinition, answers: Record<string, string>): QuizResult {
   if (!validQuizAnswers(lesson, answers)) throw new Error("Ответьте на все вопросы и выберите существующие варианты.");
-  const feedback = lesson.quiz.map(question => ({ questionId: question.id, correct: answers[question.id] === question.correctOptionId, explanation: question.explanation }));
+  const feedback = lesson.quiz.map(question => ({ questionId: question.id, correct: answers[question.id] === question.correctOptionId, explanation: question.explanation, translations: (localizedFeedback as Record<string, { en: string; kk: string }>)[question.id] }));
   const score = feedback.filter(answer => answer.correct).length;
   return { score, total: lesson.quiz.length, passed: score === lesson.quiz.length, feedback };
 }

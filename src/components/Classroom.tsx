@@ -1,3 +1,4 @@
+import { t, getLanguageTag } from "../lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -38,6 +39,7 @@ export function Classroom({
   const [form, setForm] = useState<Form>(null);
   const [taskLessonId, setTaskLessonId] = useState("");
   const [busy, setBusy] = useState(false);
+  const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [contentLoading, setContentLoading] = useState(false);
@@ -127,6 +129,9 @@ export function Classroom({
   useEffect(() => {
     void loadContent();
   }, [selected]);
+  useEffect(() => {
+    setFormError("");
+  }, [form]);
   function openTask(lessonId = "") {
     setTaskLessonId(lessonId);
     setForm("task");
@@ -135,6 +140,7 @@ export function Classroom({
     e.preventDefault();
     if (busy || !form || (form !== "join" && !teacher)) return;
     setBusy(true);
+    setFormError("");
     const owner = scope.current;
     const d = new FormData(e.currentTarget);
     try {
@@ -184,8 +190,13 @@ export function Classroom({
         await loadContent();
       }
     } catch (e) {
-      if (owner === scope.current)
-        onNotice(e instanceof Error ? e.message : "Не удалось сохранить");
+      if (owner === scope.current) {
+        setFormError(
+          e instanceof Error
+            ? e.message
+            : "Не удалось сохранить. Повторите попытку.",
+        );
+      }
     } finally {
       if (owner === scope.current) setBusy(false);
     }
@@ -195,26 +206,30 @@ export function Classroom({
       <div className="page-heading">
         <div>
           <span className="eyebrow">
-            {teacher ? "УПРАВЛЕНИЕ ОБУЧЕНИЕМ" : "УЧЕБНОЕ ПРОСТРАНСТВО"}
+            {t(teacher ? "УПРАВЛЕНИЕ ОБУЧЕНИЕМ" : "УЧЕБНОЕ ПРОСТРАНСТВО")}
           </span>
-          <h1>{teacher ? "Кабинет учителя" : "Мой класс"}</h1>
+          <h1>{t(teacher ? "Кабинет учителя" : "Мой класс")}</h1>
           <p>
-            {teacher
-              ? "Создание классов, публикация уроков и просмотр результатов учеников. Доступ к классу — по коду приглашения."
-              : "Учебные материалы, задания и результаты вашего класса. Для присоединения нужен код учителя."}
+            {t(
+              teacher
+                ? "Создание классов, публикация уроков и просмотр результатов учеников. Доступ к классу — по коду приглашения."
+                : "Учебные материалы, задания и результаты вашего класса. Для присоединения нужен код учителя.",
+            )}
           </p>
-          {teacher && (
-            <button
-              className="text-button plan-download"
-              onClick={() =>
-                downloadMaterial("course-plan/План разделов.docx").catch((e) =>
-                  onNotice(e.message),
-                )
-              }
-            >
-              <BookOpen size={14} />
-              Скачать исходный план курса
-            </button>
+          {t(
+            teacher && (
+              <button
+                className="text-button plan-download"
+                onClick={() =>
+                  downloadMaterial("course-plan/План разделов.docx").catch(
+                    (e) => onNotice(e.message),
+                  )
+                }
+              >
+                <BookOpen size={14} />
+                {t("Скачать исходный план курса")}
+              </button>
+            ),
           )}
         </div>
         <button
@@ -222,44 +237,50 @@ export function Classroom({
           onClick={() => setForm(teacher ? "class" : "join")}
         >
           <Plus size={17} />
-          {teacher ? "Создать класс" : "Присоединиться"}
+          {t(teacher ? "Создать класс" : "Присоединиться по коду")}
         </button>
       </div>
-      {error && (
-        <div className="empty-state">
-          {error}
-          <button
-            className="text-button"
-            style={{ marginLeft: 12 }}
-            onClick={() => void loadClasses()}
-          >
-            Повторить
-          </button>
-        </div>
+      {t(
+        error && (
+          <div className="empty-state">
+            {t(error)}
+            <button
+              className="text-button"
+              style={{ marginLeft: 12 }}
+              onClick={() => void loadClasses()}
+            >
+              {t("Повторить")}
+            </button>
+          </div>
+        ),
       )}
       {loading ? (
-        <div className="empty-state">Загружаем классы…</div>
+        <div className="empty-state">{t("Загружаем классы…")}</div>
       ) : !classes.length && !error ? (
         <div className="large-empty">
           <span>
             <Users size={36} />
           </span>
           <h2>
-            {teacher
-              ? "Классы пока не созданы"
-              : "Вы пока не присоединились к классу"}
+            {t(
+              teacher
+                ? "Классы пока не созданы"
+                : "Вы пока не присоединились к классу",
+            )}
           </h2>
           <p>
-            {teacher
-              ? "Создайте класс и отправьте ученикам код приглашения."
-              : "Введите код приглашения, полученный от учителя."}
+            {t(
+              teacher
+                ? "Создайте класс и отправьте ученикам код приглашения."
+                : "Введите код приглашения, полученный от учителя.",
+            )}
           </p>
           <button
             className="primary-button classroom-empty-action"
             onClick={() => setForm(teacher ? "class" : "join")}
           >
             <Plus size={16} />
-            {teacher ? "Создать первый класс" : "Ввести код учителя"}
+            {t(teacher ? "Создать первый класс" : "Ввести код учителя")}
           </button>
         </div>
       ) : classes.length ? (
@@ -280,22 +301,24 @@ export function Classroom({
           </div>
           <div className="class-overview">
             <div>
-              <span className="eyebrow">ВЫБРАННЫЙ КЛАСС</span>
+              <span className="eyebrow">{t("ВЫБРАННЫЙ КЛАСС")}</span>
               <h2>{current?.name}</h2>
               <p>
-                {contentLoading
-                  ? "Загружаем уроки…"
-                  : contentError
-                    ? "Материалы временно недоступны"
-                    : `Уроков: ${sections.length} · заданий: ${tasks.length}`}
-                {teacher ? ` · ${current?.member_count ?? 0} учеников` : ""}
+                {t(
+                  contentLoading
+                    ? "Загружаем уроки…"
+                    : contentError
+                      ? "Материалы временно недоступны"
+                      : `Уроков: ${sections.length} · заданий: ${tasks.length}`,
+                )}
+                {t(teacher ? ` · ${current?.member_count ?? 0} учеников` : "")}
               </p>
             </div>
             {teacher && (
               <div className="invite-code">
-                <span>Код приглашения</span>
+                <span>{t("Код приглашения")}</span>
                 <button
-                  title="Скопировать код"
+                  title={t("Скопировать код")}
                   onClick={() =>
                     navigator.clipboard
                       .writeText(current?.join_code || "")
@@ -312,42 +335,47 @@ export function Classroom({
             )}
           </div>
           <div className="section-heading">
-            <h2>Уроки и практика</h2>
-            {teacher && (
-              <div className="button-row">
-                <button
-                  className="secondary-button"
-                  onClick={() => setForm("section")}
-                  disabled={busy || contentLoading || !current}
-                >
-                  <BookOpen size={15} />
-                  Новый урок
-                </button>
-                <button
-                  className="primary-button"
-                  onClick={() => openTask()}
-                  disabled={
-                    busy || contentLoading || Boolean(contentError) || !current
-                  }
-                >
-                  <Plus size={16} />
-                  Новое задание
-                </button>
-              </div>
+            <h2>{t("Уроки и практика")}</h2>
+            {t(
+              teacher && (
+                <div className="button-row">
+                  <button
+                    className="secondary-button"
+                    onClick={() => setForm("section")}
+                    disabled={busy || contentLoading || !current}
+                  >
+                    <BookOpen size={15} />
+                    {t("Новый урок")}
+                  </button>
+                  <button
+                    className="primary-button"
+                    onClick={() => openTask()}
+                    disabled={
+                      busy ||
+                      contentLoading ||
+                      Boolean(contentError) ||
+                      !current
+                    }
+                  >
+                    <Plus size={16} />
+                    {t("Новое задание")}
+                  </button>
+                </div>
+              ),
             )}
           </div>
           {contentLoading ? (
             <div className="empty-state" role="status">
-              Загружаем уроки и задания…
+              {t("Загружаем уроки и задания…")}
             </div>
           ) : contentError ? (
             <div className="empty-state classroom-content-error" role="alert">
-              <p>{contentError}</p>
+              <p>{t(contentError)}</p>
               <button
                 className="text-button"
                 onClick={() => void loadContent()}
               >
-                Повторить загрузку
+                {t("Повторить загрузку")}
               </button>
             </div>
           ) : (
@@ -356,7 +384,7 @@ export function Classroom({
                 <section>
                   <h3 className="column-heading">
                     <BookOpen size={16} />
-                    Уроки с теорией
+                    {t("Уроки с теорией")}
                   </h3>
                   {sections.length ? (
                     sections.map((section) => (
@@ -370,7 +398,7 @@ export function Classroom({
                           (task) => task.section_id === section.id,
                         ) && (
                           <div className="lesson-linked-tasks">
-                            <span>Практика к уроку</span>
+                            <span>{t("Практика к уроку")}</span>
                             {tasks
                               .filter((task) => task.section_id === section.id)
                               .map((task) => (
@@ -385,31 +413,39 @@ export function Classroom({
                               ))}
                           </div>
                         )}
-                        {teacher && (
-                          <button
-                            className="text-button classroom-lesson-action"
-                            onClick={() => openTask(section.id)}
-                            disabled={busy}
-                          >
-                            <Plus size={14} /> Добавить задание к уроку
-                          </button>
+                        {t(
+                          teacher && (
+                            <button
+                              className="text-button classroom-lesson-action"
+                              onClick={() => openTask(section.id)}
+                              disabled={busy}
+                            >
+                              <Plus size={14} />
+                              {t(" Добавить задание к уроку")}
+                            </button>
+                          ),
                         )}
                       </article>
                     ))
                   ) : (
                     <div className="empty-state">
                       <p>
-                        {teacher
-                          ? "Добавьте урок с названием, объяснением темы и примерами. Он будет доступен ученикам класса."
-                          : "Учитель пока не добавил уроки."}
+                        {t(
+                          teacher
+                            ? "Добавьте урок с названием, объяснением темы и примерами. Он будет доступен ученикам класса."
+                            : "Учитель пока не добавил уроки.",
+                        )}
                       </p>
-                      {teacher && (
-                        <button
-                          className="text-button classroom-empty-action"
-                          onClick={() => setForm("section")}
-                        >
-                          Создать первый урок <ArrowRight size={14} />
-                        </button>
+                      {t(
+                        teacher && (
+                          <button
+                            className="text-button classroom-empty-action"
+                            onClick={() => setForm("section")}
+                          >
+                            {t("Создать первый урок ")}
+                            <ArrowRight size={14} />
+                          </button>
+                        ),
                       )}
                     </div>
                   )}
@@ -417,25 +453,28 @@ export function Classroom({
                 <section>
                   <h3 className="column-heading">
                     <Check size={16} />
-                    Задания
+                    {t("Задания")}
                   </h3>
                   {tasks.length ? (
                     tasks.map((task) => (
                       <article className="assignment-card" key={task.id}>
                         {task.section_id && (
                           <span className="assignment-lesson">
-                            Урок:{" "}
+                            {t("Урок:")}
+                            {t(" ")}
                             {sections.find(
                               (section) => section.id === task.section_id,
                             )?.title || "Урок класса"}
                           </span>
                         )}
                         <span className="difficulty">
-                          {task.difficulty === "easy"
-                            ? "Начальный"
-                            : task.difficulty === "medium"
-                              ? "Средний"
-                              : "Продвинутый"}
+                          {t(
+                            task.difficulty === "easy"
+                              ? "Начальный"
+                              : task.difficulty === "medium"
+                                ? "Средний"
+                                : "Продвинутый",
+                          )}
                         </span>
                         <h3>{task.title}</h3>
                         <p>{task.description}</p>
@@ -443,7 +482,7 @@ export function Classroom({
                           className="text-button"
                           onClick={() => onPractice(task)}
                         >
-                          {teacher ? "Открыть задание" : "Решить задание"}
+                          {t(teacher ? "Открыть задание" : "Решить задание")}
                           <ArrowRight size={16} />
                         </button>
                       </article>
@@ -451,17 +490,22 @@ export function Classroom({
                   ) : (
                     <div className="empty-state">
                       <p>
-                        {teacher
-                          ? "Добавьте практическое задание для выполнения в симуляторе."
-                          : "Новые задания скоро появятся здесь."}
+                        {t(
+                          teacher
+                            ? "Добавьте практическое задание для выполнения в симуляторе."
+                            : "Новые задания скоро появятся здесь.",
+                        )}
                       </p>
-                      {teacher && (
-                        <button
-                          className="text-button classroom-empty-action"
-                          onClick={() => openTask()}
-                        >
-                          Создать задание <ArrowRight size={14} />
-                        </button>
+                      {t(
+                        teacher && (
+                          <button
+                            className="text-button classroom-empty-action"
+                            onClick={() => openTask()}
+                          >
+                            {t("Создать задание ")}
+                            <ArrowRight size={14} />
+                          </button>
+                        ),
                       )}
                     </div>
                   )}
@@ -469,12 +513,12 @@ export function Classroom({
               </div>
               <section className="results-section">
                 <div className="section-heading">
-                  <h2>{teacher ? "Решения учеников" : "Мои результаты"}</h2>
+                  <h2>{t(teacher ? "Решения учеников" : "Мои результаты")}</h2>
                   <button
                     className="text-button"
                     onClick={() => void loadContent()}
                   >
-                    Обновить
+                    {t("Обновить")}
                   </button>
                 </div>
                 {submissions.length ? (
@@ -482,10 +526,10 @@ export function Classroom({
                     <table>
                       <thead>
                         <tr>
-                          <th>Задание</th>
-                          {teacher && <th>Ученик</th>}
-                          <th>Результат</th>
-                          <th>Когда</th>
+                          <th>{t("Задание")}</th>
+                          {t(teacher && <th>{t("Ученик")}</th>)}
+                          <th>{t("Результат")}</th>
+                          <th>{t("Когда")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -508,18 +552,25 @@ export function Classroom({
                                     : "muted"
                                 }
                               >
-                                {s.success || s.result?.success
-                                  ? "Выполнено"
-                                  : "Нужна доработка"}
+                                {t(
+                                  s.success || s.result?.success
+                                    ? "Выполнено"
+                                    : "Нужна доработка",
+                                )}
                               </span>
                             </td>
                             <td>
-                              {new Date(s.created_at).toLocaleString("ru-RU", {
-                                day: "numeric",
-                                month: "short",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              {t(
+                                new Date(s.created_at).toLocaleString(
+                                  getLanguageTag(),
+                                  {
+                                    day: "numeric",
+                                    month: "short",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  },
+                                ),
+                              )}
                             </td>
                           </tr>
                         ))}
@@ -528,7 +579,7 @@ export function Classroom({
                   </div>
                 ) : (
                   <div className="empty-state">
-                    Проверенные решения появятся здесь.
+                    {t("Проверенные решения появятся здесь.")}
                   </div>
                 )}
               </section>
@@ -547,96 +598,127 @@ export function Classroom({
           >
             <button
               className="icon-button modal-close"
-              aria-label="Закрыть"
+              aria-label={t("Закрыть")}
               onClick={() => setForm(null)}
               disabled={busy}
             >
               <X size={20} />
             </button>
             <span className="eyebrow">
-              {form === "join" ? "ДОСТУП К КЛАССУ" : "СОЗДАНИЕ МАТЕРИАЛОВ"}
+              {t(form === "join" ? "ДОСТУП К КЛАССУ" : "СОЗДАНИЕ МАТЕРИАЛОВ")}
             </span>
             <h2 id="classroom-form-title">
-              {form === "class"
-                ? "Новый класс"
-                : form === "section"
-                  ? "Новый урок"
-                  : form === "task"
-                    ? "Новое задание"
-                    : "Войти в класс"}
+              {t(
+                form === "class"
+                  ? "Новый класс"
+                  : form === "section"
+                    ? "Новый урок"
+                    : form === "task"
+                      ? "Новое задание"
+                      : "Присоединиться к классу",
+              )}
             </h2>
             {(form === "section" || form === "task") && (
               <p>
-                Класс «{current?.name}». Материал будет доступен только
-                участникам этого класса.
+                {t("Класс «")}
+                {current?.name}
+                {t(
+                  "». Материал будет доступен только участникам этого класса.",
+                )}
               </p>
             )}
             <form className="stack-form" onSubmit={save}>
-              {form === "join" ? (
-                <label>
-                  Код от учителя
-                  <input
-                    name="code"
-                    required
-                    minLength={4}
-                    maxLength={16}
-                    placeholder="Например, EASY42"
-                    autoFocus
-                    autoComplete="off"
-                  />
-                </label>
-              ) : (
-                <label>
-                  Название
-                  <input
-                    name="title"
-                    required
-                    minLength={2}
-                    maxLength={form === "class" ? 100 : 150}
-                    placeholder={
-                      form === "class"
-                        ? "Например, 4 «А»"
-                        : form === "section"
-                          ? "Например, Знакомство с алгоритмами"
-                          : "Например, Найди дорогу домой"
-                    }
-                    autoFocus
-                  />
-                </label>
+              {t(
+                formError && (
+                  <p className="classroom-form-error" role="alert">
+                    {t(formError)}
+                  </p>
+                ),
               )}
-              {form === "section" && (
-                <label>
-                  Теория урока
-                  <textarea
-                    name="theory"
-                    required
-                    maxLength={20000}
-                    rows={7}
-                    placeholder="Объяснение темы и примеры. Материал будет доступен ученикам этого класса."
-                  />
-                </label>
+              {t(
+                form === "join" ? (
+                  <label>
+                    {t("Код от учителя")}
+                    <input
+                      name="code"
+                      required
+                      minLength={4}
+                      maxLength={32}
+                      placeholder={t("Например, EASY42")}
+                      autoFocus
+                      autoComplete="off"
+                      autoCapitalize="characters"
+                      spellCheck={false}
+                      aria-describedby="classroom-code-hint"
+                    />
+                    <span
+                      id="classroom-code-hint"
+                      className="classroom-code-hint"
+                    >
+                      {t(
+                        "Попросите учителя прислать код из его кабинета. После входа здесь появятся уроки и задания класса.",
+                      )}
+                    </span>
+                  </label>
+                ) : (
+                  <label>
+                    {t("Название")}
+                    <input
+                      name="title"
+                      required
+                      minLength={2}
+                      maxLength={form === "class" ? 100 : 150}
+                      placeholder={t(
+                        form === "class"
+                          ? "Например, 4 «А»"
+                          : form === "section"
+                            ? "Например, Знакомство с алгоритмами"
+                            : "Например, Найди дорогу домой",
+                      )}
+                      autoFocus
+                    />
+                  </label>
+                ),
+              )}
+              {t(
+                form === "section" && (
+                  <label>
+                    {t("Теория урока")}
+                    <textarea
+                      name="theory"
+                      required
+                      maxLength={20000}
+                      rows={7}
+                      placeholder={t(
+                        "Объяснение темы и примеры. Материал будет доступен ученикам этого класса.",
+                      )}
+                    />
+                  </label>
+                ),
               )}
               {form === "task" && (
                 <>
                   <label>
-                    Условие
+                    {t("Условие")}
                     <textarea
                       name="description"
                       required
                       minLength={10}
                       maxLength={4000}
                       rows={4}
-                      placeholder="Что должна сделать машина?"
+                      placeholder={t("Что должна сделать машина?")}
                     />
                   </label>
                   <label>
-                    Урок
+                    {t("Урок")}
                     <select
                       name="sectionId"
-                      aria-label="Урок"
+                      aria-label={t("Урок")}
                       defaultValue={taskLessonId}
                     >
-                      <option value="">Отдельное задание, без урока</option>
+                      <option value="">
+                        {t("Отдельное задание, без урока")}
+                      </option>
                       {sections.map((s) => (
                         <option value={s.id} key={s.id}>
                           {s.title}
@@ -645,30 +727,32 @@ export function Classroom({
                     </select>
                   </label>
                   <label>
-                    Сложность
-                    <select name="difficulty" aria-label="Сложность">
-                      <option value="easy">Начальный</option>
-                      <option value="medium">Средний</option>
-                      <option value="hard">Продвинутый</option>
+                    {t("Сложность")}
+                    <select name="difficulty" aria-label={t("Сложность")}>
+                      <option value="easy">{t("Начальный")}</option>
+                      <option value="medium">{t("Средний")}</option>
+                      <option value="hard">{t("Продвинутый")}</option>
                     </select>
                   </label>
                   <p className="form-note">
-                    В первой версии используется поле 8 × 6: старт (1, 4), цель
-                    (6, 1). Оценка — достижение цели без столкновений. Редактор
-                    карт добавим следующим этапом.
+                    {t(
+                      "В первой версии используется поле 8 × 6: старт (1, 4), цель (6, 1). Оценка — достижение цели без столкновений. Редактор карт добавим следующим этапом.",
+                    )}
                   </p>
                 </>
               )}
               <button className="primary-button" disabled={busy}>
-                {busy
-                  ? "Сохраняем…"
-                  : form === "join"
-                    ? "Присоединиться"
-                    : form === "section"
-                      ? "Создать урок"
-                      : form === "class"
-                        ? "Создать класс"
-                        : "Создать задание"}
+                {t(
+                  busy
+                    ? "Сохраняем…"
+                    : form === "join"
+                      ? "Присоединиться"
+                      : form === "section"
+                        ? "Создать урок"
+                        : form === "class"
+                          ? "Создать класс"
+                          : "Создать задание",
+                )}
                 <ArrowRight size={16} />
               </button>
             </form>

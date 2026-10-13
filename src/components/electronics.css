@@ -1,0 +1,551 @@
+.practice-environments {
+  display: flex;
+  gap: 8px;
+  padding: 24px 42px 0;
+  max-width: 1440px;
+  margin: auto;
+}
+.practice-environments button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+}
+.practice-environments button[aria-pressed="true"] {
+  color: #badaff;
+  border-color: #3b82f6;
+  background: #3b82f61c;
+}
+.electronics-page {
+  padding-top: 28px;
+}
+.electronics-page button {
+  touch-action: manipulation;
+}
+.electronics-assignment {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+.electronics-assignment > svg {
+  color: #93c5fd;
+}
+.electronics-assignment label {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 7px;
+}
+.electronics-assignment select {
+  color: #f5f5f5;
+  background: #0d1524;
+  border: 1px solid #405a78;
+  border-radius: 6px;
+  padding: 9px 12px;
+  max-width: 100%;
+  font-weight: 600;
+  font-size: 15px;
+}
+.electronics-assignment p {
+  color: #aebdce;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 9px;
+}
+.electronics-local {
+  margin-left: auto;
+  color: #93c5fd;
+  font-size: 11px;
+  max-width: 140px;
+  line-height: 1.6;
+}
+.electronics-toolbar,
+.electronics-toolbar > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.electronics-toolbar {
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.electronics-workbench {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 16px;
+}
+.electronics-library,
+.electronics-canvas-panel,
+.electronics-editor,
+.electronics-inspector {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  overflow: hidden;
+  min-width: 0;
+}
+.electronics-library {
+  padding: 18px 12px;
+}
+.electronics-library h2 {
+  font-size: 16px;
+  padding-inline: 6px;
+}
+.electronics-library > p {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 8px 6px 18px;
+  line-height: 1.6;
+}
+.electronics-library > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 6px;
+  width: 100%;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  text-align: left;
+}
+.electronics-library > button:disabled {
+  opacity: 0.65;
+}
+.electronics-library > button:hover:not(:disabled) {
+  background: #3b82f617;
+}
+.electronics-library strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+.electronics-library small {
+  display: block;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.electronics-library .electronics-part-art {
+  width: 48px;
+  height: 40px;
+  flex-shrink: 0;
+}
+.electronics-library-note {
+  margin-top: 20px !important;
+}
+.electronics-canvas-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.electronics-canvas-title span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.electronics-canvas-title span:last-child {
+  color: #93c5fd;
+  font-size: 11px;
+}
+.electronics-canvas-scroll {
+  overflow: auto;
+  background: #0d1524;
+}
+.electronics-canvas {
+  position: relative;
+  background-image: radial-gradient(#40577780 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.electronics-wires {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.electronics-wires path {
+  fill: none;
+  stroke: #61aaff;
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.electronics-wires .is-ground {
+  stroke: #8293a9;
+}
+.electronics-wires .is-power {
+  stroke: #e08889;
+}
+.electronics-part {
+  position: absolute;
+  background: #17253a;
+  border: 1px solid #405a78;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px #0003;
+}
+.electronics-part.is-selected {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 2px #3b82f640;
+}
+.electronics-part-handle {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 2px;
+  border-radius: 9px 9px 0 0;
+  border-bottom: 1px solid #405a7870;
+  font-size: 11px;
+  background: #1d304a;
+  cursor: grab;
+  touch-action: none !important;
+  user-select: none;
+}
+.electronics-part-handle:active {
+  cursor: grabbing;
+}
+.electronics-part .electronics-part-art {
+  display: block;
+  width: 115px;
+  height: 65px;
+  margin: 7px auto 0;
+}
+.electronics-part-value {
+  display: block;
+  text-align: center;
+  font-size: 10px;
+  color: #b4c7dc;
+  margin-top: 2px;
+}
+.electronics-part-art.is-on {
+  filter: drop-shadow(0 0 12px #7fdcffb0);
+}
+.electronics-pins {
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  height: 0;
+}
+.electronics-pins button {
+  position: absolute;
+  top: -20px;
+  width: 28px;
+  height: 40px;
+  padding: 0;
+  transform: translateX(-50%);
+  background: transparent;
+  font-size: 9px;
+  color: #c6d9ee;
+  z-index: 2;
+}
+.electronics-pins button span {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.electronics-pins i {
+  position: absolute;
+  top: 14px;
+  left: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0d1524;
+  border: 2px solid #c8a764;
+}
+.electronics-pins button:hover i,
+.electronics-pins .is-pending i {
+  background: #93c5fd;
+  border-color: #fff;
+  box-shadow: 0 0 0 4px #3b82f63c;
+}
+.electronics-canvas-bottom {
+  min-height: 54px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.electronics-canvas-bottom > span {
+  font-size: 11px;
+  color: var(--muted);
+  flex: 1;
+}
+.electronics-empty {
+  position: absolute;
+  inset: 150px 40px auto;
+  text-align: center;
+  color: var(--muted);
+  font-size: 15px;
+}
+.electronics-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  padding: 18px;
+  margin: 16px 0 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.electronics-inputs > div,
+.electronics-inputs label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.electronics-inputs label {
+  margin-left: auto;
+  flex-wrap: wrap;
+  color: #b4c7dc;
+}
+.electronics-inputs input {
+  width: 160px;
+  accent-color: #3b82f6;
+}
+.electronics-led-status {
+  width: 14px;
+  height: 14px;
+  background: #29425f;
+  border: 1px solid #4f6986;
+  border-radius: 50%;
+}
+.electronics-led-status.is-on {
+  background: #7fdcff;
+  box-shadow: 0 0 12px #7fdcff80;
+}
+.electronics-inputs .is-pressed {
+  background: #3b82f630;
+  border-color: #93c5fd;
+}
+.electronics-bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 20px;
+}
+.electronics-editor .panel-bar > span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.electronics-code {
+  width: 100%;
+  min-height: 410px;
+  resize: vertical;
+  padding: 22px;
+  background: #0d1524;
+  color: #c6ddf7;
+  border: 0;
+  font:
+    13px/1.9 "Geist Mono",
+    monospace;
+  tab-size: 4;
+  display: block;
+}
+.electronics-editor-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+.electronics-inspector {
+  padding: 22px;
+}
+.electronics-inspector h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+.electronics-console {
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #304963;
+  background: #0d1524;
+  color: #b7cde5;
+  font:
+    12px/1.7 "Geist Mono",
+    monospace;
+  overflow-wrap: anywhere;
+  margin-bottom: 18px;
+}
+.electronics-issues {
+  padding-left: 18px;
+  color: #e0bd88;
+  font-size: 12px;
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+.electronics-disclaimer {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 14px;
+}
+.electronics-check {
+  padding: 12px;
+  border: 1px solid #8b6c3e;
+  background: #9a67171c;
+  border-radius: 8px;
+  color: #e0bd88;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 14px;
+}
+.electronics-check.is-success {
+  border-color: #418763;
+  background: #216a441c;
+  color: #80dcb0;
+}
+.electronics-connections {
+  margin-top: 22px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+.electronics-connections summary {
+  font-size: 13px;
+  cursor: pointer;
+  color: #93c5fd;
+}
+.electronics-connections ul {
+  padding: 0;
+  list-style: none;
+}
+.electronics-connections li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: #b4c7dc;
+  line-height: 1.5;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 0;
+}
+.electronics-help {
+  border: 1px solid #405a78;
+  border-radius: 12px;
+  padding: 24px;
+  background: var(--card);
+  margin-bottom: 20px;
+}
+.electronics-help h2 {
+  font-size: 20px;
+}
+.electronics-help ol {
+  padding-left: 20px;
+}
+.electronics-help li,
+.electronics-help p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #b4c7dc;
+}
+.electronics-help li {
+  margin-bottom: 8px;
+}
+.electronics-help p {
+  margin-top: 16px;
+}
+.electronics-command-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 20px;
+  font-size: 12px;
+}
+.electronics-command-list code {
+  color: #93c5fd;
+}
+.electronics-command-list span {
+  color: var(--muted);
+}
+@media (max-width: 1100px) {
+  .electronics-workbench {
+    grid-template-columns: 180px minmax(0, 1fr);
+  }
+  .electronics-library .electronics-part-art {
+    width: 36px;
+  }
+  .electronics-library small {
+    font-size: 9px;
+  }
+  .electronics-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+  .electronics-local {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .practice-environments {
+    padding: 20px 20px 0;
+    flex-wrap: wrap;
+  }
+  .electronics-workbench {
+    grid-template-columns: 1fr;
+  }
+  .electronics-library {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px;
+  }
+  .electronics-library > h2 {
+    width: 100%;
+  }
+  .electronics-library > p {
+    display: none;
+  }
+  .electronics-library > button {
+    width: auto;
+    flex: 1 1 135px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .electronics-library small {
+    display: none;
+  }
+  .electronics-assignment {
+    padding: 16px;
+    align-items: flex-start;
+  }
+  .electronics-inputs {
+    gap: 14px;
+  }
+  .electronics-inputs label {
+    margin-left: 0;
+  }
+  .electronics-help {
+    padding: 18px;
+  }
+  .electronics-command-list {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .electronics-command-list span {
+    margin-bottom: 8px;
+  }
+}

@@ -85,6 +85,11 @@
           "title": "Что такое цикл и зачем он нужен?",
           "materials": [
             {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "section-03/topic-01/Презентация.pptx"
+            },
+            {
               "type": "teacher_notes",
               "audience": "teacher",
               "path": "section-03/topic-01/Конспект для учителя.docx"
@@ -94,7 +99,7 @@
         {
           "number": "3.2",
           "title": "Создание алгоритмов с повторениями",
-          "materials": []
+          "materials": [{ "type": "presentation", "audience": "student_and_teacher", "path": "section-03/topic-02/Презентация.pptx" }]
         }
       ]
     },
@@ -106,12 +111,12 @@
         {
           "number": "4.1",
           "title": "Условие и блок «если»",
-          "materials": []
+          "materials": [{ "type": "presentation", "audience": "student_and_teacher", "path": "section-04/topic-01/Презентация.pptx" }]
         },
         {
           "number": "4.2",
           "title": "Конструкции «если — иначе» и несколько условий",
-          "materials": []
+          "materials": [{ "type": "presentation", "audience": "student_and_teacher", "path": "section-04/topic-02/Презентация.pptx" }]
         }
       ]
     },
@@ -123,12 +128,12 @@
         {
           "number": "5.1",
           "title": "Основные электронные компоненты и их назначение",
-          "materials": []
+          "materials": [{ "type": "presentation", "audience": "student_and_teacher", "path": "section-05/topic-01/Презентация.pptx" }]
         },
         {
           "number": "5.2",
           "title": "Управление электронными компонентами с помощью блоков",
-          "materials": []
+          "materials": [{ "type": "presentation", "audience": "student_and_teacher", "path": "section-05/topic-02/Презентация.pptx" }]
         }
       ]
     },
@@ -140,12 +145,12 @@
         {
           "number": "6.1",
           "title": "Планирование и разработка проекта",
-          "materials": []
+          "materials": [{ "type": "presentation", "audience": "student_and_teacher", "path": "section-06/topic-01/Презентация.pptx" }]
         },
         {
           "number": "6.2",
           "title": "Тестирование, отладка и улучшение проекта",
-          "materials": []
+          "materials": [{ "type": "presentation", "audience": "student_and_teacher", "path": "section-06/topic-02/Презентация.pptx" }]
         }
       ]
     }

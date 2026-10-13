@@ -1,3 +1,4 @@
+import { t, getLanguage } from "../lib/i18n";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -171,9 +172,10 @@ export function Practice({
       const data = await api<{ hint: string; source: string }>("/hints", {
         code: source,
         taskId: task.id,
+        language: getLanguage(),
       });
       setHint(
-        `${data.source === "local" ? "Подсказка без AI" : "AI-подсказка"}: ${data.hint}`,
+        `${t(data.source === "local" ? "Подсказка без AI" : "AI-подсказка")}: ${data.hint}`,
       );
     } catch (e) {
       onNotice(e instanceof Error ? e.message : "Подсказка недоступна");
@@ -189,16 +191,18 @@ export function Practice({
     <div className="practice-page page-container">
       <div className="page-heading">
         <div>
-          <span className="eyebrow">ПРАКТИКА ПРОГРАММИРОВАНИЯ</span>
-          <h1>Практическая среда</h1>
-          <p>Создание программ из блоков и кода с проверкой в симуляторе.</p>
+          <span className="eyebrow">{t("ПРАКТИКА ПРОГРАММИРОВАНИЯ")}</span>
+          <h1>{t("Практическая среда")}</h1>
+          <p>
+            {t("Создание программ из блоков и кода с проверкой в симуляторе.")}
+          </p>
         </div>
         <button
           className="secondary-button"
           onClick={() => setShowHelp(!showHelp)}
         >
           <HelpCircle size={16} />
-          Команды
+          {t("Команды")}
         </button>
       </div>
       <section className="mission-card">
@@ -207,44 +211,51 @@ export function Practice({
         </span>
         <div>
           <div className="mission-label">
-            ЗАДАНИЕ <span>·</span>{" "}
-            {task.difficulty === "easy"
-              ? "Начальный уровень"
-              : task.difficulty === "medium"
-                ? "Средний уровень"
-                : "Продвинутый уровень"}
+            {t("ЗАДАНИЕ ")}
+            <span>·</span>
+            {t(" ")}
+            {t(
+              task.difficulty === "easy"
+                ? "Начальный уровень"
+                : task.difficulty === "medium"
+                  ? "Средний уровень"
+                  : "Продвинутый уровень",
+            )}
           </div>
-          <h2>{task.title}</h2>
-          <p>{task.description}</p>
+          <h2>{task.class_id ? task.title : t(task.title)}</h2>
+          <p>{task.class_id ? task.description : t(task.description)}</p>
         </div>
         <span className="mission-mode">
-          {task.class_id ? "Задание учителя" : "Тренировочное задание"}
+          {t(task.class_id ? "Задание учителя" : "Тренировочное задание")}
         </span>
       </section>
-      {showHelp && (
-        <div className="help-panel">
-          <h3>Справочник учебного Python</h3>
-          <div>
-            <code>robot.forward(3)</code>
-            <span>Вперёд на 3 клетки</span>
-            <code>robot.backward(1)</code>
-            <span>Назад на 1 клетку</span>
-            <code>robot.turn_left()</code>
-            <span>Поворот налево на 90°</span>
-            <code>robot.turn_right()</code>
-            <span>Поворот направо на 90°</span>
-            <code>robot.stop()</code>
-            <span>Завершить программу</span>
-            <code>for i in range(3):</code>
-            <span>Повторить команды с отступом 3 раза</span>
-            <code>if robot.obstacle_ahead():</code>
-            <span>Проверить препятствие; поддерживается else</span>
+      {t(
+        showHelp && (
+          <div className="help-panel">
+            <h3>{t("Справочник учебного Python")}</h3>
+            <div>
+              <code>robot.forward(3)</code>
+              <span>{t("Вперёд на 3 клетки")}</span>
+              <code>robot.backward(1)</code>
+              <span>{t("Назад на 1 клетку")}</span>
+              <code>robot.turn_left()</code>
+              <span>{t("Поворот налево на 90°")}</span>
+              <code>robot.turn_right()</code>
+              <span>{t("Поворот направо на 90°")}</span>
+              <code>robot.stop()</code>
+              <span>{t("Завершить программу")}</span>
+              <code>for i in range(3):</code>
+              <span>{t("Повторить команды с отступом 3 раза")}</span>
+              <code>if robot.obstacle_ahead():</code>
+              <span>{t("Проверить препятствие; поддерживается else")}</span>
+            </div>
+            <p>
+              {t(
+                "Это ограниченный учебный язык, а не полный Python. Ввод, библиотеки и произвольные выражения не поддерживаются.",
+              )}
+            </p>
           </div>
-          <p>
-            Это ограниченный учебный язык, а не полный Python. Ввод, библиотеки
-            и произвольные выражения не поддерживаются.
-          </p>
-        </div>
+        ),
       )}
       <div className="playground">
         <section className="editor-panel">
@@ -255,7 +266,7 @@ export function Practice({
                 onClick={() => setMode("blocks")}
               >
                 <Layers3 size={15} />
-                Блоки
+                {t("Блоки")}
               </button>
               <button
                 className={mode === "code" ? "selected" : ""}
@@ -267,8 +278,8 @@ export function Practice({
             </div>
             <button
               className="icon-button"
-              title="Сохранить черновик в этом браузере"
-              aria-label="Сохранить черновик"
+              title={t("Сохранить черновик в этом браузере")}
+              aria-label={t("Сохранить черновик")}
               onClick={() => {
                 try {
                   localStorage.setItem(
@@ -282,84 +293,99 @@ export function Practice({
                 }
               }}
             >
-              {saved ? <Check size={16} /> : <Save size={16} />}
+              {t(saved ? <Check size={16} /> : <Save size={16} />)}
             </button>
           </div>
           <div className="editor-content">
-            {mode === "blocks" ? (
-              <Suspense
-                fallback={<div className="empty-state">Загружаем блоки…</div>}
-              >
-                {ready && (
-                  <BlockEditor
-                    initialState={blocks}
-                    onChange={(next, state) => {
-                      setBlockCode(next);
-                      setBlocks(state);
-                    }}
-                  />
-                )}
-              </Suspense>
-            ) : (
-              <div className="code-editor">
-                <div className="code-filename">
-                  <span className="tiny-dot" />
-                  main.py<span>Учебный Python</span>
-                </div>
-                <div className="code-input-wrap">
-                  <div className="line-numbers" aria-hidden="true">
-                    {code.split("\n").map((_, i) => (
-                      <span key={i}>{i + 1}</span>
-                    ))}
+            {t(
+              mode === "blocks" ? (
+                <Suspense
+                  fallback={
+                    <div className="empty-state">{t("Загружаем блоки…")}</div>
+                  }
+                >
+                  {t(
+                    ready && (
+                      <BlockEditor
+                        initialState={blocks}
+                        onChange={(next, state) => {
+                          setBlockCode(next);
+                          setBlocks(state);
+                        }}
+                      />
+                    ),
+                  )}
+                </Suspense>
+              ) : (
+                <div className="code-editor">
+                  <div className="code-filename">
+                    <span className="tiny-dot" />
+                    main.py<span>{t("Учебный Python")}</span>
                   </div>
-                  <textarea
-                    aria-label="Код программы"
-                    value={code}
-                    spellCheck={false}
-                    onChange={(e) => setCode(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Tab") {
-                        e.preventDefault();
-                        const el = e.currentTarget;
-                        const start = el.selectionStart;
-                        const end = el.selectionEnd;
-                        setCode(
-                          code.slice(0, start) + "    " + code.slice(end),
-                        );
-                        requestAnimationFrame(() => {
-                          el.selectionStart = el.selectionEnd = start + 4;
-                        });
-                      }
-                    }}
-                  />
+                  <div className="code-input-wrap">
+                    <div className="line-numbers" aria-hidden="true">
+                      {t(
+                        code
+                          .split("\n")
+                          .map((_, i) => <span key={i}>{t(i + 1)}</span>),
+                      )}
+                    </div>
+                    <textarea
+                      aria-label={t("Код программы")}
+                      value={code}
+                      spellCheck={false}
+                      onChange={(e) => setCode(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Tab") {
+                          e.preventDefault();
+                          const el = e.currentTarget;
+                          const start = el.selectionStart;
+                          const end = el.selectionEnd;
+                          setCode(
+                            code.slice(0, start) + "    " + code.slice(end),
+                          );
+                          requestAnimationFrame(() => {
+                            el.selectionStart = el.selectionEnd = start + 4;
+                          });
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
+              ),
             )}
           </div>
           <div className="editor-bottom">
             <span>
-              {mode === "blocks"
-                ? "Соединяйте блоки для составления программы"
-                : "Отступ внутри цикла — 4 пробела"}
+              {t(
+                mode === "blocks"
+                  ? "Соединяйте блоки для составления программы"
+                  : "Отступ внутри цикла — 4 пробела",
+              )}
             </span>
-            {mode === "blocks" && (
-              <button
-                className="text-button"
-                onClick={() => {
-                  if (
-                    code !== starter &&
-                    code !== blockCode &&
-                    !window.confirm(
-                      "Заменить текст программы кодом из блоков? Текущие изменения в Python будут заменены.",
+            {t(
+              mode === "blocks" && (
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    if (
+                      code !== starter &&
+                      code !== blockCode &&
+                      !window.confirm(
+                        t(
+                          "Заменить текст программы кодом из блоков? Текущие изменения в Python будут заменены.",
+                        ),
+                      )
                     )
-                  )
-                    return;
-                  setCode(blockCode);
-                  setMode("code");
-                }}
-              >
-                В код <ArrowRight size={13} />
-              </button>
+                      return;
+                    setCode(blockCode);
+                    setMode("code");
+                  }}
+                >
+                  {t("В код ")}
+                  <ArrowRight size={13} />
+                </button>
+              ),
             )}
           </div>
         </section>
@@ -367,10 +393,10 @@ export function Practice({
           <div className="panel-bar">
             <span className="panel-title">
               <span className="status-dot" />
-              Симуляция
+              {t("Симуляция")}
             </span>
             <span className="scene-dimensions">
-              {task.world.width} × {task.world.height}
+              {t(task.world.width)} × {t(task.world.height)}
             </span>
           </div>
           <div className="scene-content">
@@ -382,25 +408,27 @@ export function Practice({
             <div className="scene-legend">
               <span>
                 <i className="legend-start" />
-                Старт
+                {t("Старт")}
               </span>
               <span>
                 <i className="legend-goal" />
-                Цель
+                {t("Цель")}
               </span>
               <span>
                 <i className="legend-obstacle" />
-                Препятствие
+                {t("Препятствие")}
               </span>
             </div>
           </div>
           <div className="scene-status">
             <span className={finished && result.success ? "success-text" : ""}>
-              {running
-                ? "Выполнение команд…"
-                : finished
-                  ? result.message
-                  : "Симулятор готов к запуску"}
+              {t(
+                running
+                  ? "Выполнение команд…"
+                  : finished
+                    ? result.message
+                    : "Симулятор готов к запуску",
+              )}
             </span>
             <code>
               x: {frame.x} · y: {frame.y}
@@ -421,12 +449,14 @@ export function Practice({
                 : run
             }
           >
-            {running ? (
-              <Square size={15} />
-            ) : (
-              <Play size={15} fill="currentColor" />
+            {t(
+              running ? (
+                <Square size={15} />
+              ) : (
+                <Play size={15} fill="currentColor" />
+              ),
             )}
-            {running ? "Остановить" : "Запустить"}
+            {t(running ? "Остановить" : "Запустить")}
           </button>
           <button
             className="secondary-button"
@@ -434,12 +464,12 @@ export function Practice({
             disabled={running}
           >
             <StepForward size={16} />
-            По шагам
+            {t("По шагам")}
           </button>
           <button
             className="icon-button"
-            aria-label="Сбросить симуляцию"
-            title="Сбросить симуляцию"
+            aria-label={t("Сбросить симуляцию")}
+            title={t("Сбросить симуляцию")}
             onClick={reset}
           >
             <RotateCcw size={17} />
@@ -451,38 +481,46 @@ export function Practice({
           disabled={busy || running}
         >
           <Check size={16} />
-          {busy ? "Проверяем…" : "Проверить решение"}
+          {t(busy ? "Проверяем…" : "Проверить решение")}
         </button>
       </div>
       <div className="practice-bottom">
         <section className="console-panel">
           <h3>
             <Terminal size={16} />
-            Журнал программы
-            <span>{result ? `${result.steps} шагов` : "Ожидание"}</span>
+            {t("Журнал программы")}
+            <span>{t(result ? `${result.steps} шагов` : "Ожидание")}</span>
           </h3>
           <div className="console-lines">
-            {result?.frames.length ? (
-              result.frames
-                .slice(0, Math.min(frameIndex + 1, result.frames.length))
-                .map((f, i) => (
-                  <div key={i}>
-                    <span>{String(i).padStart(2, "0")}</span>
-                    <code>{f.command}</code>
-                    <small>
-                      ({f.x}, {f.y})
-                    </small>
-                  </div>
-                ))
-            ) : (
-              <p>Нажмите «Запустить» для просмотра выполнения команд.</p>
+            {t(
+              result?.frames.length ? (
+                result.frames
+                  .slice(0, Math.min(frameIndex + 1, result.frames.length))
+                  .map((f, i) => (
+                    <div key={i}>
+                      <span>{t(String(i).padStart(2, "0"))}</span>
+                      <code>{f.command}</code>
+                      <small>
+                        ({t(f.x)}, {t(f.y)})
+                      </small>
+                    </div>
+                  ))
+              ) : (
+                <p>
+                  {t("Нажмите «Запустить» для просмотра выполнения команд.")}
+                </p>
+              ),
             )}
-            {result && !running && (
-              <p
-                className={result.success ? "success-text" : "console-message"}
-              >
-                {result.message}
-              </p>
+            {t(
+              result && !running && (
+                <p
+                  className={
+                    result.success ? "success-text" : "console-message"
+                  }
+                >
+                  {t(result.message)}
+                </p>
+              ),
             )}
           </div>
         </section>
@@ -490,18 +528,23 @@ export function Practice({
           <span className="hint-icon">
             <HelpCircle size={20} />
           </span>
-          <h3>Помощь с заданием</h3>
+          <h3>{t("Помощь с заданием")}</h3>
           <p>
-            {hint ||
-              "Получите пояснение к текущему решению и рекомендации по следующему шагу."}
+            {t(
+              hint ||
+                "Получите пояснение к текущему решению и рекомендации по следующему шагу.",
+            )}
           </p>
           <button className="text-button" onClick={requestHint} disabled={busy}>
-            Получить подсказку <ChevronRight size={16} />
+            {t("Получить подсказку ")}
+            <ChevronRight size={16} />
           </button>
           <small>
-            {canUseCloud
-              ? "AI включится после настройки ключа и модели."
-              : "Подсказки доступны после входа. Практиковаться можно без аккаунта."}
+            {t(
+              canUseCloud
+                ? "AI включится после настройки ключа и модели."
+                : "Подсказки доступны после входа. Практиковаться можно без аккаунта.",
+            )}
           </small>
         </section>
       </div>
@@ -528,30 +571,36 @@ function Board({
         gridTemplateColumns: `repeat(${world.width},1fr)`,
         gridTemplateRows: `repeat(${world.height},1fr)`,
       }}
-      aria-label={`Машина в клетке ${frame.x}, ${frame.y}. Цель ${world.goal.x}, ${world.goal.y}.`}
+      aria-label={t(
+        `Машина в клетке ${frame.x}, ${frame.y}. Цель ${world.goal.x}, ${world.goal.y}.`,
+      )}
     >
-      {Array.from({ length: world.width * world.height }, (_, i) => {
-        const x = i % world.width,
-          y = Math.floor(i / world.width);
-        const obstacle = world.obstacles.some((p) => p.x === x && p.y === y);
-        const goal = world.goal.x === x && world.goal.y === y;
-        const start = world.start.x === x && world.start.y === y;
-        const trail = frames.some((f) => f.x === x && f.y === y);
-        return (
-          <div
-            key={i}
-            className={`world-cell ${obstacle ? "obstacle" : ""} ${goal ? "goal" : ""} ${start ? "start" : ""} ${trail ? "trail" : ""}`}
-          >
-            {goal ? (
-              <Flag size={20} />
-            ) : obstacle ? (
-              <span />
-            ) : start ? (
-              <i />
-            ) : null}
-          </div>
-        );
-      })}
+      {t(
+        Array.from({ length: world.width * world.height }, (_, i) => {
+          const x = i % world.width,
+            y = Math.floor(i / world.width);
+          const obstacle = world.obstacles.some((p) => p.x === x && p.y === y);
+          const goal = world.goal.x === x && world.goal.y === y;
+          const start = world.start.x === x && world.start.y === y;
+          const trail = frames.some((f) => f.x === x && f.y === y);
+          return (
+            <div
+              key={i}
+              className={`world-cell ${obstacle ? "obstacle" : ""} ${goal ? "goal" : ""} ${start ? "start" : ""} ${trail ? "trail" : ""}`}
+            >
+              {t(
+                goal ? (
+                  <Flag size={20} />
+                ) : obstacle ? (
+                  <span />
+                ) : start ? (
+                  <i />
+                ) : null,
+              )}
+            </div>
+          );
+        }),
+      )}
       <div
         className="simulation-car"
         style={{
@@ -566,23 +615,23 @@ function Board({
           style={{ transform: `rotate(${rotation}deg)` }}
           aria-hidden="true"
         >
-          <rect x="16" y="9" width="12" height="9" rx="3" fill="#08060c" />
-          <rect x="38" y="9" width="12" height="9" rx="3" fill="#08060c" />
-          <rect x="16" y="46" width="12" height="9" rx="3" fill="#08060c" />
-          <rect x="38" y="46" width="12" height="9" rx="3" fill="#08060c" />
+          <rect x="16" y="9" width="12" height="9" rx="3" fill="#06090c" />
+          <rect x="38" y="9" width="12" height="9" rx="3" fill="#06090c" />
+          <rect x="16" y="46" width="12" height="9" rx="3" fill="#06090c" />
+          <rect x="38" y="46" width="12" height="9" rx="3" fill="#06090c" />
           <rect
             x="10"
             y="15"
             width="45"
             height="34"
             rx="12"
-            fill="#b66cf8"
-            stroke="#e1bbff"
+            fill="#6cadf8"
+            stroke="#bbdbff"
             strokeWidth="1.3"
           />
-          <path d="M35 19h9q6 0 6 7v12q0 7-6 7h-9z" fill="#362444" />
+          <path d="M35 19h9q6 0 6 7v12q0 7-6 7h-9z" fill="#243344" />
           <path d="M37 23h6q3 0 3 3v12q0 3-3 3h-6z" fill="#b9dcf0" />
-          <rect x="15" y="21" width="12" height="22" rx="4" fill="#9e46ed" />
+          <rect x="15" y="21" width="12" height="22" rx="4" fill="#4694ed" />
           <rect x="51" y="21" width="5" height="7" rx="2" fill="#fff2bf" />
           <rect x="51" y="36" width="5" height="7" rx="2" fill="#fff2bf" />
         </svg>

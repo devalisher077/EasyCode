@@ -181,6 +181,23 @@ afterEach(async () => {
   vi.unstubAllGlobals();
 });
 
+describe("Dashboard sidebar", () => {
+  it.each(["student", "teacher"] as const)("keeps only the upper navigation for %s", async (role) => {
+    account = { ...account, profile: { ...initialProfile, role } };
+    await render("/learn");
+    const sidebar = container.querySelector(".sidebar")!;
+    const menu = sidebar.querySelector('nav[aria-label="Главное меню"]')!;
+    expect(menu.querySelectorAll("button")).toHaveLength(3);
+    expect(menu.textContent).toContain("Мой курс");
+    expect(menu.textContent).toContain("Практическая среда");
+    expect(menu.textContent).toContain(role === "teacher" ? "Кабинет учителя" : "Мой класс");
+    expect(sidebar.querySelector('nav[aria-label="Разделы курса"]')).toBeNull();
+    expect(sidebar.textContent).not.toContain("РАЗДЕЛЫ КУРСА");
+    expect(sidebar.textContent).not.toContain("Создать программу");
+    expect(sidebar.querySelector(".build-card")).toBeNull();
+  });
+});
+
 describe("Lesson presentation integration", () => {
   it("opens presentations in the scoped viewer while DOCX still downloads", async () => {
     await render();

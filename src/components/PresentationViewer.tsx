@@ -1,3 +1,4 @@
+import { t } from "../lib/i18n";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -280,22 +281,22 @@ export function PresentationViewer({
       >
         <header className="presentation-header">
           <div>
-            <span className="presentation-eyebrow">МАТЕРИАЛ УРОКА</span>
-            <h2 id={labelId}>{title}</h2>
+            <span className="presentation-eyebrow">{t("МАТЕРИАЛ УРОКА")}</span>
+            <h2 id={labelId}>{t(title)}</h2>
           </div>
           <button
             type="button"
             className="presentation-icon-button"
             onClick={onClose}
-            aria-label="Закрыть презентацию"
-            title="Закрыть (Escape)"
+            aria-label={t("Закрыть презентацию")}
+            title={t("Закрыть (Escape)")}
           >
             <X size={20} />
           </button>
         </header>
         <div
           className="presentation-toolbar"
-          aria-label="Управление презентацией"
+          aria-label={t("Управление презентацией")}
         >
           <div className="presentation-control-group">
             <button
@@ -303,7 +304,7 @@ export function PresentationViewer({
               className="presentation-icon-button"
               onClick={() => setPage(page - 1)}
               disabled={!pdf || page <= 1}
-              aria-label="Предыдущий слайд"
+              aria-label={t("Предыдущий слайд")}
             >
               <ChevronLeft size={19} />
             </button>
@@ -312,14 +313,14 @@ export function PresentationViewer({
               aria-live="polite"
               aria-atomic="true"
             >
-              {pdf ? `Слайд ${page} из ${pdf.numPages}` : "Слайды"}
+              {t(pdf ? `Слайд ${page} из ${pdf.numPages}` : "Слайды")}
             </output>
             <button
               type="button"
               className="presentation-icon-button"
               onClick={() => setPage(page + 1)}
               disabled={!pdf || page >= pdf.numPages}
-              aria-label="Следующий слайд"
+              aria-label={t("Следующий слайд")}
             >
               <ChevronRight size={19} />
             </button>
@@ -328,19 +329,19 @@ export function PresentationViewer({
             <button
               type="button"
               className="presentation-icon-button"
-              aria-label="Уменьшить масштаб"
+              aria-label={t("Уменьшить масштаб")}
               disabled={!pdf || zoom <= 0.5}
               onClick={() => setZoom((value) => Math.max(0.5, value - 0.25))}
             >
               <ZoomOut size={18} />
             </button>
             <span className="presentation-zoom-label">
-              {Math.round(zoom * 100)}%
+              {t(Math.round(zoom * 100))}%
             </span>
             <button
               type="button"
               className="presentation-icon-button"
-              aria-label="Увеличить масштаб"
+              aria-label={t("Увеличить масштаб")}
               disabled={!pdf || zoom >= 2}
               onClick={() => setZoom((value) => Math.min(2, value + 0.25))}
             >
@@ -349,8 +350,8 @@ export function PresentationViewer({
             <button
               type="button"
               className="presentation-icon-button"
-              aria-label="Вписать слайд"
-              title="Вписать слайд"
+              aria-label={t("Вписать слайд")}
+              title={t("Вписать слайд")}
               disabled={!pdf || zoom === 1}
               onClick={() => setZoom(1)}
             >
@@ -361,16 +362,18 @@ export function PresentationViewer({
             type="button"
             className="presentation-icon-button presentation-fullscreen"
             onClick={() => void toggleFullscreen()}
-            aria-label={
+            aria-label={t(
               fullscreen || expanded
                 ? "Выйти из полноэкранного режима"
-                : "На весь экран"
-            }
+                : "На весь экран",
+            )}
           >
-            {fullscreen || expanded ? (
-              <Minimize size={18} />
-            ) : (
-              <Maximize size={18} />
+            {t(
+              fullscreen || expanded ? (
+                <Minimize size={18} />
+              ) : (
+                <Maximize size={18} />
+              ),
             )}
           </button>
         </div>
@@ -379,70 +382,84 @@ export function PresentationViewer({
           className="presentation-stage"
           aria-busy={(!pdf && !loadError) || rendering}
         >
-          {loadError ? (
-            <div className="presentation-state" role="alert">
-              <h3>Презентация недоступна</h3>
-              <p>{loadError}</p>
-              <button
-                type="button"
-                onClick={() => setRetry((value) => value + 1)}
-              >
-                <RotateCcw size={16} /> Повторить
-              </button>
-            </div>
-          ) : !pdf ? (
-            <div className="presentation-state" role="status">
-              <LoaderCircle size={24} className="presentation-loader" />
-              <p>Загрузка презентации…</p>
-            </div>
-          ) : (
-            <div className="presentation-slide-wrap">
-              {rendering && (
-                <div className="presentation-render-status" role="status">
-                  Загрузка слайда…
-                </div>
-              )}
-              {pageError && (
-                <div className="presentation-state" role="alert">
-                  <p>{pageError}</p>
-                  <button
-                    type="button"
-                    onClick={() => setRetry((value) => value + 1)}
-                  >
-                    Повторить
-                  </button>
-                </div>
-              )}
-              <canvas
-                key={`${page}:${width}:${height}:${zoom}:${retry}`}
-                ref={canvasRef}
-                role="img"
-                aria-label={`Слайд ${page}. Текст слайда доступен ниже.`}
-                style={{
-                  visibility: rendering || pageError ? "hidden" : "visible",
-                }}
-              />
-            </div>
+          {t(
+            loadError ? (
+              <div className="presentation-state" role="alert">
+                <h3>{t("Презентация недоступна")}</h3>
+                <p>{t(loadError)}</p>
+                <button
+                  type="button"
+                  onClick={() => setRetry((value) => value + 1)}
+                >
+                  <RotateCcw size={16} />
+                  {t(" Повторить")}
+                </button>
+              </div>
+            ) : !pdf ? (
+              <div className="presentation-state" role="status">
+                <LoaderCircle size={24} className="presentation-loader" />
+                <p>{t("Загрузка презентации…")}</p>
+              </div>
+            ) : (
+              <div className="presentation-slide-wrap">
+                {t(
+                  rendering && (
+                    <div className="presentation-render-status" role="status">
+                      {t("Загрузка слайда…")}
+                    </div>
+                  ),
+                )}
+                {t(
+                  pageError && (
+                    <div className="presentation-state" role="alert">
+                      <p>{t(pageError)}</p>
+                      <button
+                        type="button"
+                        onClick={() => setRetry((value) => value + 1)}
+                      >
+                        {t("Повторить")}
+                      </button>
+                    </div>
+                  ),
+                )}
+                <canvas
+                  key={`${page}:${width}:${height}:${zoom}:${retry}`}
+                  ref={canvasRef}
+                  role="img"
+                  aria-label={t(`Слайд ${page}. Текст слайда доступен ниже.`)}
+                  style={{
+                    visibility: rendering || pageError ? "hidden" : "visible",
+                  }}
+                />
+              </div>
+            ),
           )}
         </div>
-        {pdf && !pageError && (
-          <details className="presentation-transcript">
-            <summary>Текст слайда {page}</summary>
-            <div tabIndex={0}>
-              {text ||
-                (rendering
-                  ? "Загрузка текста…"
-                  : "На этом слайде нет доступного текстового слоя.")}
-            </div>
-          </details>
+        {t(
+          pdf && !pageError && (
+            <details className="presentation-transcript">
+              <summary>
+                {t("Текст слайда ")}
+                {t(page)}
+              </summary>
+              <div tabIndex={0}>
+                {text ||
+                  t(
+                    rendering
+                      ? "Загрузка текста…"
+                      : "На этом слайде нет доступного текстового слоя.",
+                  )}
+              </div>
+            </details>
+          ),
         )}
         <footer className="presentation-footer">
           <p id={noteId}>
-            Статичные слайды. Анимации PowerPoint не воспроизводятся.
+            {t("Статичные слайды. Анимации PowerPoint не воспроизводятся.")}
           </p>
           <button type="button" onClick={onDownload}>
             <ArrowDownToLine size={16} />
-            <span>Скачать оригинал</span>
+            <span>{t("Скачать оригинал")}</span>
           </button>
         </footer>
       </div>

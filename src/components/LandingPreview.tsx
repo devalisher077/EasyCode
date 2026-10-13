@@ -1,3 +1,4 @@
+import { t } from "../lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -70,7 +71,7 @@ export function LandingPreview({ onTry }: { onTry: () => void }) {
   const stepSelect = (
     <select
       className="lp-preview-step"
-      aria-label="Количество шагов вперёд"
+      aria-label={t("Количество шагов вперёд")}
       value={steps}
       disabled={running}
       onChange={(event) => {
@@ -78,18 +79,20 @@ export function LandingPreview({ onTry }: { onTry: () => void }) {
         reset();
       }}
     >
-      {[1, 2, 3, 4, 5].map((value) => (
-        <option key={value} value={value}>
-          {value}
-        </option>
-      ))}
+      {t(
+        [1, 2, 3, 4, 5].map((value) => (
+          <option key={value} value={value}>
+            {t(value)}
+          </option>
+        )),
+      )}
     </select>
   );
 
   return (
     <section
       className="lp-preview"
-      aria-label="Интерактивная демонстрация программирования"
+      aria-label={t("Интерактивная демонстрация программирования")}
     >
       <div className="lp-preview-windowbar">
         <span className="lp-preview-dots" aria-hidden="true">
@@ -98,17 +101,18 @@ export function LandingPreview({ onTry }: { onTry: () => void }) {
           <i />
         </span>
         <span className="lp-preview-filename">route.py</span>
-        <span className="lp-preview-demo">Демонстрация</span>
+        <span className="lp-preview-demo">{t("Демонстрация")}</span>
       </div>
 
-      <div className="lp-preview-tabs" aria-label="Вид программы">
+      <div className="lp-preview-tabs" aria-label={t("Вид программы")}>
         <button
           type="button"
           className={mode === "blocks" ? "is-active" : ""}
           aria-pressed={mode === "blocks"}
           onClick={() => setMode("blocks")}
         >
-          <Layers3 size={13} /> Блоки
+          <Layers3 size={13} />
+          {t(" Блоки")}
         </button>
         <button
           type="button"
@@ -118,83 +122,93 @@ export function LandingPreview({ onTry }: { onTry: () => void }) {
         >
           <Braces size={13} /> Python
         </button>
-        <span>Два режима программирования</span>
+        <span>{t("Два режима программирования")}</span>
       </div>
 
       <div className={`lp-preview-editor lp-preview-editor--${mode}`}>
-        {mode === "python" ? (
-          <div
-            className="lp-preview-code"
-            aria-label="Учебная программа Python"
-          >
-            <div>
-              <span className="lp-preview-line">1</span>
-              <span className="lp-preview-comment">
-                # Маршрут к целевой точке
-              </span>
+        {t(
+          mode === "python" ? (
+            <div
+              className="lp-preview-code"
+              aria-label={t("Учебная программа Python")}
+            >
+              <div>
+                <span className="lp-preview-line">1</span>
+                <span className="lp-preview-comment">
+                  {t("# Маршрут к целевой точке")}
+                </span>
+              </div>
+              <div>
+                <span className="lp-preview-line">2</span>
+                <span className="lp-preview-comment">
+                  {t("# Движение и поворот налево")}
+                </span>
+              </div>
+              <div>
+                <span className="lp-preview-line">3</span>
+                <span aria-hidden="true">&nbsp;</span>
+              </div>
+              <div>
+                <span className="lp-preview-line">4</span>
+                <span className="lp-preview-object">robot</span>
+                <span>.</span>
+                <span className="lp-preview-method">forward</span>
+                <span>(</span>
+                {t(stepSelect)}
+                <span>)</span>
+              </div>
+              <div>
+                <span className="lp-preview-line">5</span>
+                <span className="lp-preview-object">robot</span>
+                <span>.</span>
+                <span className="lp-preview-method">turn_left</span>
+                <span>()</span>
+              </div>
+              <div>
+                <span className="lp-preview-line">6</span>
+                <span className="lp-preview-object">robot</span>
+                <span>.</span>
+                <span className="lp-preview-method">forward</span>
+                <span>(</span>
+                <span className="lp-preview-number">3</span>
+                <span>)</span>
+              </div>
+              <div>
+                <span className="lp-preview-line">7</span>
+                <span aria-hidden="true">&nbsp;</span>
+              </div>
+              <div>
+                <span className="lp-preview-line">8</span>
+                <span className="lp-preview-comment">
+                  {t("# Нажмите «Запустить»")}
+                </span>
+              </div>
             </div>
-            <div>
-              <span className="lp-preview-line">2</span>
-              <span className="lp-preview-comment">
-                # Движение и поворот налево
-              </span>
+          ) : (
+            <div
+              className="lp-preview-blocks"
+              aria-label={t("Та же программа из трёх блоков")}
+            >
+              <div className="lp-preview-block lp-preview-block--start">
+                <Play size={12} fill="currentColor" />
+                {t(" Когда нажата кнопка запуска")}
+              </div>
+              <div className="lp-preview-block">
+                {t("Двигаться вперёд ")}
+                {t(stepSelect)}
+                {t(" шагов")}
+              </div>
+              <div className="lp-preview-block">
+                {t("Повернуть налево ")}
+                <span>90°</span>
+              </div>
+              <div className="lp-preview-block">
+                {t("Двигаться вперёд ")}
+                <span>3</span>
+                {t(" шага")}
+              </div>
             </div>
-            <div>
-              <span className="lp-preview-line">3</span>
-              <span aria-hidden="true">&nbsp;</span>
-            </div>
-            <div>
-              <span className="lp-preview-line">4</span>
-              <span className="lp-preview-object">robot</span>
-              <span>.</span>
-              <span className="lp-preview-method">forward</span>
-              <span>(</span>
-              {stepSelect}
-              <span>)</span>
-            </div>
-            <div>
-              <span className="lp-preview-line">5</span>
-              <span className="lp-preview-object">robot</span>
-              <span>.</span>
-              <span className="lp-preview-method">turn_left</span>
-              <span>()</span>
-            </div>
-            <div>
-              <span className="lp-preview-line">6</span>
-              <span className="lp-preview-object">robot</span>
-              <span>.</span>
-              <span className="lp-preview-method">forward</span>
-              <span>(</span>
-              <span className="lp-preview-number">3</span>
-              <span>)</span>
-            </div>
-            <div>
-              <span className="lp-preview-line">7</span>
-              <span aria-hidden="true">&nbsp;</span>
-            </div>
-            <div>
-              <span className="lp-preview-line">8</span>
-              <span className="lp-preview-comment"># Нажмите «Запустить»</span>
-            </div>
-          </div>
-        ) : (
-          <div
-            className="lp-preview-blocks"
-            aria-label="Та же программа из трёх блоков"
-          >
-            <div className="lp-preview-block lp-preview-block--start">
-              <Play size={12} fill="currentColor" /> Когда нажата кнопка запуска
-            </div>
-            <div className="lp-preview-block">
-              Двигаться вперёд {stepSelect} шагов
-            </div>
-            <div className="lp-preview-block">
-              Повернуть налево <span>90°</span>
-            </div>
-            <div className="lp-preview-block">
-              Двигаться вперёд <span>3</span> шага
-            </div>
-          </div>
+          ),
         )}
       </div>
 
@@ -202,27 +216,31 @@ export function LandingPreview({ onTry }: { onTry: () => void }) {
         <div
           className="lp-preview-world"
           role="img"
-          aria-label={`Поле 8 на 6. Машина: столбец ${frame.x + 1}, строка ${frame.y + 1}. Финиш: столбец 7, строка 2.`}
+          aria-label={t(
+            `Поле 8 на 6. Машина: столбец ${frame.x + 1}, строка ${frame.y + 1}. Финиш: столбец 7, строка 2.`,
+          )}
         >
-          {Array.from({ length: 48 }, (_, index) => {
-            const x = index % 8;
-            const y = Math.floor(index / 8);
-            const obstacle = DEFAULT_WORLD.obstacles.some(
-              (item) => item.x === x && item.y === y,
-            );
-            const goal =
-              DEFAULT_WORLD.goal.x === x && DEFAULT_WORLD.goal.y === y;
-            const route =
-              (y === 4 && x >= 1 && x <= 6) || (x === 6 && y >= 1 && y <= 4);
-            return (
-              <span
-                key={index}
-                className={`lp-preview-cell${obstacle ? " is-obstacle" : ""}${goal ? " is-goal" : ""}${route ? " is-route" : ""}`}
-              >
-                {goal && <Flag size={13} />}
-              </span>
-            );
-          })}
+          {t(
+            Array.from({ length: 48 }, (_, index) => {
+              const x = index % 8;
+              const y = Math.floor(index / 8);
+              const obstacle = DEFAULT_WORLD.obstacles.some(
+                (item) => item.x === x && item.y === y,
+              );
+              const goal =
+                DEFAULT_WORLD.goal.x === x && DEFAULT_WORLD.goal.y === y;
+              const route =
+                (y === 4 && x >= 1 && x <= 6) || (x === 6 && y >= 1 && y <= 4);
+              return (
+                <span
+                  key={index}
+                  className={`lp-preview-cell${obstacle ? " is-obstacle" : ""}${goal ? " is-goal" : ""}${route ? " is-route" : ""}`}
+                >
+                  {t(goal && <Flag size={13} />)}
+                </span>
+              );
+            }),
+          )}
           <div
             className="lp-preview-car-position"
             style={{
@@ -236,50 +254,57 @@ export function LandingPreview({ onTry }: { onTry: () => void }) {
               style={{ transform: `rotate(${angles[frame.direction]}deg)` }}
               aria-hidden="true"
             >
-              <rect x="7" y="2" width="7" height="5" rx="2" fill="#0f0a17" />
-              <rect x="24" y="2" width="7" height="5" rx="2" fill="#0f0a17" />
-              <rect x="7" y="21" width="7" height="5" rx="2" fill="#0f0a17" />
-              <rect x="24" y="21" width="7" height="5" rx="2" fill="#0f0a17" />
+              <rect x="7" y="2" width="7" height="5" rx="2" fill="#0a1017" />
+              <rect x="24" y="2" width="7" height="5" rx="2" fill="#0a1017" />
+              <rect x="7" y="21" width="7" height="5" rx="2" fill="#0a1017" />
+              <rect x="24" y="21" width="7" height="5" rx="2" fill="#0a1017" />
               <rect
                 x="3"
                 y="5"
                 width="30"
                 height="18"
                 rx="6"
-                fill="#bd88ff"
-                stroke="#e7d4ff"
+                fill="#88c0ff"
+                stroke="#d4e8ff"
                 strokeWidth="1"
               />
-              <rect x="12" y="7" width="10" height="14" rx="3" fill="#40245e" />
-              <path d="M22 8 26 10v8l-4 2Z" fill="#ead6ff" opacity=".85" />
+              <rect x="12" y="7" width="10" height="14" rx="3" fill="#243f5e" />
+              <path d="M22 8 26 10v8l-4 2Z" fill="#d6e9ff" opacity=".85" />
               <rect x="30" y="8" width="3" height="4" rx="1" fill="#fff5c6" />
               <rect x="30" y="16" width="3" height="4" rx="1" fill="#fff5c6" />
             </svg>
           </div>
         </div>
         <div className="lp-preview-mission">
-          <span className="lp-preview-mission-label">УЧЕБНОЕ ЗАДАНИЕ</span>
+          <span className="lp-preview-mission-label">
+            {t("УЧЕБНОЕ ЗАДАНИЕ")}
+          </span>
           <strong>
-            Управление
+            {t("Управление")}
             <br />
-            движением
+            {t("движением")}
           </strong>
-          <p>Укажите число шагов, чтобы машина достигла целевой точки.</p>
+          <p>
+            {t("Укажите число шагов, чтобы машина достигла целевой точки.")}
+          </p>
           <span
             className={`lp-preview-status${result?.success ? " is-success" : ""}`}
             role="status"
             aria-live="polite"
           >
-            {running ? (
-              "Программа выполняется…"
-            ) : result?.success ? (
-              <>
-                <Check size={12} /> Целевая точка достигнута
-              </>
-            ) : result ? (
-              "Измените число шагов"
-            ) : (
-              "Готово к запуску"
+            {t(
+              running ? (
+                "Программа выполняется…"
+              ) : result?.success ? (
+                <>
+                  <Check size={12} />
+                  {t(" Целевая точка достигнута")}
+                </>
+              ) : result ? (
+                "Измените число шагов"
+              ) : (
+                "Готово к запуску"
+              ),
             )}
           </span>
         </div>
@@ -292,15 +317,18 @@ export function LandingPreview({ onTry }: { onTry: () => void }) {
           onClick={run}
           disabled={running}
         >
-          {result ? (
-            <RotateCcw size={14} />
-          ) : (
-            <Play size={13} fill="currentColor" />
+          {t(
+            result ? (
+              <RotateCcw size={14} />
+            ) : (
+              <Play size={13} fill="currentColor" />
+            ),
           )}
-          {running ? "Выполняется…" : result ? "Повторить" : "Запустить"}
+          {t(running ? "Выполняется…" : result ? "Повторить" : "Запустить")}
         </button>
         <button type="button" className="lp-preview-open" onClick={onTry}>
-          Открыть редактор <ArrowRight size={14} />
+          {t("Открыть редактор ")}
+          <ArrowRight size={14} />
         </button>
       </div>
     </section>

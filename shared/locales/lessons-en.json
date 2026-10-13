@@ -1,0 +1,842 @@
+{
+  "5.1": {
+    "description": "Meet the parts of a smart device and model their roles safely on paper and in the virtual lab.",
+    "goals": [
+      "Distinguish power, input, control and output",
+      "Explain LEDs, resistors and sensors",
+      "Model a device without building real hardware"
+    ],
+    "steps": [
+      [
+        "What makes a device smart?",
+        [
+          "A night light that turns on in the dark needs more than a lamp: it must sense light, decide whether to turn on and carry out the decision.",
+          "Power supplies energy. Inputs report the situation. A controller runs a program and makes decisions. Outputs show the result, such as light or sound. Start with cards and drawings, then use the virtual lab. Do not dismantle devices or connect anything to a wall outlet."
+        ]
+      ],
+      [
+        "Power, light and current limiting",
+        [
+          "A battery supplies energy; it does not decide what the device should do. An LED produces light and serves as an output.",
+          "A resistor helps limit current. It is neither another lamp nor a replacement for the controller's program. Real circuits need correctly chosen components. This lesson does not require selecting or connecting real parts; the virtual model is not a real-circuit safety check."
+        ]
+      ],
+      [
+        "Who senses, decides and reports?",
+        [
+          "A button reports a person's action, while a sensor reports something about the environment, such as light level. These are inputs, not instructions about what to do with the information.",
+          "The controller follows a rule. An LED provides a visual output; a buzzer can provide a sound output in a conceptual model. The same input can produce different actions depending on the program. Power remains a separate necessary role."
+        ]
+      ],
+      [
+        "Draw information flow",
+        [
+          "Draw cards for light sensor, controller and LED. Connect them with arrows: the sensor reports, the controller decides, the LED shows the result. These information arrows are not electrical wiring.",
+          "Add a power card and separately label the resistor's current-limiting role. Explain the model in simple words. EasyCode's car and electronics are separate workspaces with different commands; neither connects real hardware."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "What role does a battery play?",
+        [
+          "Chooses commands instead of the program",
+          "Supplies energy",
+          "Displays the lesson text"
+        ]
+      ],
+      [
+        "Which component is an input reporting the environment?",
+        ["Light sensor", "LED", "Buzzer"]
+      ],
+      [
+        "What is a resistor for in a circuit?",
+        [
+          "Storing all lessons",
+          "Replacing the light sensor",
+          "Helping limit electric current"
+        ]
+      ]
+    ],
+    "practice": [
+      "Components and a first virtual circuit",
+      [
+        "Draw cards for a battery, light sensor, controller, LED and resistor.",
+        "Assign power, input, processing and output roles. Label the resistor as current limiting.",
+        "Draw information-flow arrows from sensor to controller to light output, not wiring instructions.",
+        "Open Electronics, inspect the board, LED and resistor, then run the starter program. No real parts are needed."
+      ]
+    ]
+  },
+  "5.2": {
+    "description": "Design an input–condition–output rule for a night light and test both cases.",
+    "goals": [
+      "Connect sensor input to a condition",
+      "Specify both branches",
+      "Test several input situations"
+    ],
+    "steps": [
+      [
+        "Components follow a rule",
+        [
+          "The sensor reports, the controller decides and the LED shows a result. Define when an action should occur, not just which parts exist.",
+          "For a night light: if dark, turn the light on; otherwise, turn it off. Write this in words, then use led.on(), led.off() and if sensor.dark(): in the Electronics workspace, not the car editor. Dark means a light level below 40%."
+        ]
+      ],
+      [
+        "Build conditional blocks on paper",
+        [
+          "Draw an ‘if dark’ frame. Place ‘light on’ in its first branch and ‘light off’ in else. These are conceptual cards, not executable commands or real wiring.",
+          "Both branches matter. If you specify only turning on, what happens when it becomes bright? The else branch explicitly turns the light off on the next check."
+        ]
+      ],
+      [
+        "Act as sensor and controller",
+        [
+          "One participant shows a dark or bright card; another follows the controller rule. Use a drawing instead of a real LED. Test dark, then change to bright and check again.",
+          "The second check need not repeat the old answer: the input changed. Likewise, the car checks a new direction after turning. No batteries, wires or devices need to be connected to a computer."
+        ]
+      ],
+      [
+        "Test the rule instead of guessing",
+        [
+          "Write expected results: dark → on; bright → off. Compare them with the model. If reversed, inspect which command is in each branch.",
+          "The same idea can model a button and a buzzer on paper. In the available virtual lab, test the night light at 20%, 70% and exactly 40%: at 40% the LED must be off. This educational simulator does not control real components."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "For ‘if dark: light on; else: off’, the sensor reports bright. What should happen?",
+        [
+          "Light stays on because it was on before",
+          "Both commands run together",
+          "Light turns off: else is selected"
+        ]
+      ],
+      [
+        "Which is a safe way to model the lesson rule?",
+        [
+          "Use cards or a drawing without connecting parts",
+          "Connect random wires to a wall outlet",
+          "Put ‘turn on LED’ in the car editor and assume it works"
+        ]
+      ],
+      [
+        "What should you test in a two-branch rule?",
+        [
+          "Only the device's attractive name",
+          "Results when the condition is both true and false",
+          "Only one convenient case"
+        ]
+      ]
+    ],
+    "practice": [
+      "Automatic night light",
+      [
+        "Open Electronics and choose Automatic night light. Inspect the sensor and LED wiring.",
+        "Build: if dark, turn the LED on; otherwise, turn it off. Add a short wait. Use blocks or learning Python.",
+        "Run and set light to 20%, 70%, then 40%. At 40% the LED must be off.",
+        "Stop and click Check task. This is a local self-check, not a teacher's cloud grade. No real devices are connected."
+      ]
+    ]
+  },
+  "6.1": {
+    "description": "Turn a car mission idea into a small project with a goal, plan, program and test.",
+    "goals": [
+      "Define a testable goal",
+      "Split a route into parts",
+      "Choose commands and checks"
+    ],
+    "steps": [
+      [
+        "An idea becomes a task",
+        [
+          "‘Make an interesting car’ is hard to check. ‘Deliver cargo from start to finish on this map without collisions’ is a clear, testable goal.",
+          "Give the mission a name and story, but keep the movement rules. Use the prepared map rather than a custom map editor. Define completion: no movement error and the car at the finish cell."
+        ]
+      ],
+      [
+        "A small project brief",
+        [
+          "Write a title, goal, executor, starting conditions and available commands. Consider the initial direction, finish, obstacles and field boundaries.",
+          "Choose an extra learning aim, such as meaningful use of a loop or condition. Explain what it does. Merely including if is not an improvement. Server route checking verifies reaching the goal, not every personal project requirement. Record how you will check those separately."
+        ]
+      ],
+      [
+        "Break work into parts",
+        [
+          "Divide the route into straight sections and turns. For each part, predict the final cell and direction.",
+          "Build a small part, predict and test, then extend it. Each full run starts from the original position. Choose blocks or supported text commands. Blocks can generate text, but arbitrary text cannot automatically become blocks."
+        ]
+      ],
+      [
+        "Prepare a clear explanation",
+        [
+          "Explain why each turn is placed there, what the loop repeats and which cell the condition checks. This distinguishes an understood solution from an accidental success.",
+          "Record what works and one improvement. Finish a small working version before adding everything. A custom map or new character remains a future idea; electronics is a separate practice workspace, not a car-editor feature."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "Which project goal is easiest to test?",
+        [
+          "Make something very cool",
+          "Drive from start to finish without collisions",
+          "Type as many random commands as possible"
+        ]
+      ],
+      [
+        "How should you develop a long route?",
+        [
+          "Avoid looking at the map until the final run",
+          "Randomly replace the whole program each time",
+          "Split it into parts, predict and test each"
+        ]
+      ],
+      [
+        "You want to use a loop. Is adding an unnecessary loop at the end enough?",
+        [
+          "No, explain its role and test the result",
+          "Yes, any loop improves a project",
+          "Yes, a loop always leads to the goal"
+        ]
+      ]
+    ],
+    "practice": [
+      "A mission from my plan",
+      [
+        "Name your mission on the prepared Delivery to Mars field and write a testable goal.",
+        "Plan the starting direction, route sections and expected result of each part.",
+        "Build or write the program. Explain any loop or condition you use.",
+        "Run the full route, compare with your plan and record one improvement for the next lesson. A free map editor is not used."
+      ]
+    ]
+  },
+  "6.2": {
+    "description": "Compare expectations with results, find the first error and retest improvements.",
+    "goals": [
+      "Distinguish testing, debugging and improvement",
+      "Trace position and direction",
+      "Ensure a change preserves working behavior"
+    ],
+    "steps": [
+      [
+        "Expectations before results",
+        [
+          "Testing uses known starting conditions and an expected result, then compares it with execution. Watching without an expectation can miss a wrong final cell.",
+          "Debugging finds and fixes the cause. Improvement makes a understood working program clearer or shorter. First make the route correct, then improve it."
+        ]
+      ],
+      [
+        "Find the first difference",
+        [
+          "On the original field, this program moves two cells, turns left, then attempts three cells upward. After the first upward step, an obstacle prevents completing the remaining movement.",
+          "The commands are valid but the route crosses an obstacle. Find the first mismatch rather than changing everything randomly. An unknown command is a syntax problem; a collision is a route problem. Fix according to the cause."
+        ]
+      ],
+      [
+        "Trace the program",
+        [
+          "Tracing records the executor's state after each command. Write the car's cell and direction. Expand loop repetitions and record condition answers and selected branches.",
+          "Make three columns: command, position, direction. Compare your prediction with animation, find the first mismatch, change one cause and rerun from the original start. A successful fragment does not prove the whole route."
+        ]
+      ],
+      [
+        "Improve and retest",
+        [
+          "Once the route works, use loops for repeated movements or remove truly unnecessary turns. Fewer lines do not always mean fewer actions: a loop can perform many movements.",
+          "Retest after every improvement. Explain the error, how you found it and what proves the fix works. Reading steps and passing the quiz completes the lesson; the practical project still needs its own real simulator run."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "What makes a meaningful program test?",
+        [
+          "Known starting conditions and an expected result",
+          "Only randomly clicking Run",
+          "As many lines as possible"
+        ]
+      ],
+      [
+        "The car understands the commands but hits an obstacle. What should you check first?",
+        [
+          "The browser name instead of the route",
+          "Movement and turn order relative to the map",
+          "Whether all lessons should be deleted"
+        ]
+      ],
+      [
+        "You replace repeated lines with a loop. What next?",
+        [
+          "Declare the project finished without running",
+          "Assume the car is now faster",
+          "Retest the whole program and compare results"
+        ]
+      ]
+    ],
+    "practice": [
+      "Test and improve the mission",
+      [
+        "Use your project or this lesson's obstacle example. Write the expected route before running.",
+        "Observe and find the first mismatch. Record the command, position and direction.",
+        "Fix one cause, then retest the whole route from start to finish.",
+        "Make one meaningful improvement, such as a loop. Run again and explain the test result."
+      ]
+    ]
+  },
+  "3.1": {
+    "description": "Find repeated actions and write them more compactly without changing the route.",
+    "goals": [
+      "Recognize repeated commands",
+      "Identify a loop body and repeat count",
+      "Predict actions inside and after loops"
+    ],
+    "steps": [
+      [
+        "Repeat without a long list",
+        [
+          "Raising and lowering your arms four times can be written as eight actions, or as one pair repeated four times. The shorter plan does the same work.",
+          "A loop repeats its body: the commands inside it. Here we use a fixed repeat count. Shorter code does not mean faster movement: three repetitions of one step still move three cells."
+        ]
+      ],
+      [
+        "One command, several repetitions",
+        [
+          "Replace three identical one-cell movements with a repeat block containing one movement. In code, for i in range(3): repeats the indented body three times.",
+          "The four-space indentation puts the movement inside the loop. In this learning language, i is part of the loop syntax, not a variable you can use in calculations. Write the repeat count directly."
+        ]
+      ],
+      [
+        "Inside or outside?",
+        [
+          "The indented movement repeats three times. The unindented turn after the loop runs once, after all movement repetitions.",
+          "Moving the turn inside changes the route: the car turns after each step. Always check which commands are in the body, not only the count."
+        ]
+      ],
+      [
+        "Trace each repetition",
+        [
+          "Mentally expand the loop: first step, second step, third step, then the command after the loop. This makes unfamiliar syntax easier to follow.",
+          "Use loops for genuinely repeated groups. Check the body, repeat count, commands after the loop and obstacles along the way. Clear code is more useful than shortening a random sequence."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "A loop runs robot.forward(1) four times on a clear path. How many cells does the car travel?",
+        ["One", "Eight", "Four"]
+      ],
+      [
+        "What is a loop body?",
+        [
+          "The commands inside the loop that repeat",
+          "Only the program name",
+          "All commands after the program ends"
+        ]
+      ],
+      [
+        "What changes when three identical steps are written as a loop?",
+        [
+          "The car necessarily moves three times faster",
+          "The code is shorter but the actions stay the same",
+          "Obstacles no longer affect the car"
+        ]
+      ]
+    ],
+    "practice": [
+      "Find repetition in a route",
+      [
+        "Plan a route on the original field and find a clear straight stretch.",
+        "Replace repeated movement commands with a loop containing a one-cell movement.",
+        "Keep a turn needed only at the end outside the loop.",
+        "Complete the route and compare the actual step count with your calculation."
+      ]
+    ]
+  },
+  "3.2": {
+    "description": "Identify repeated route sections, count their actions and explore nested loops.",
+    "goals": [
+      "Find a repeated action group",
+      "Count actions in loops",
+      "Check repeated block boundaries"
+    ],
+    "steps": [
+      [
+        "Find a pattern",
+        [
+          "A repeated group can contain several commands, such as step, right turn, step, left turn. Put the exact repeated group into a loop.",
+          "Each repetition must use the same commands in the same order. Keep a different final section after the loop. Check that your pattern fits the field and avoids obstacles."
+        ]
+      ],
+      [
+        "Count actions, not lines",
+        [
+          "Moving two cells three times attempts six cells in total. Count what each command does in every repetition.",
+          "The example moves two cells twice, then turns left once outside the loop. Check that four cells are clear before running."
+        ]
+      ],
+      [
+        "A loop inside a loop",
+        [
+          "An inner loop runs completely again for every outer repetition. In the example, two outer repetitions each perform two one-cell movements: four movements in total.",
+          "Trace two steps, then two more. For a straight route, a single four-repeat loop is simpler. Use nesting only when it makes repeated groups clearer."
+        ]
+      ],
+      [
+        "Different kinds of repetition",
+        [
+          "Repeating until an event is a different idea, where the count may be unknown. EasyCode currently supports fixed-count for loops, not while. Do not put while into your working program.",
+          "Use known, small counts. If movement leaves the field, inspect the whole repeated group rather than guessing a new count. Each repetition executes the entire body; nested loops restart each time. Code length and action count are different."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "robot.forward(2) repeats three times on a clear path. How many cells?",
+        ["Five", "Six", "Three"]
+      ],
+      [
+        "An outer loop repeats twice, an inner loop three times. The inner body has one turn. How many turns?",
+        ["Two", "Three", "Six"]
+      ],
+      [
+        "Which repetition is supported in EasyCode?",
+        [
+          "for i in range(4): with indented commands",
+          "Any while command from regular Python",
+          "‘Repeat some number of times’ without a count"
+        ]
+      ]
+    ],
+    "practice": [
+      "One route, two versions",
+      [
+        "Write a route to the finish using ordinary movement and turn commands.",
+        "Replace a repeated straight section with a loop. Calculate the cell count before running.",
+        "Compare both versions: final cell and direction should match.",
+        "Optionally replace four steps with two outer repetitions of two inner steps. Explain why one loop can be clearer."
+      ]
+    ]
+  },
+  "4.1": {
+    "description": "Check the path and act only when a condition is true.",
+    "goals": [
+      "Recognize yes/no conditions",
+      "Explain an if block",
+      "Check for an obstacle ahead"
+    ],
+    "steps": [
+      [
+        "Actions depend on situations",
+        [
+          "‘If it rains, take an umbrella’ performs an action only when the condition is true. A condition is a question with a yes/no answer at that moment.",
+          "An if block checks the condition first. If true, its body runs. If false, the body is skipped and the program continues after the block."
+        ]
+      ],
+      [
+        "What the car sees ahead",
+        [
+          "robot.obstacle_ahead() checks only the next cell in the current direction. An obstacle or the field boundary counts as blocked. The check itself does not move the car.",
+          "After a turn or movement, the next cell may be different. One clear cell does not mean the next five are clear. A condition is checked only where it occurs in the program."
+        ]
+      ],
+      [
+        "Turn if the path is blocked",
+        [
+          "On the original field, move forward three cells and turn left. There is now an obstacle ahead. The example detects it and turns right.",
+          "The final movement is outside if and executes after the check. Predict direction after every line, then test. This fragment demonstrates a decision, not a complete route to the finish."
+        ]
+      ],
+      [
+        "Test both answers",
+        [
+          "Try a blocked path and a clear path. The if body should run in the first case and be skipped in the second.",
+          "A condition does not find the best route for you. You choose the action and must check the path after turning. Identify the question, when it is true, the body, and commands that run afterwards regardless of the answer."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "What does if do when its condition is false?",
+        [
+          "Skips its body and continues after the block",
+          "Runs its body twice",
+          "Always ends the entire program"
+        ]
+      ],
+      [
+        "What does robot.obstacle_ahead() check?",
+        [
+          "The entire route to the finish",
+          "Whether the student likes the map",
+          "Whether the next cell is blocked or outside the field"
+        ]
+      ],
+      [
+        "The next cell is clear. Does that alone make moving five cells safe?",
+        [
+          "Yes, the check removes obstacles forever",
+          "No, only the nearest cell was checked",
+          "Yes, if you add more spaces"
+        ]
+      ]
+    ],
+    "practice": [
+      "Check before turning",
+      [
+        "Build the lesson example: forward three cells, turn left, conditional right turn, one step.",
+        "Identify the obstacle before running and verify that the if branch executes.",
+        "In a fresh run, test if from the original position where the next cell is clear. Predict the skipped command.",
+        "Complete your route to the finish with a meaningful obstacle check."
+      ]
+    ]
+  },
+  "4.2": {
+    "description": "Choose between two branches and distinguish else from a separate if.",
+    "goals": [
+      "Predict if–else branch selection",
+      "Distinguish alternatives from separate checks",
+      "Recheck after the car changes state"
+    ],
+    "steps": [
+      [
+        "Two alternatives, one choice",
+        [
+          "‘If it rains, choose an umbrella; otherwise, choose a cap’ selects one branch. Otherwise means the original condition was false.",
+          "Write else at the same indentation as its if. Indent each branch's commands. Commands after the whole structure continue normally."
+        ]
+      ],
+      [
+        "Turn or move",
+        [
+          "The example turns right if the next cell is blocked; otherwise it moves one cell. One check selects exactly one branch, not both.",
+          "With an obstacle, it only turns. Movement is in else, so it does not run after that turn. If movement after turning is needed, plan it separately and check the new path."
+        ]
+      ],
+      [
+        "Two if blocks mean two checks",
+        [
+          "A second independent if checks the current situation again. If the first if turned the car, the second checks its new direction. It is not the alternative branch of the first.",
+          "On the original field, both example checks are initially false, so only the final movement runs. EasyCode supports obstacle checks, if and else, not arbitrary comparisons, and, or, or other full-Python expressions."
+        ]
+      ],
+      [
+        "Repeat decisions thoughtfully",
+        [
+          "Put if–else inside a fixed-count loop to check again on each repetition. Movement and turns change the state, so later answers can differ.",
+          "‘Turn when blocked’ does not guarantee reaching every goal. Test the actual map and explain your route. One if–else chooses one branch; separate if blocks check in sequence using the current position and direction. Retest the entire route after changes."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "In an if–else pair, the condition is true. What runs?",
+        ["Both branches at once", "Only else", "Only the if body"]
+      ],
+      [
+        "The first if turns the car. What does the next separate obstacle_ahead() check see?",
+        [
+          "Always the old cell from before the turn",
+          "The cell ahead in the new direction",
+          "Every cell at once"
+        ]
+      ],
+      [
+        "‘If blocked: turn; else: step.’ There is an obstacle. What happens in this check?",
+        [
+          "Only a turn",
+          "A turn followed by the else step",
+          "Only a step into the obstacle"
+        ]
+      ]
+    ],
+    "practice": [
+      "Test both branches",
+      [
+        "Run if–else from the original position and explain why the car steps rather than turns.",
+        "In a new version, add three forward steps and a left turn before the condition. Predict the branch with an obstacle ahead.",
+        "Verify that the else step does not run after the conditional turn.",
+        "Build a complete route containing a meaningful if–else. The condition does not find the entire route itself."
+      ]
+    ]
+  },
+  "1.1": {
+    "description": "Turn a familiar task into clear steps and give the car precise instructions.",
+    "goals": [
+      "Explain what an algorithm is",
+      "Identify the executor and goal",
+      "Put actions in the right order"
+    ],
+    "steps": [
+      [
+        "A plan you can follow",
+        [
+          "To help a friend draw a house, ‘Make it beautiful’ is not enough. Say: draw a square, add a triangular roof, then a door and a window. Now there is a plan.",
+          "An algorithm is an ordered sequence of actions that an executor understands and follows to solve a task. Each instruction is a command. The executor can be a person, machine or program. Choose commands it understands and a clear goal, such as a drawing or reaching the finish."
+        ]
+      ],
+      [
+        "Why order matters",
+        [
+          "When brushing your teeth, pick up the brush, add toothpaste, then brush. Changing the order can change the result.",
+          "There can be several correct algorithms: a house drawing could start with the roof. Check that the steps achieve the goal, not that they copy someone else's plan. Ask: what is the goal, who acts, which commands do they understand, and what comes first?"
+        ]
+      ],
+      [
+        "Translate the plan into car commands",
+        [
+          "The car moves through cells and turns. robot.forward(2) means moving two cells in the direction the car currently faces.",
+          "Read the example from top to bottom: move two cells, then turn left. Turning changes direction without changing the cell. An obstacle or field boundary stops movement with an error, so adjust your route."
+        ]
+      ],
+      [
+        "Think first, then run",
+        [
+          "Trace the route before running. At every step, ask where the car is and which way it faces. This helps you notice missing commands.",
+          "You can write an algorithm in words, arrows, blocks or code. The form changes, but the actions still have an order. A goal says what you want; an algorithm says how to achieve it."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "Which best describes an algorithm?",
+        [
+          "Any beautiful drawing",
+          "Actions the executor understands, in a specific order",
+          "Only the final goal, without steps"
+        ]
+      ],
+      [
+        "Who is the executor when a car follows a student's commands?",
+        ["The car", "The finish cell", "The assignment title"]
+      ],
+      [
+        "What does robot.turn_left() do without a movement command?",
+        [
+          "Immediately reaches the finish",
+          "Moves one cell to the left",
+          "Stays in the same cell and changes direction"
+        ]
+      ]
+    ],
+    "practice": [
+      "My first route",
+      [
+        "Open Delivery to Mars and locate the start, finish and obstacles.",
+        "Name the goal and executor. Trace a possible route, keeping track of direction.",
+        "Build movement and turn commands with blocks or code. Run and compare with your plan.",
+        "If the car stops in the wrong place, adjust the order or step counts and run again."
+      ]
+    ]
+  },
+  "1.2": {
+    "description": "Explore precise commands, the car's direction and errors in command sequences.",
+    "goals": [
+      "Recognize precise commands",
+      "Track the car's direction",
+      "Correct an action sequence"
+    ],
+    "steps": [
+      [
+        "Each executor has its own commands",
+        [
+          "A person can interpret ‘Go to the door’. The car needs a number of cells and a turn direction; it cannot guess missing steps.",
+          "An executor's command set contains all the commands it understands. Our car moves forward and backward, turns and stops. It cannot jump. ‘Forward 2 cells’ is more precise than ‘Go a little’, and ‘Turn right’ is clearer than ‘Turn where needed’."
+        ]
+      ],
+      [
+        "Whose right?",
+        [
+          "If the car faces right on the screen, a left turn makes it face up. If it faces up, a left turn makes it face left. Left and right are relative to the car, not the screen.",
+          "Forward also depends on direction. Track both position and direction. Imagine sitting in the driver's seat to choose the correct turn."
+        ]
+      ],
+      [
+        "Same commands, different routes",
+        [
+          "Compare ‘forward, left, forward’ with ‘left, forward, forward’. The turn occurs at a different position, so the final cells differ even from the same start.",
+          "The example turns before moving. Follow one line at a time from the starting position; do not skip directly to the last command."
+        ]
+      ],
+      [
+        "Use errors to guide checking",
+        [
+          "A wrong route is a reason to investigate. Find the first difference between your plan and the actual movement: an early turn, too many steps, or the wrong direction.",
+          "Change one cause at a time and rerun from the start. Check the starting direction, read commands in order, find the first incorrect action, fix it and test again."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "Which command is most precise for the car?",
+        ["Go somewhere ahead", "Drive beautifully", "Move forward 3 cells"]
+      ],
+      [
+        "The car faces right. Where does it face after a left turn?",
+        ["Down", "Up", "Still right"]
+      ],
+      [
+        "What is a useful way to find a route error?",
+        [
+          "Find the first difference from the plan and fix one cause",
+          "Replace every command randomly",
+          "Keep running the same incorrect plan"
+        ]
+      ]
+    ],
+    "practice": [
+      "Fix the turn",
+      [
+        "Plan a route to the goal in Delivery to Mars. Say each command before running.",
+        "Write down a successful sequence, then deliberately reverse one turn.",
+        "Predict where the route changes and test it.",
+        "Restore the correct turn, test again and explain why command order matters."
+      ]
+    ]
+  },
+  "2.1": {
+    "description": "Find the palette, workspace and stage, and compare Scratch with EasyCode.",
+    "goals": [
+      "Navigate the block editor",
+      "Understand the stage and executor",
+      "Distinguish Scratch and EasyCode features"
+    ],
+    "steps": [
+      [
+        "Build a program from blocks",
+        [
+          "Block programming provides ready-made commands. Choose blocks and connect them to focus on action order instead of brackets and commas.",
+          "Block shapes show how they connect: movement blocks form a chain, while a repeat block contains other blocks. Colors help identify categories but vary between environments. Read each command. Blocks are real programming: you still design the algorithm yourself."
+        ]
+      ],
+      [
+        "Three editor areas",
+        [
+          "The palette holds available blocks. Drag them into the workspace to assemble a program. The stage or field shows execution.",
+          "Scratch calls a character a sprite and offers movement, appearance and sound. In EasyCode's car workspace, the executor is a car on a grid. We practice routes, loops and conditions: choose in the palette, build in the workspace, observe on the field."
+        ]
+      ],
+      [
+        "Scratch and EasyCode are different",
+        [
+          "The Scratch presentation demonstrates the green flag, pixel steps, speech and sound. Seeing a Scratch block does not make it available in EasyCode.",
+          "In the car workspace, use Run and count movement in grid cells. Speech and music are not supported. Electronics has a separate workspace. Use the commands available in the current palette; start by dragging a movement block and setting its cell count."
+        ]
+      ],
+      [
+        "Connect blocks with actions",
+        [
+          "Join movement, a turn and another movement into one clear chain. Disconnected blocks make order harder to understand.",
+          "Run the program and match each movement to a block. Generated code follows the same order: moving forward 2 cells corresponds to robot.forward(2). These are two ways to express the same idea."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "What is the block editor workspace for?",
+        [
+          "Connecting blocks into a program",
+          "Only watching movement results",
+          "Changing the account password"
+        ]
+      ],
+      [
+        "Which units does the EasyCode car use?",
+        ["Musical notes", "Only meters of a real road", "Grid cells"]
+      ],
+      [
+        "Scratch has a sound block. What is true for EasyCode now?",
+        [
+          "Every Scratch block works here",
+          "There is no sound block; use the available commands",
+          "Type a song title instead of movement"
+        ]
+      ]
+    ],
+    "practice": [
+      "Find and build",
+      [
+        "Open Blocks and find the palette, workspace and car field.",
+        "Connect movement, turn and movement blocks. Choose counts that avoid obstacles.",
+        "Run and explain which block caused each action.",
+        "Extend the chain to the finish. Use Run, not a Scratch green flag or sound block."
+      ]
+    ]
+  },
+  "2.2": {
+    "description": "Build a connected program, predict its result and test it in small steps.",
+    "goals": [
+      "Connect compatible blocks",
+      "Set command parameters",
+      "Compare the plan with the result"
+    ],
+    "steps": [
+      [
+        "Start with a clear goal",
+        [
+          "Choose a short goal, such as reaching the finish without hitting obstacles. Random blocks do not create a reliable plan.",
+          "Draw arrows or describe forward movement and turns, then replace each action with a block. The number inside a movement block sets the cell count."
+        ]
+      ],
+      [
+        "Starting programs in different environments",
+        [
+          "Scratch often begins a script with ‘when green flag clicked’. This event starts a sequence that may contain movement, speech and sound.",
+          "EasyCode's car workspace does not need a green flag block and does not support speech or sound. Connect available commands and click Run. Transfer the idea of ordered actions, not every Scratch block. Thirty pixel steps in Scratch are not thirty EasyCode grid cells: the latter can cross the field boundary."
+        ]
+      ],
+      [
+        "Build a short chain",
+        [
+          "Start with forward 2 cells, turn left, then forward 1 cell. On the original field, this demonstrates a direction change but does not finish the task.",
+          "Predict the final cell, then run and compare. If the result matches your prediction, add the next part of the route. Small checks make a large task manageable."
+        ]
+      ],
+      [
+        "Check more than connections",
+        [
+          "Blocks can be connected correctly while the route is wrong: a turn may be too early or a distance one cell too long. This is a logic or parameter error.",
+          "Read the result message, find the first mismatch and correct it. Check connections, cell counts, turn positions and whether the car reaches the goal. Explain each block aloud before improving the program."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "What should you do before building a large program?",
+        [
+          "Add as many blocks as possible",
+          "Name the goal and plan the action order",
+          "Choose blocks only by color"
+        ]
+      ],
+      [
+        "What does Scratch's green-flag event block do?",
+        [
+          "Defines when a sequence starts",
+          "Always moves a car one cell",
+          "Replaces every other command"
+        ]
+      ],
+      [
+        "Blocks are connected but the car is not at the finish. What should you check?",
+        [
+          "Only the page color",
+          "Whether the computer has a real battery",
+          "Command order, turns and cell counts"
+        ]
+      ]
+    ],
+    "practice": [
+      "A program to the finish",
+      [
+        "Build a short block chain and predict its result on the original field.",
+        "Run it. Once you understand the result, add the remaining route.",
+        "Check that generated code lines follow the block order.",
+        "Explain which blocks you corrected and why. Speech, sound and the Scratch green flag are not part of this task."
+      ]
+    ]
+  }
+}

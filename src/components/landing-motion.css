@@ -1,21 +1,21 @@
 /* Original, dependency-free motion treatment inspired by React Bits. */
 .lp-hero h1 > .lp-title-line {
   display: block;
-  color: #f5f2fa;
+  color: #f2f6fa;
   white-space: nowrap;
 }
 .lp-letter {
   display: inline-block;
 }
 .lp-hero h1 > .lp-title-accent {
-  color: #b46bf7;
+  color: #6bacf7;
   background: linear-gradient(
     110deg,
-    #9e42f5 10%,
-    #bc79ff 36%,
-    #eed4ff 48%,
-    #b463f5 60%,
-    #9747ed 90%
+    #4296f5 10%,
+    #79b8ff 36%,
+    #d4e8ff 48%,
+    #63a7f5 60%,
+    #4794ed 90%
   );
   background-size: 240% 100%;
   background-clip: text;
@@ -56,7 +56,7 @@
   inset: -34px;
   z-index: -1;
   pointer-events: none;
-  background: radial-gradient(ellipse, #a855f732, transparent 68%);
+  background: radial-gradient(ellipse, #3b82f632, transparent 68%);
 }
 .lp-motion-on .lp-hero-demo::before {
   animation: lp-halo-breathe 7s ease-in-out infinite alternate;
@@ -70,8 +70,8 @@
 }
 .lp-atmosphere {
   background:
-    radial-gradient(ellipse at 12% 20%, #7031ad1a, transparent 55%),
-    radial-gradient(ellipse at 85% 75%, #7334b32e, transparent 65%), #120f17;
+    radial-gradient(ellipse at 12% 20%, #316bad1a, transparent 55%),
+    radial-gradient(ellipse at 85% 75%, #346fb32e, transparent 65%), #0d1524;
 }
 .lp-atmosphere::after {
   content: "";
@@ -79,12 +79,12 @@
   inset: 0;
   pointer-events: none;
   /* Local contrast, not an edge mask: the moving field remains full-bleed. */
-  background: radial-gradient(ellipse at 28% 45%, #120f173d, transparent 65%);
+  background: radial-gradient(ellipse at 28% 45%, #0d15243d, transparent 65%);
 }
 .lp-header {
   border: 1px solid #ffffff0c;
   border-radius: 18px;
-  background: #120f17bf;
+  background: #0d1524bf;
   backdrop-filter: blur(14px);
   height: 76px;
   margin: 20px auto 0;
@@ -104,7 +104,7 @@
   height: 1px;
   transform: scaleX(0);
   transform-origin: left;
-  background: #bc76f8;
+  background: #76b3f8;
   transition: transform 220ms ease;
 }
 .lp-nav a:hover::after,
@@ -182,7 +182,7 @@
   border-radius: inherit;
   background: radial-gradient(
     420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-    #ae64ff23,
+    #64acff23,
     transparent 65%
   );
   opacity: 0;
@@ -199,10 +199,10 @@
       rotateY(var(--tilt-y, 0deg)) translateY(-5px);
     transition-duration: 160ms;
     transition-delay: 0ms;
-    border-color: #b572f070;
+    border-color: #72adf070;
     box-shadow:
-      0 15px 40px #08050d55,
-      inset 0 1px #dca4ff12;
+      0 15px 40px #05090d55,
+      inset 0 1px #a4ceff12;
   }
 }
 
@@ -234,13 +234,13 @@
   align-items: center;
   gap: 10px;
   white-space: nowrap;
-  color: #bba4cf;
+  color: #a4b8cf;
   font-size: 13px;
 }
 .lp-ribbon-divider {
   width: 1px;
   height: 14px;
-  background: #8b50b966;
+  background: #5081b966;
   margin-left: 14px;
 }
 .lp-motion-on .lp-ribbon-track {
@@ -386,10 +386,10 @@
 @keyframes lp-icon-glow {
   0%,
   100% {
-    box-shadow: 0 0 0 #a855f700;
+    box-shadow: 0 0 0 #3b82f600;
   }
   50% {
-    box-shadow: 0 0 24px #a855f730;
+    box-shadow: 0 0 24px #3b82f630;
   }
 }
 @keyframes lp-hint-dots {

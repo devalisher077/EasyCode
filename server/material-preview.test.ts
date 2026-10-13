@@ -52,6 +52,27 @@ async function setup(demo = true) {
 }
 
 describe("authenticated presentation previews", () => {
+  it.each([3, 4, 5, 6].flatMap(section => [1, 2].map(topic => [section, topic])))
+  ("publishes topic %s.%s with a readable PDF and editable PPTX for both roles", async (section, topic) => {
+    const app = await setup();
+    const source = `section-0${section}/topic-0${topic}/Презентация.pptx`;
+    for (const role of ["student", "teacher"]) {
+      const headers = { "x-demo-role": role };
+      const catalog = (await app.inject({ url: "/api/catalog", headers })).json();
+      const entry = catalog.sections.find((item: { number: number }) => item.number === section)
+        .topics.find((item: { number: string }) => item.number === `${section}.${topic}`);
+      expect(entry.materials).toContainEqual({ type: "presentation", audience: "student_and_teacher", path: source });
+      const preview = await app.inject({ url: url(source), headers });
+      expect(preview.statusCode).toBe(200);
+      expect(preview.headers["content-type"]).toBe("application/pdf");
+      expect(preview.headers["content-disposition"]).toMatch(/^inline;/);
+      expect(preview.rawPayload.subarray(0, 5).toString()).toBe("%PDF-");
+      const original = await app.inject({ url: `/api/materials?path=${encodeURIComponent(source)}`, headers });
+      expect(original.statusCode).toBe(200);
+      expect(original.rawPayload.subarray(0, 2).toString()).toBe("PK");
+    }
+  });
+
   it("serves only the prepared same-folder PDF with private inline headers", async () => {
     const app = await setup();
     const response = await app.inject(url());

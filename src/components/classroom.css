@@ -13,12 +13,12 @@
   gap: 11px;
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid #3a2a45;
+  border-top: 1px solid #2a3745;
 }
 
 .lesson-linked-tasks > span,
 .assignment-lesson {
-  color: #b59ac5;
+  color: #9aaec5;
   font-size: 10px;
   line-height: 1.6;
 }
@@ -45,4 +45,19 @@
 
 .classroom-content-error .text-button {
   margin-top: 14px;
+}
+.classroom-form-error {
+  color: #f0b1ba;
+  background: #b8324914;
+  border: 1px solid #b8324960;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.classroom-code-hint {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
 }

@@ -1,0 +1,277 @@
+/* Shared learning-platform UI: flat controls, clear hierarchy and course covers.
+   The existing blue/graphite palette and semantic status colors are retained. */
+:root {
+  --control-radius: 8px;
+  --panel-radius: 16px;
+  --control-height: 44px;
+}
+
+/* Consistent filled and outlined actions, including lazy-loaded dialogs. */
+:root :is(.primary-button, .secondary-button, .lp-primary, .lp-secondary,
+  .lp-glow-button, .lp-login) {
+  min-height: var(--control-height);
+  padding: 11px 20px;
+  border-radius: var(--control-radius);
+  border-width: 1px;
+  border-style: solid;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+:root :is(.primary-button, .lp-primary, .lp-glow-button) {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+:root :is(.primary-button, .lp-primary, .lp-glow-button):hover:not(:disabled) {
+  background: #2563eb;
+  border-color: #2563eb;
+  transform: none;
+  box-shadow: none;
+}
+:root :is(.secondary-button, .lp-secondary, .lp-login) {
+  background: transparent;
+  border-color: #6aaefb;
+  color: #badaff;
+}
+:root :is(.secondary-button, .lp-secondary, .lp-login):hover:not(:disabled) {
+  background: #3b82f61c;
+  border-color: #93c5fd;
+  transform: none;
+  box-shadow: none;
+}
+:root .lp :is(.lp-primary, .lp-glow-button)::after { display: none; }
+:root .lp :is(.lp-primary, .lp-secondary, .lp-glow-button):hover > svg { transform: none; }
+:root :is(.app-shell, .lp) :is(.text-button, .lp-text-button) {
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+:root :is(.app-shell, .lp) :is(.text-button, .lp-text-button):hover {
+  text-decoration: underline;
+}
+:root :is(button, a, input, select, textarea, summary):focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 3px;
+}
+:root button:disabled { cursor: not-allowed; }
+
+/* Full-width navigation and readable controls, without a floating glass frame. */
+.lp .lp-header {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-inline: clamp(20px, 3vw, 48px);
+  height: 80px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--bg);
+  backdrop-filter: none;
+  box-shadow: 0 2px 8px #0002;
+}
+.lp .lp-nav a { font-size: 14px; font-weight: 500; }
+.lp .lp-account { background: transparent; border-radius: var(--control-radius); }
+.lp .lp-account:hover { background: #3b82f61c; }
+.lp .lp-brand-mark { background: #3b82f6; box-shadow: none; border: 0; }
+.lp .lp-nav-slash { display: none; }
+.lp .lp-motion-toggle, .lp .lp-menu-toggle {
+  border-radius: 50%;
+  height: 44px;
+  width: 44px;
+  border-color: var(--border);
+  box-shadow: none;
+}
+.app-shell .topbar { min-height: 80px; height: auto; padding-block: 16px; }
+.app-shell .header-actions { flex: 1; justify-content: flex-end; gap: 18px; min-width: 0; }
+.app-shell .search {
+  min-height: 46px;
+  width: min(100%, 440px);
+  padding: 0 16px;
+  border: 1px solid #405a78;
+  border-radius: 999px;
+  background: var(--card);
+  gap: 12px;
+}
+.app-shell .search:focus-within { border-color: #93c5fd; }
+.app-shell .search input { width: 100%; min-width: 0; font-size: 13px; }
+.app-shell .search kbd { display: none; }
+.app-shell .nav-item { min-height: 46px; font-size: 13px; font-weight: 500; }
+.app-shell .nav-item.active { border-left: 3px solid #3b82f6; }
+.app-shell .breadcrumbs { font-size: 12px; }
+.app-shell .avatar { width: 36px; height: 36px; flex-shrink: 0; font-weight: 600; }
+
+/* Strong editorial headings and flat surfaces keep the focus on learning. */
+.lp :is(h1, h2, h3, h4), .app-shell :is(h1, h2, h3) {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.lp .lp-hero h1 { line-height: 1.12; }
+.lp .lp-hero-copy > p { color: #aebdce; line-height: 1.75; }
+.lp .lp-section-title h2 { font-size: clamp(28px, 3vw, 40px); }
+.lp .lp-feature-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--panel-radius);
+  padding: 16px;
+}
+.lp .lp-feature-card:hover { transform: none; border-color: #608ab9; }
+.lp .lp-feature-visual { border-radius: 10px; background-color: #192b44; }
+.lp .lp-feature-card h3 { font-size: 20px; line-height: 1.35; }
+.lp .lp-feature-card p { color: #aebdce; font-size: 14px; line-height: 1.65; }
+.lp .lp-feature-tag { font-size: 12px; color: #93c5fd; }
+.lp .lp-topic-ribbon { justify-content: flex-start; gap: 12px; }
+.lp .lp-topic-ribbon > span {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--card);
+}
+.lp .lp-topic-ribbon i { border: 0; }
+.lp :is(.lp-preview, .lp-teacher-window) { background: var(--card); box-shadow: none; }
+.lp .lp-hero-demo::before { display: none; }
+.lp .lp-faq-list article { border-color: var(--border); }
+.lp .lp-faq-list button { min-height: 64px; font-weight: 600; }
+
+.app-shell .hero-copy > p { font-size: 14px; color: #aebdce; line-height: 1.75; }
+.app-shell .hero-facts { font-size: 11px; color: #9caec6; }
+.app-shell :is(.course-progress, .course-strip, .lesson-article, .custom-section,
+  .assignment-card, .editor-panel, .scene-panel, .console-panel, .hint-card) {
+  background: var(--card);
+  border-color: var(--border);
+  border-radius: var(--panel-radius);
+  box-shadow: none;
+}
+.app-shell .course-progress-track > span { background: #3b82f6; }
+.app-shell .section-heading h2 { font-size: 28px; }
+.app-shell .course-grid { gap: 24px; }
+.app-shell .course-card {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 14px 0;
+  border-radius: var(--panel-radius);
+  background: var(--card);
+  border-color: var(--border);
+}
+.app-shell .course-card:hover { transform: none; border-color: #608ab9; }
+.course-cover {
+  position: relative;
+  min-height: 150px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px;
+  color: #badaff;
+  border-radius: 10px;
+  background: #1b3557;
+}
+.course-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(#93c5fd0c 1px, transparent 1px),
+    linear-gradient(90deg, #93c5fd0c 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.course-card:nth-child(2n) .course-cover { background-color: #18304a; }
+.course-card:nth-child(3n) .course-cover { background-color: #203d68; }
+.course-cover-label { font-size: 9px; letter-spacing: 1.5px; font-weight: 600; }
+.course-cover code { font-size: 11px; position: relative; }
+.course-cover-number {
+  position: absolute;
+  right: 14px;
+  top: 22px;
+  color: #93c5fd30;
+  font-size: 72px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -5px;
+}
+.app-shell .card-top { padding: 18px 2px 0; gap: 8px; }
+.app-shell .section-number { font-size: 10px; color: #9caec6; }
+.app-shell .availability { font-size: 10px; padding: 4px 7px; }
+.app-shell .course-card h3 {
+  font-size: 19px;
+  line-height: 1.35;
+  margin: 12px 2px 8px;
+  min-height: 52px;
+  max-width: none;
+}
+.app-shell .course-card > p { font-size: 12px; color: #9caec6; margin: 0 2px 16px; min-height: 42px; }
+.app-shell .topic-links { margin: 0 2px 18px; gap: 12px; }
+.app-shell .topic-links button { font-size: 12px; line-height: 1.5; color: #c5d4e5; }
+.app-shell .topic-links button > span { font-size: 10px; }
+.app-shell .topic-links button:hover { color: #93c5fd; text-decoration: underline; text-underline-offset: 3px; }
+.app-shell .section-progress-track { margin-top: auto; }
+.app-shell .card-bottom { padding: 16px 2px; background: none; flex-wrap: wrap; gap: 10px; font-size: 11px; }
+.app-shell .card-bottom button {
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid #6aaefb;
+  border-radius: var(--control-radius);
+  color: #badaff;
+  font-size: 12px;
+  font-weight: 600;
+}
+.app-shell .card-bottom button:hover { background: #3b82f61c; }
+
+/* Forms and lesson controls follow the same sizing as the main actions. */
+:root .stack-form :is(input:not([type="radio"]):not([type="checkbox"]), select, textarea) {
+  min-height: 48px;
+  border-radius: var(--control-radius);
+  border-color: #405a78;
+  font-size: 14px;
+}
+:root .stack-form label { font-size: 13px; font-weight: 500; }
+:root .stack-form input::placeholder, :root .stack-form textarea::placeholder { color: #9caec6; }
+:root .modal { border-radius: var(--panel-radius); }
+.app-shell .lesson-page .primary-button { min-height: 44px; font-size: 14px; border-radius: var(--control-radius); }
+.app-shell .lesson-step-list button { border-radius: var(--control-radius); }
+.app-shell .lesson-options label { padding: 14px 16px; }
+.app-shell .class-tabs button { min-height: 44px; font-size: 13px; font-weight: 600; border-radius: var(--control-radius); }
+.app-shell .tabs button { min-height: 44px; font-size: 13px; font-weight: 600; }
+.presentation-overlay .presentation-viewer button {
+  min-height: 40px;
+  border-radius: var(--control-radius);
+  font-weight: 600;
+  border-color: #405a78;
+}
+
+@media (max-width: 1100px) {
+  .app-shell .search { width: min(100%, 280px); }
+  .app-shell .course-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-shell .topbar { padding-inline: 24px; }
+}
+@media (max-width: 760px) {
+  .lp .lp-header { height: 72px; padding-inline: 16px; gap: 14px; }
+  .lp .lp-header-actions { gap: 8px; }
+  .lp .lp-glow-button, .lp .lp-login { padding-inline: 12px; font-size: 12px; }
+  .app-shell .topbar { padding: 14px 20px; flex-wrap: wrap; gap: 12px; }
+  .app-shell .header-actions { flex: auto; }
+  .app-shell .search { width: 100%; flex: 1; min-width: 120px; }
+  .app-shell .edition { display: none; }
+  .app-shell .course-grid { gap: 16px; }
+  .app-shell .hero-actions { flex-wrap: wrap; gap: 16px; }
+  .app-shell .section-heading h2 { font-size: 24px; }
+}
+@media (max-width: 560px) {
+  .app-shell .course-grid { grid-template-columns: 1fr; }
+  .app-shell .course-card h3, .app-shell .course-card > p { min-height: 0; }
+  .app-shell .header-actions { width: 100%; }
+  .lp .lp-header .lp-brand { font-size: 21px; }
+  .lp .lp-header .lp-brand-mark { width: 30px; height: 30px; }
+  .lp .lp-header .lp-motion-toggle { width: 36px; height: 36px; }
+  .lp .lp-header .lp-glow-button { min-height: 40px; }
+  .app-shell .course-cover { min-height: 164px; }
+}

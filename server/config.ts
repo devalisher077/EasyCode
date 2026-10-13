@@ -11,6 +11,25 @@ export interface AppConfig {
   openaiModel: string;
 }
 
+/** Local aliases are equivalent only for a loopback-bound, locally configured API.
+ * Public deployments retain the single explicitly configured frontend origin. */
+export function frontendOrigins(config: AppConfig): Set<string> {
+  const frontend = new URL(config.frontendOrigin);
+  if (!['http:', 'https:'].includes(frontend.protocol) || frontend.username ||
+    frontend.password || frontend.pathname !== '/' || frontend.search || frontend.hash)
+    throw new Error('FRONTEND_ORIGIN должен содержать только адрес сайта без пути.');
+  const origins = new Set([frontend.origin]);
+  const loopback = ['localhost', '127.0.0.1', '::1', '[::1]'];
+  if (loopback.includes(config.host) && loopback.includes(frontend.hostname)) {
+    for (const hostname of ['localhost', '127.0.0.1', '[::1]']) {
+      const alias = new URL(frontend.origin);
+      alias.hostname = hostname;
+      origins.add(alias.origin);
+    }
+  }
+  return origins;
+}
+
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const demo = env.DEMO_MODE === "true";
   const host = env.HOST || "127.0.0.1";

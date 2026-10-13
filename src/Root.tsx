@@ -1,11 +1,14 @@
+import { t } from "./lib/i18n";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { LandingPage } from "./components/LandingPage";
 import { useAccount } from "./lib/useAccount";
 import type { Profile, Role } from "./lib/types";
+import { useLanguage } from "./lib/i18n";
 
 const LearningApp = lazy(() => import("./App"));
 
 export default function Root() {
+  useLanguage();
   const [location, setLocation] = useState(
     () => window.location.pathname + window.location.search,
   );
@@ -39,7 +42,7 @@ export default function Root() {
       <Suspense
         fallback={
           <div className="lp-loading" role="status">
-            Открываем твоё пространство…
+            {t("Открываем твоё пространство…")}
           </div>
         }
       >

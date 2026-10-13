@@ -1,3 +1,4 @@
+import { t } from "../lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import { BookOpen, GraduationCap } from "lucide-react";
 import { api, supabase } from "../lib/api";
@@ -66,14 +67,18 @@ export function AuthPanel({
   if (mismatch)
     return (
       <>
-        <span className="eyebrow">РОЛЬ АККАУНТА</span>
+        <span className="eyebrow">{t("РОЛЬ АККАУНТА")}</span>
         <h2>
-          {mismatch.role === "teacher" ? "Аккаунт учителя" : "Аккаунт ученика"}
+          {t(
+            mismatch.role === "teacher" ? "Аккаунт учителя" : "Аккаунт ученика",
+          )}
         </h2>
         <p role="status">
-          {register
-            ? "Регистрация прошла, но сохранённая в базе роль отличается от выбранной. Для регистрации учителей администратору проекта нужно применить миграцию 202610070002_signup_roles.sql. Уже созданному аккаунту роль меняют отдельно."
-            : "Вход выполнен. В базе у этого аккаунта другая роль. Выбор на форме не изменяет права доступа."}
+          {t(
+            register
+              ? "Регистрация прошла, но сохранённая в базе роль отличается от выбранной. Для регистрации учителей администратору проекта нужно применить миграцию 202610070002_signup_roles.sql. Уже созданному аккаунту роль меняют отдельно."
+              : "Вход выполнен. В базе у этого аккаунта другая роль. Выбор на форме не изменяет права доступа.",
+          )}
         </p>
         <button
           className="primary-button"
@@ -96,19 +101,22 @@ export function AuthPanel({
             }
           }}
         >
-          {mismatch.role === "teacher"
-            ? "Перейти в кабинет учителя"
-            : "Продолжить как ученик"}
+          {t(
+            mismatch.role === "teacher"
+              ? "Перейти в кабинет учителя"
+              : "Продолжить как ученик",
+          )}
         </button>
       </>
     );
   if (pendingUserId)
     return (
       <>
-        <h2>Проверяем профиль</h2>
+        <h2>{t("Проверяем профиль")}</h2>
         <p>
-          Вход выполнен, но профиль пока не удалось загрузить. Повторная
-          регистрация не нужна.
+          {t(
+            "Вход выполнен, но профиль пока не удалось загрузить. Повторная регистрация не нужна.",
+          )}
         </p>
         <button
           className="primary-button"
@@ -131,33 +139,37 @@ export function AuthPanel({
             }
           }}
         >
-          {busy ? "Подождите…" : "Повторить проверку"}
+          {t(busy ? "Подождите…" : "Повторить проверку")}
         </button>
       </>
     );
   if (confirmationSent)
     return (
       <>
-        <span className="eyebrow">ПОДТВЕРЖДЕНИЕ РЕГИСТРАЦИИ</span>
-        <h2>Проверьте почту</h2>
+        <span className="eyebrow">{t("ПОДТВЕРЖДЕНИЕ РЕГИСТРАЦИИ")}</span>
+        <h2>{t("Проверьте почту")}</h2>
         <p>
-          Если регистрация доступна для этого адреса, на почту придёт ссылка
-          подтверждения. Откройте её, затем вернитесь и войдите как{" "}
-          {role === "teacher" ? "учитель" : "ученик"}.
+          {t(
+            "Если регистрация доступна для этого адреса, на почту придёт ссылка подтверждения. Откройте её, затем вернитесь и войдите как",
+          )}
+          {t(" ")}
+          {t(role === "teacher" ? "учитель" : "ученик")}.
         </p>
         <button className="primary-button" onClick={() => changeMode("login")}>
-          Перейти ко входу
+          {t("Перейти ко входу")}
         </button>
       </>
     );
   return (
     <>
-      <span className="eyebrow">УЧЁТНАЯ ЗАПИСЬ</span>
-      <h2>{register ? "Создать аккаунт" : "Вход в аккаунт"}</h2>
+      <span className="eyebrow">{t("УЧЁТНАЯ ЗАПИСЬ")}</span>
+      <h2>{t(register ? "Создать аккаунт" : "Вход в аккаунт")}</h2>
       <p>
-        {register
-          ? "Выберите роль для работы с платформой. Она сохранится в профиле аккаунта."
-          : "Выберите роль, указанную при регистрации, и войдите в личный кабинет."}
+        {t(
+          register
+            ? "Выберите роль для работы с платформой. Она сохранится в профиле аккаунта."
+            : "Выберите роль, указанную при регистрации, и войдите в личный кабинет.",
+        )}
       </p>
       <form
         className="stack-form"
@@ -211,52 +223,64 @@ export function AuthPanel({
         }}
       >
         <fieldset className="auth-role-picker" disabled={busy}>
-          <legend>{register ? "Я регистрируюсь как" : "Я вхожу как"}</legend>
+          <legend>{t(register ? "Я регистрируюсь как" : "Я вхожу как")}</legend>
           <div className="auth-role-options">
-            {(["student", "teacher"] as const).map((option) => (
-              <label
-                key={option}
-                className={role === option ? "auth-role selected" : "auth-role"}
-              >
-                <input
-                  type="radio"
-                  name="role"
-                  value={option}
-                  checked={role === option}
-                  onChange={() => {
-                    generation.current++;
-                    setRole(option);
-                  }}
-                />
-                {option === "teacher" ? (
-                  <BookOpen size={20} />
-                ) : (
-                  <GraduationCap size={20} />
-                )}
-                <strong>{option === "teacher" ? "Учитель" : "Ученик"}</strong>
-                <span>
-                  {option === "teacher"
-                    ? "Классы, уроки и результаты"
-                    : "Обучение и задания"}
-                </span>
-              </label>
-            ))}
+            {t(
+              (["student", "teacher"] as const).map((option) => (
+                <label
+                  key={option}
+                  className={
+                    role === option ? "auth-role selected" : "auth-role"
+                  }
+                >
+                  <input
+                    type="radio"
+                    name="role"
+                    value={option}
+                    checked={role === option}
+                    onChange={() => {
+                      generation.current++;
+                      setRole(option);
+                    }}
+                  />
+                  {t(
+                    option === "teacher" ? (
+                      <BookOpen size={20} />
+                    ) : (
+                      <GraduationCap size={20} />
+                    ),
+                  )}
+                  <strong>
+                    {t(option === "teacher" ? "Учитель" : "Ученик")}
+                  </strong>
+                  <span>
+                    {t(
+                      option === "teacher"
+                        ? "Классы, уроки и результаты"
+                        : "Обучение и задания",
+                    )}
+                  </span>
+                </label>
+              )),
+            )}
           </div>
         </fieldset>
-        {register && (
-          <label>
-            Имя
-            <input
-              name="name"
-              required
-              maxLength={60}
-              autoComplete="given-name"
-              disabled={busy}
-            />
-          </label>
+        {t(
+          register && (
+            <label>
+              {t("Имя")}
+              <input
+                name="name"
+                required
+                maxLength={60}
+                autoComplete="given-name"
+                disabled={busy}
+              />
+            </label>
+          ),
         )}
         <label>
-          Электронная почта
+          {t("Электронная почта")}
           <input
             name="email"
             type="email"
@@ -266,7 +290,7 @@ export function AuthPanel({
           />
         </label>
         <label>
-          Пароль
+          {t("Пароль")}
           <input
             name="password"
             type="password"
@@ -277,7 +301,7 @@ export function AuthPanel({
           />
         </label>
         <button disabled={busy} className="primary-button">
-          {busy ? "Подождите…" : register ? "Зарегистрироваться" : "Войти"}
+          {t(busy ? "Подождите…" : register ? "Зарегистрироваться" : "Войти")}
         </button>
       </form>
       <button
@@ -285,9 +309,11 @@ export function AuthPanel({
         disabled={busy}
         onClick={() => changeMode(register ? "login" : "register")}
       >
-        {register
-          ? "Уже есть аккаунт? Войти"
-          : "Нет аккаунта? Зарегистрироваться"}
+        {t(
+          register
+            ? "Уже есть аккаунт? Войти"
+            : "Нет аккаунта? Зарегистрироваться",
+        )}
       </button>
     </>
   );

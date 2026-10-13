@@ -5,7 +5,7 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: #08060dda;
+  background: #06090dda;
   backdrop-filter: blur(10px);
 }
 .presentation-viewer {
@@ -15,11 +15,11 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #17121f;
-  border: 1px solid #42314f;
+  background: #111820;
+  border: 1px solid #313f4f;
   border-radius: 16px;
   box-shadow: 0 24px 100px #0008;
-  color: #f1eaf7;
+  color: #eaf0f7;
 }
 .presentation-viewer.is-expanded,
 .presentation-viewer:fullscreen {
@@ -42,7 +42,7 @@
   min-width: 0;
 }
 .presentation-eyebrow {
-  color: #b59bcb;
+  color: #9bb1cb;
   font-size: 9px;
   letter-spacing: 0.12em;
 }
@@ -61,8 +61,8 @@
   flex-wrap: wrap;
   gap: 12px 24px;
   padding: 10px 24px;
-  background: #21192b;
-  border-block: 1px solid #33283f;
+  background: #17212d;
+  border-block: 1px solid #28333f;
   flex-shrink: 0;
 }
 .presentation-control-group {
@@ -86,9 +86,9 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid #51405e;
-  background: #2b2138;
-  color: #efe6f7;
+  border: 1px solid #404e5e;
+  background: #1e2c3b;
+  color: #e6eef7;
   border-radius: 7px;
   padding: 9px 13px;
   font-size: 12px;
@@ -100,15 +100,15 @@
   padding: 0;
 }
 .presentation-viewer button:hover:not(:disabled) {
-  background: #41304f;
-  border-color: #a97cce;
+  background: #303e4f;
+  border-color: #7ca2ce;
 }
 .presentation-viewer button:disabled {
   opacity: 0.38;
   cursor: not-allowed;
 }
 .presentation-viewer :is(button, summary, [tabindex]):focus-visible {
-  outline: 2px solid #c79af4;
+  outline: 2px solid #93c5fd;
   outline-offset: 3px;
 }
 .presentation-fullscreen {
@@ -119,7 +119,7 @@
   min-height: 120px;
   overflow: auto;
   overscroll-behavior: contain;
-  background: #0e0b13;
+  background: #0a0f14;
   position: relative;
 }
 .presentation-slide-wrap {
@@ -154,7 +154,7 @@
 }
 .presentation-state p {
   margin: 0;
-  color: #bbb0c5;
+  color: #b0bac5;
   font-size: 13px;
   line-height: 1.7;
   max-width: 600px;
@@ -164,17 +164,17 @@
   position: absolute;
   inset: 20px 0 auto;
   text-align: center;
-  color: #bbb0c5;
+  color: #b0bac5;
   font-size: 12px;
 }
 .presentation-transcript {
-  border-top: 1px solid #33283f;
+  border-top: 1px solid #28333f;
   flex-shrink: 0;
 }
 .presentation-transcript summary {
   padding: 12px 24px;
   font-size: 11px;
-  color: #cfb8e3;
+  color: #b8cce3;
   cursor: pointer;
 }
 .presentation-transcript > div {
@@ -184,7 +184,7 @@
   white-space: pre-wrap;
   font-size: 13px;
   line-height: 1.7;
-  color: #e3d9ec;
+  color: #d9e2ec;
 }
 .presentation-footer {
   display: flex;
@@ -193,12 +193,12 @@
   gap: 14px;
   margin: 0;
   padding: 12px 24px;
-  border-top: 1px solid #33283f;
+  border-top: 1px solid #28333f;
   flex-shrink: 0;
 }
 .presentation-footer p {
   margin: 0;
-  color: #a999b6;
+  color: #99a7b6;
   font-size: 10px;
   line-height: 1.6;
 }

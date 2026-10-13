@@ -136,6 +136,49 @@ afterEach(async () => {
 });
 
 describe("Classroom", () => {
+  it("keeps a creation error visible in the dialog and allows retry", async () => {
+    classList = [];
+    let attempts = 0;
+    request.mockImplementation((path: string, body?: Record<string, unknown>) => {
+      if (path === "/classes" && body) {
+        if (++attempts === 1) return Promise.reject(new Error("Этот источник запроса не разрешён."));
+        classList = [firstClass];
+        return Promise.resolve({ class: firstClass });
+      }
+      return handleRequest(path, body);
+    });
+    await render();
+    await click("Создать первый класс");
+    fill("title", "4 А");
+    await submit();
+    expect(container.querySelector('[role="dialog"] [role="alert"]')?.textContent)
+      .toContain("Этот источник запроса не разрешён.");
+    expect(container.querySelector<HTMLInputElement>('[name="title"]')?.value).toBe("4 А");
+    await submit();
+    expect(container.querySelector('[role="dialog"]')).toBeNull();
+    expect(container.querySelector(".class-overview")?.textContent).toContain("4 А");
+  });
+
+  it("shows invalid code feedback and lets a student join another class", async () => {
+    request.mockImplementation((path: string, body?: Record<string, unknown>) => {
+      if (path === "/classes/join") {
+        if (body?.code !== "EASY43") return Promise.reject(new Error("Код не найден. Уточните его у учителя."));
+        classList = [firstClass, secondClass];
+        return Promise.resolve({ class: secondClass });
+      }
+      return handleRequest(path, body);
+    });
+    await render("student");
+    await click("Присоединиться по коду");
+    fill("code", "NOPE");
+    await submit();
+    expect(container.querySelector('[role="dialog"] [role="alert"]')?.textContent).toContain("Код не найден");
+    fill("code", " easy43 ");
+    await submit();
+    expect(request).toHaveBeenCalledWith("/classes/join", { code: "EASY43" });
+    expect(container.querySelector('[role="dialog"]')).toBeNull();
+    expect(container.querySelector(".class-overview")?.textContent).toContain("4 Б");
+  });
   it("creates a class from the teacher empty state and selects it", async () => {
     classList = [];
     request.mockImplementation(
