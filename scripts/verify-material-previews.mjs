@@ -4,6 +4,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
+import { createHash } from "node:crypto";
 
 const execFileAsync = promisify(execFile);
 const require = createRequire(import.meta.url);
@@ -75,7 +76,14 @@ function extractText(content) {
 
 /** Dependencies are injectable so tests need neither authored PDFs nor external services. */
 export async function verifyPresentation(entry, options) {
-  const { root, getDocument, renderDir, canvas, pdfOptions = {} } = options;
+  const {
+    root,
+    getDocument,
+    renderDir,
+    canvas,
+    pdfOptions = {},
+    imageOps = [],
+  } = options;
   const read = options.read ?? readFile;
   const listZip =
     options.listZip ??
@@ -156,7 +164,14 @@ export async function verifyPresentation(entry, options) {
       const text = extractText(await page.getTextContent());
       const readable =
         text.replace(/\s/g, "").length > 0 && !text.includes("\ufffd");
-      if (!readable)
+      // Only hash-verified image-only sources may intentionally have no text.
+      // A blank page is still an error, even for that source format.
+      const hasImages =
+        entry.imageOnly === true &&
+        (await page.getOperatorList()).fnArray.some((operation) =>
+          imageOps.includes(operation),
+        );
+      if ((!readable && !hasImages) || text.includes("\ufffd"))
         errors.push(
           `Слайд ${number}: нет читаемого текстового слоя или обнаружен символ замены.`,
         );
@@ -166,6 +181,7 @@ export async function verifyPresentation(entry, options) {
         width: viewport.width,
         height: viewport.height,
         readable,
+        hasImages,
         characters: text.length,
         text,
       };
@@ -197,10 +213,10 @@ export async function verifyPresentation(entry, options) {
           (cellWidth - 24) / pageCanvas.width,
           (cellHeight - 42) / pageCanvas.height,
         );
-        sheetContext.fillStyle = readable ? "#25243a" : "#b30020";
+        sheetContext.fillStyle = readable || hasImages ? "#25243a" : "#b30020";
         sheetContext.font = "16px sans-serif";
         sheetContext.fillText(
-          `Slide ${number} · ${text.length} chars`,
+          `Slide ${number} · ${hasImages && !readable ? "image-only source" : `${text.length} chars`}`,
           x,
           y + 21,
         );
@@ -253,7 +269,34 @@ export async function main(args = process.argv.slice(2)) {
   );
   const entries = presentationEntries(catalog);
   if (!entries.length) throw new Error("В каталоге нет презентаций PPTX.");
-  const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const { getDocument, OPS } = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const sourceManifest = JSON.parse(
+    await readFile(path.join(root, "presentation-sources.json"), "utf8").catch(
+      (error) => {
+        if (error.code === "ENOENT") return '{"presentations":[]}';
+        throw error;
+      },
+    ),
+  );
+  for (const entry of entries) {
+    const source = sourceManifest.presentations.find(
+      (item) => item.path === entry.original,
+    );
+    if (!source) continue;
+    const digest = (file) =>
+      readFile(inside(root, file)).then((bytes) =>
+        createHash("sha256").update(bytes).digest("hex"),
+      );
+    if (
+      (await digest(entry.original)) !== source.sha256 ||
+      (await digest(entry.original.slice(0, -5) + ".pdf")) !==
+        source.previewSha256
+    )
+      throw new Error(
+        `${entry.topic}: импортированные файлы отличаются от проверенных исходников. Обновите manifest после проверки.`,
+      );
+    entry.imageOnly = source.format === "image-only";
+  }
   const packageRoot = path.dirname(require.resolve("pdfjs-dist/package.json"));
   const canvas = options.renderDir ? await import("@napi-rs/canvas") : null;
   const pdfOptions = {
@@ -276,6 +319,11 @@ export async function main(args = process.argv.slice(2)) {
         getDocument,
         canvas,
         pdfOptions,
+        imageOps: [
+          OPS.paintImageXObject,
+          OPS.paintInlineImageXObject,
+          OPS.paintImageXObjectRepeat,
+        ],
         renderDir: options.renderDir,
       });
       report.presentations.push(result);

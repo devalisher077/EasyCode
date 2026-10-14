@@ -54,6 +54,27 @@ function fixture({
 }
 
 describe("material preview verification", () => {
+  it("accepts confirmed image-only pages but rejects blank previews", async () => {
+    const { entry, options, getPage } = fixture({ texts: ["", ""] });
+    const originalPage = getPage.getMockImplementation();
+    getPage.mockImplementation(async (number) => ({
+      ...(await originalPage(number)),
+      getOperatorList: async () => ({ fnArray: number === 1 ? [85] : [] }),
+    }));
+    const result = await verifyPresentation(
+      { ...entry, imageOnly: true },
+      { ...options, imageOps: [85] },
+    );
+    expect(result.errors).toHaveLength(1);
+    expect(result.pageChecks.map((page) => page.hasImages)).toEqual([
+      true,
+      false,
+    ]);
+    expect(result.pageChecks.map((page) => page.readable)).toEqual([
+      false,
+      false,
+    ]);
+  });
   it("accepts only explicit render-dir or help CLI options", () => {
     expect(parseArgs([])).toEqual({});
     expect(parseArgs(["--help"])).toEqual({ help: true });

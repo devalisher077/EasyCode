@@ -1,0 +1,78 @@
+{
+  "updatedAt": "2026-10-14",
+  "notes": "User-supplied presentations, matched by all slides; originals unchanged. Image-only previews preserve source layout. Source text issues: topic 5.1 slide 10, topic 6.2 slide 7.",
+  "presentations": [
+    {
+      "topic": "2.1",
+      "sourceFilename": "Тема 3.Основы блочного программирования.pptx",
+      "path": "section-02/topic-01/Презентация.pptx",
+      "format": "image-only",
+      "slides": 12,
+      "sha256": "455ab70e30af36aab61967614ee08fb15fc860480a9ec81812070725746f44ac",
+      "previewSha256": "7c94a0c6b2d9196f5a9a759ac7e0698499b5301c3e15bad7698afb142e9eac1a"
+    },
+    {
+      "topic": "2.2",
+      "sourceFilename": "Тема 4.Создание первой программы из блоков.pptx",
+      "path": "section-02/topic-02/Презентация.pptx",
+      "format": "image-only",
+      "slides": 12,
+      "sha256": "ffd9c05e5237960e29e8a2df43d0a8a1f4aec0ac1b1e32edd50a5d50af8c2429",
+      "previewSha256": "fec4fde849face29f7ee2a97fcb8c03f7665d30e64e35e4685b0eaf1ede3eedd"
+    },
+    {
+      "topic": "4.1",
+      "sourceFilename": "Тема 7. Условие и блок «если».pptx",
+      "path": "section-04/topic-01/Презентация.pptx",
+      "format": "image-only",
+      "slides": 12,
+      "sha256": "ed7ffa5345890b4cb44850de365000e5e11659a2c768480131db1c69cf29ddc9",
+      "previewSha256": "514acf7a39a739ca271aa83f1222964bc618ddb95870fe55c8db714ebd5788e6"
+    },
+    {
+      "topic": "4.2",
+      "sourceFilename": "Тема 8. Конструкции «если — иначе» и несколько условий.pptx",
+      "path": "section-04/topic-02/Презентация.pptx",
+      "format": "image-only",
+      "slides": 12,
+      "sha256": "e8a5f3f3d62182bd47345c6e0e048080f17d60948f736411d495ec67f3fd6e9e",
+      "previewSha256": "8a201417b5794bfc4016a0f7bd3948911a7047586adbadeae1090dc4b89275a9"
+    },
+    {
+      "topic": "5.1",
+      "sourceFilename": "Тема 9. Основные электронные компоненты и их назначение.pptx",
+      "path": "section-05/topic-01/Презентация.pptx",
+      "format": "image-only",
+      "slides": 12,
+      "sha256": "1a6d0fc001915c1853c95b1c5027cda44a3689b8e08283eaaa0d0f4fa15f1189",
+      "previewSha256": "e62be1e0261f56f5267a88dd14297c2ce189b2b56d46a7f18eac877023a3196b"
+    },
+    {
+      "topic": "5.2",
+      "sourceFilename": "Тема 10.Управление электронными компонентами с помощью блоков.pptx",
+      "path": "section-05/topic-02/Презентация.pptx",
+      "format": "image-only",
+      "slides": 12,
+      "sha256": "710f6c8b72467d470d32c463e3e07827d6cfc5eea7863eed1305fef75d08070f",
+      "previewSha256": "a6f76b0d79bd1f1b4a132f11cb482ecb939c4bd7346f256c270eec51e1c55f29"
+    },
+    {
+      "topic": "6.1",
+      "sourceFilename": "Тема 11. Планирование и разработка проекта.pptx",
+      "path": "section-06/topic-01/Презентация.pptx",
+      "format": "image-only",
+      "slides": 12,
+      "sha256": "7daa1480c7e01f552212c8ebb41624eb1cac01edc1d89246c39e4b8ef0717511",
+      "previewSha256": "86ac9bea6adea220e858232e12b11e7bcc43b2c311ec4842e63eb7c321c772b5"
+    },
+    {
+      "topic": "6.2",
+      "sourceFilename": "Тема 12. Тестирование, отладка и улучшение проекта.pptx",
+      "path": "section-06/topic-02/Презентация.pptx",
+      "format": "image-only",
+      "slides": 12,
+      "sha256": "2be6903d078c9155b29e74a007376830a7e2610f27297db02dd2542f59211a29",
+      "previewSha256": "a097f5b1aa2650ebde26b9a7bdc9e69715f7a1020ed3b7dfae78da70aec898bb"
+    }
+  ]
+}
