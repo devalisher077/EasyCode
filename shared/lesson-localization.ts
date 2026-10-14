@@ -44,8 +44,10 @@ export function localizeLesson(lesson: Lesson, language: Language): Lesson {
     })),
     practice: {
       ...lesson.practice,
-      title: copy.practice[0],
-      instructions: copy.practice[1],
+      title: translate(lesson.practice.title, language),
+      instructions: lesson.practice.instructions.map((text) =>
+        translate(text, language),
+      ),
     },
     source: {
       ...lesson.source,

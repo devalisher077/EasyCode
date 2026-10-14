@@ -272,7 +272,17 @@ function validateProgram(program: Program): void {
   visit(program.statements, 0);
 }
 
-export function runProgram(program: Program, world: World): RunResult {
+export type ExecutionEvidence = {
+  loopMovement: boolean;
+  loopTurn: boolean;
+  trueAction: boolean;
+  falseAction: boolean;
+};
+export function runProgram(
+  program: Program,
+  world: World,
+  evidence?: ExecutionEvidence,
+): RunResult {
   const frames: Frame[] = [];
   let steps = 0;
   try {
@@ -341,19 +351,45 @@ export function runProgram(program: Program, world: World): RunResult {
             break;
           case "pass":
             break;
-          case "repeat":
+          case "repeat": {
+            let movingIterations = 0;
+            let turningIterations = 0;
             for (let index = 0; index < statement.count && !stopped; index++) {
               tick();
+              const before = steps;
+              const frameStart = frames.length;
               execute(statement.body);
+              if (steps > before) movingIterations++;
+              if (
+                steps > before &&
+                frames
+                  .slice(frameStart)
+                  .some((frame) => frame.command.startsWith("robot.turn_"))
+              )
+                turningIterations++;
             }
+            if (evidence && movingIterations >= 2) evidence.loopMovement = true;
+            if (evidence && turningIterations >= 2) evidence.loopTurn = true;
             break;
-          case "if":
-            execute(
-              blocked(x + vectors[direction].x, y + vectors[direction].y)
-                ? statement.body
-                : statement.otherwise,
+          }
+          case "if": {
+            const condition = blocked(
+              x + vectors[direction].x,
+              y + vectors[direction].y,
             );
+            const frameStart = frames.length;
+            execute(condition ? statement.body : statement.otherwise);
+            if (
+              evidence &&
+              frames
+                .slice(frameStart)
+                .some((frame) =>
+                  /^robot\.(forward|backward|turn_)/.test(frame.command),
+                )
+            )
+              evidence[condition ? "trueAction" : "falseAction"] = true;
             break;
+          }
         }
       }
     }

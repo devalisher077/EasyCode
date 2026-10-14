@@ -35,6 +35,8 @@ import {
   type PartKind,
 } from "../../shared/electronics";
 import "./electronics.css";
+import { api, supabase } from "../lib/api";
+import { courseElectronics } from "../../shared/course-practice";
 const BlockEditor = lazy(() => import("./BlockEditor"));
 const kinds = Object.keys(PARTS) as PartKind[];
 const WIDTH = 820,
@@ -56,21 +58,25 @@ const pinLabel = (id: string) => {
   return `${PARTS[kind as PartKind]?.title || kind} · ${pin}`;
 };
 
-function loadDraft(owner: string) {
+const draftKey = (owner: string, lessonId?: string) =>
+  `easycode:electronics:v1:${owner}${lessonId ? `:lesson:${lessonId}` : ""}`;
+function loadDraft(owner: string, lessonId?: string) {
+  const fixed = lessonId ? courseElectronics[lessonId] : undefined;
   const fallback = {
-    circuit: starterCircuit(),
-    exercise: "blink" as Exercise,
+    circuit: starterCircuit(fixed?.exercise || "blink"),
+    exercise: fixed?.exercise || ("blink" as Exercise),
     code: STARTER_CODE,
     blocks: undefined as object | undefined,
     mode: "blocks" as "blocks" | "code",
   };
   try {
-    const raw = localStorage.getItem(`easycode:electronics:v1:${owner}`);
+    const raw = localStorage.getItem(draftKey(owner, lessonId));
     if (!raw || raw.length > 150000) return fallback;
     const data = JSON.parse(raw);
     if (
       !validateCircuit(data.circuit) ||
       !Object.hasOwn(EXERCISES, data.exercise) ||
+      (fixed && data.exercise !== fixed.exercise) ||
       typeof data.code !== "string" ||
       data.code.length > 12000
     )
@@ -93,11 +99,16 @@ function loadDraft(owner: string) {
 export default function Electronics({
   draftOwner,
   onNotice,
+  canUseCloud = false,
+  lessonId,
 }: {
   draftOwner: string;
   onNotice: (message: string) => void;
+  canUseCloud?: boolean;
+  lessonId?: string;
 }) {
-  const [draft] = useState(() => loadDraft(draftOwner));
+  const course = lessonId ? courseElectronics[lessonId] : undefined;
+  const [draft] = useState(() => loadDraft(draftOwner, lessonId));
   const [circuit, setCircuit] = useState<Circuit>(draft.circuit);
   const [exercise, setExercise] = useState<Exercise>(draft.exercise);
   const [code, setCode] = useState(draft.code);
@@ -121,6 +132,48 @@ export default function Electronics({
   } | null>(null);
   const [help, setHelp] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const submissionRevision = useRef(0);
+  const active = useRef(true);
+  useEffect(() => {
+    active.current = true;
+    return () => {
+      active.current = false;
+    };
+  }, []);
+  async function submitExercise() {
+    if (submitting) return;
+    if (!canUseCloud) {
+      setCheck(checkElectronics(source, circuit, exercise));
+      return;
+    }
+    setSubmitting(true);
+    const revision = submissionRevision.current;
+    try {
+      const data = await api<{ result: { success: boolean; message: string } }>(
+        "/electronics-submissions",
+        {
+          exercise,
+          code: source,
+          editorMode: mode,
+          circuit,
+          ...(mode === "blocks" ? { blocksState: blocks } : {}),
+          ...(lessonId ? { lessonId } : {}),
+        },
+        supabase ? { expectedUserId: draftOwner } : undefined,
+      );
+      if (!active.current) return;
+      if (revision === submissionRevision.current) setCheck(data.result);
+      onNotice("Решение проверено сервером и сохранено.");
+    } catch (error) {
+      if (active.current)
+        onNotice(
+          error instanceof Error ? error.message : "Не удалось сохранить",
+        );
+    } finally {
+      if (active.current) setSubmitting(false);
+    }
+  }
   const board = useRef<HTMLDivElement>(null);
   const drag = useRef<{
     kind: PartKind;
@@ -132,6 +185,9 @@ export default function Electronics({
     before: Circuit;
   } | null>(null);
   const source = mode === "blocks" ? blockCode : code;
+  useEffect(() => {
+    submissionRevision.current++;
+  }, [source, circuit, exercise]);
   const inspection = inspectCircuit(circuit, inputs);
   const connect = (id: string) => {
     if (running) return;
@@ -302,7 +358,7 @@ export default function Electronics({
           <select
             id="circuit-exercise"
             value={exercise}
-            disabled={running}
+            disabled={running || !!course}
             onChange={(e) => loadExercise(e.target.value as Exercise)}
           >
             {t(
@@ -313,10 +369,19 @@ export default function Electronics({
               )),
             )}
           </select>
-          <p>{t(EXERCISES[exercise].goal)}</p>
+          {course && (
+            <h2>
+              {lessonId} · {t(course.title)}
+            </h2>
+          )}
+          <p>{t(course?.description || EXERCISES[exercise].goal)}</p>
         </div>
         <span className="electronics-local">
-          {t("Самопроверка · без облачной оценки")}
+          {t(
+            canUseCloud
+              ? "Проверка с сохранением результата"
+              : "Самопроверка · без облачной оценки",
+          )}
         </span>
       </section>
       {t(
@@ -410,7 +475,7 @@ export default function Electronics({
             onClick={() => {
               try {
                 localStorage.setItem(
-                  `easycode:electronics:v1:${draftOwner}`,
+                  draftKey(draftOwner, lessonId),
                   JSON.stringify({ circuit, exercise, code, blocks, mode }),
                 );
                 setSaved(true);
@@ -862,13 +927,11 @@ export default function Electronics({
           )}
           <button
             className="primary-button"
-            disabled={running}
-            onClick={() => {
-              setCheck(checkElectronics(source, circuit, exercise));
-            }}
+            disabled={running || submitting || (mode === "blocks" && !blocks)}
+            onClick={() => void submitExercise()}
           >
             <Check size={16} />
-            {t("Проверить задание")}
+            {t(submitting ? "Проверяем…" : "Проверить задание")}
           </button>
           {t(
             check && (
@@ -882,7 +945,9 @@ export default function Electronics({
           )}
           <p className="electronics-disclaimer">
             {t(
-              "Черновик сохраняется только в этом браузере. Эта самопроверка не записывает оценку учителю или прогресс курса.",
+              canUseCloud
+                ? "Проверка сохраняет код, блоки и схему для просмотра учителем. Оценку выставляет учитель."
+                : "Без входа доступна только локальная самопроверка. Войдите, чтобы отправить решение учителю.",
             )}
           </p>
           <details className="electronics-connections">

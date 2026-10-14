@@ -28,6 +28,7 @@ test.beforeEach(async ({ request, page, baseURL }) => {
 
 test("course, block editor, code execution and private file restrictions", async ({
   page,
+  baseURL,
 }) => {
   const errors: string[] = [];
   const externalRequests: string[] = [];
@@ -35,7 +36,7 @@ test("course, block editor, code execution and private file restrictions", async
   page.on("request", (request) => {
     if (
       /^https?:/.test(request.url()) &&
-      !request.url().startsWith("http://127.0.0.1:5173/")
+      !request.url().startsWith(`${baseURL}/`)
     )
       externalRequests.push(request.url());
   });
@@ -225,6 +226,7 @@ test("teacher creates content, pupil joins and submits, teacher sees result", as
     .getByLabel("Урок", { exact: true })
     .selectOption({ label: "Команды и маршрут" });
   await page
+    .getByRole("dialog")
     .getByRole("button", { name: "Создать задание", exact: true })
     .click();
   await expect(page.locator(".assignment-card")).toContainText(
@@ -236,7 +238,7 @@ test("teacher creates content, pupil joins and submits, teacher sees result", as
   });
   await page.getByLabel("Роль в деморежиме").selectOption("student");
   await page
-    .getByRole("button", { name: "Присоединиться", exact: true })
+    .getByRole("button", { name: "Присоединиться по коду", exact: true })
     .click();
   await page.getByLabel("Код от учителя").fill(code);
   await page
@@ -285,4 +287,187 @@ test("mobile course and navigation fit the screen", async ({ page }) => {
     path: "test-results/practice-mobile.png",
     fullPage: true,
   });
+});
+
+test("topic practice checks skills, both maps and fixed electronics assignment", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/learn?practice=1&lesson=3.1");
+  await expect(
+    page.getByRole("heading", { name: "Шесть шагов циклом" }),
+  ).toBeVisible();
+  await expect(page.locator(".blocklySvg").first()).toBeVisible();
+  await page.getByRole("button", { name: "Python", exact: true }).click();
+  const check = async (code: string) => {
+    await page.getByLabel("Код программы").fill(code);
+    const response = page.waitForResponse(
+      (r) =>
+        r.url().endsWith("/api/submissions") && r.request().method() === "POST",
+    );
+    await page
+      .getByRole("button", { name: "Проверить решение", exact: true })
+      .click();
+    return (await response).json();
+  };
+  expect((await check("robot.forward(6)")).result.success).toBe(false);
+  await expect(page.locator(".practice-checks")).toContainText("Не выполнено");
+  expect(
+    (await check("for i in range(6):\n    robot.forward(1)")).result.success,
+  ).toBe(true);
+  await page.getByLabel("Практика темы", { exact: true }).selectOption("4.2");
+  await expect(
+    page.getByRole("heading", { name: "Одна программа — две карты" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Python", exact: true }).click();
+  expect(
+    (
+      await check(
+        "if robot.obstacle_ahead():\n    robot.turn_right()\n    robot.forward(2)\n    robot.turn_left()\n    robot.forward(2)\nelse:\n    robot.forward(2)\n    robot.turn_right()\n    robot.forward(2)",
+      )
+    ).result.success,
+  ).toBe(true);
+  await page.getByLabel("Карта для просмотра").selectOption("1");
+  await page.getByRole("button", { name: "Запустить", exact: true }).click();
+  await expect(page.locator(".scene-status")).toContainText("все условия", {
+    timeout: 10000,
+  });
+  await page.screenshot({
+    path: "test-results/topic-practice.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth + 1,
+    ),
+  ).toBe(true);
+  await page.goto("/learn?practice=1&environment=electronics&lesson=5.2");
+  await expect(page.getByLabel("Учебное задание", { exact: true })).toHaveValue(
+    "night",
+  );
+  await expect(
+    page.getByLabel("Учебное задание", { exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("heading", { name: "5.2 · Ночник с датчиком" }),
+  ).toBeVisible();
+  await page.goto("/learn?practice=1&environment=electronics&lesson=5.1");
+  await expect(page.getByLabel("Учебное задание", { exact: true })).toHaveValue(
+    "blink",
+  );
+  expect(errors).toEqual([]);
+});
+
+test("teacher reviews actual submitted blocks, replays a map and grades a course section", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/learn?practice=1&lesson=1.1");
+  await expect(page.locator(".blocklySvg").first()).toBeVisible();
+  const sent = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/submissions") &&
+      response.request().method() === "POST",
+  );
+  await page
+    .getByRole("button", { name: "Проверить решение", exact: true })
+    .click();
+  const response = await sent;
+  expect(response.status()).toBe(200);
+  expect(
+    (await response.json()).submission.blocks_state.blocks.blocks[0].type,
+  ).toBe("easy_forward");
+  await page.getByLabel("Роль в деморежиме").selectOption("teacher");
+  await page
+    .getByRole("button", { name: "Кабинет учителя", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Прогресс и оценки", exact: true })
+    .click();
+  await expect(page.getByLabel("Ученик", { exact: true })).toContainText(
+    "Ученик · демо",
+  );
+  await page.locator(".journal-attempt").first().click();
+  await expect(page.locator(".journal-solution .blocklySvg")).toBeVisible();
+  await page
+    .locator(".journal-solution .blockly-editor")
+    .scrollIntoViewIfNeeded();
+  await expect(
+    page
+      .locator(".journal-solution .blocklyText")
+      .filter({ hasText: "вперёд" })
+      .first(),
+  ).toBeInViewport();
+  await expect(page.locator(".journal-code")).toContainText("robot.forward(1)");
+  await expect(page.locator(".journal-solution .world-board")).toBeVisible();
+  await expect(page.locator(".journal-solution .blocklyToolbox")).toHaveCount(
+    0,
+  );
+  await page.getByLabel("Баллы (0–10)").fill("8");
+  await page.getByLabel("Комментарий учителя").fill("Проверь порядок команд.");
+  await page
+    .getByRole("button", { name: "Сохранить оценку", exact: true })
+    .click();
+  await expect(page.locator(".journal-grade")).toContainText(
+    "Оценка сохранена.",
+  );
+  await page.screenshot({
+    path: "test-results/teacher-journal-desktop.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(390);
+  await page.screenshot({
+    path: "test-results/teacher-journal-mobile.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await page.getByLabel("Роль в деморежиме").selectOption("student");
+  await expect(page.locator(".journal-grades")).toContainText("8/10");
+  await expect(page.locator(".journal-grades")).toContainText(
+    "Проверь порядок команд.",
+  );
+  await expect(
+    page.getByRole("button", { name: "Сохранить оценку", exact: true }),
+  ).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test("electronics sends its blocks and circuit and teacher can inspect them", async ({
+  page,
+}) => {
+  await page.goto("/learn?practice=1&environment=electronics&lesson=5.1");
+  await expect(page.locator(".blocklySvg").first()).toBeVisible();
+  const sent = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/electronics-submissions") &&
+      response.request().method() === "POST",
+  );
+  await page
+    .getByRole("button", { name: "Проверить задание", exact: true })
+    .click();
+  const response = await sent;
+  expect(response.status()).toBe(200);
+  expect((await response.json()).submission.circuit.wires).toHaveLength(3);
+  await page.getByLabel("Роль в деморежиме").selectOption("teacher");
+  await page
+    .getByRole("button", { name: "Кабинет учителя", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Прогресс и оценки", exact: true })
+    .click();
+  await page.locator(".journal-attempt").first().click();
+  await expect(page.locator(".journal-solution .blocklySvg")).toBeVisible();
+  await expect(page.locator(".journal-circuit")).toBeVisible();
+  await expect(page.locator(".journal-solution table")).toContainText(
+    "controller.D9",
+  );
+  await expect(page.locator(".journal-code")).toContainText("led.on()");
 });

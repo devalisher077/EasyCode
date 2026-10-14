@@ -4,6 +4,8 @@ import landing from "./locales/landing.json" with { type: "json" };
 import learning from "./locales/learning-ui.json" with { type: "json" };
 import errors from "./locales/errors.json" with { type: "json" };
 import materials from "./locales/materials.json" with { type: "json" };
+import journal from "./locales/journal.json" with { type: "json" };
+import coursePractice from "./locales/course-practice.json" with { type: "json" };
 
 export type Language = "ru" | "kk" | "en";
 export const languages: readonly Language[] = ["ru", "kk", "en"];
@@ -18,6 +20,8 @@ export const messages = [
   ...learning,
   ...errors,
   ...materials,
+  ...journal,
+  ...coursePractice,
 ];
 const dictionary = new Map(
   messages.map(([ru, en, kk]) => [normalize(ru), { en, kk }]),

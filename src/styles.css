@@ -2559,3 +2559,38 @@ td:first-child {
     font-size: 9px;
   }
 }
+/* Topic practice shares the existing dark platform palette. */
+.practice-topic-picker,
+.practice-checks {
+  display: block;
+  margin-bottom: 20px;
+  padding: 18px;
+  border: 1px solid var(--border, #293650);
+  border-radius: 12px;
+}
+.practice-topic-picker select,
+.practice-checks select {
+  margin-left: 12px;
+  max-width: 100%;
+  padding: 8px;
+  background: #111d32;
+  color: #edf3ff;
+  border: 1px solid #3a4b69;
+  border-radius: 6px;
+}
+.practice-checks h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+}
+.practice-checks ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  line-height: 1.8;
+}
+@media (max-width: 600px) {
+  .practice-topic-picker select {
+    display: block;
+    margin: 10px 0 0;
+    width: 100%;
+  }
+}

@@ -364,7 +364,8 @@ export function evaluateElectronics(
   return { frames, on, duration };
 }
 
-/** Local self-check only: never used as a trusted cloud grade. */
+/** Deterministic exercise check. The API reruns it on submitted inputs; this
+ * pass/fail result is separate from the teacher's manual section grade. */
 export function checkElectronics(
   source: string,
   circuit: Circuit,

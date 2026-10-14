@@ -19,11 +19,18 @@ import {
   DEFAULT_WORLD,
   evaluateCode,
   type Frame,
-  type RunResult,
   type World,
 } from "../../shared/simulator";
-import { api } from "../lib/api";
+import { api, supabase } from "../lib/api";
 import type { Task } from "../lib/types";
+import {
+  courseTaskByLesson,
+  courseTaskById,
+  courseRobotTasks,
+  evaluateCourseTask,
+  ruleLabels,
+  type CourseRunResult,
+} from "../../shared/course-practice";
 const BlockEditor = lazy(() => import("./BlockEditor"));
 const starter = "# Пример программы\nrobot.forward(2)\n";
 const defaultTask: Task = {
@@ -41,19 +48,44 @@ export function Practice({
   draftOwner,
   canUseCloud,
   onRequireAuth,
+  lessonId,
+  onChooseLesson,
 }: {
   initialTask?: Task;
   onNotice: (message: string) => void;
   draftOwner: string;
   canUseCloud: boolean;
   onRequireAuth: () => void;
+  lessonId?: string;
+  onChooseLesson?: (lessonId: string) => void;
 }) {
-  const [task, setTask] = useState<Task>(initialTask || defaultTask);
+  const initialCourse =
+    !initialTask && lessonId ? courseTaskByLesson(lessonId) : undefined;
+  const [task, setTask] = useState<Task>(
+    initialTask || initialCourse || defaultTask,
+  );
+  const course = courseTaskById(task.id);
+  const [mapIndex, setMapIndex] = useState(0);
+  const activeWorld =
+    mapIndex && course ? course.variants[mapIndex - 1] : task.world;
   const [mode, setMode] = useState<"blocks" | "code">("blocks");
-  const [blockCode, setBlockCode] = useState("robot.forward(2)\n");
-  const [code, setCode] = useState(starter);
-  const [blocks, setBlocks] = useState<object>();
-  const [result, setResult] = useState<RunResult | null>(null);
+  const [blockCode, setBlockCode] = useState(
+    initialCourse?.starterCode || "robot.forward(2)\n",
+  );
+  const [code, setCode] = useState(initialCourse?.starterCode || starter);
+  const [blocks, setBlocks] = useState<object | undefined>(
+    initialCourse
+      ? initialCourse.starterBlocks || {
+          blocks: {
+            languageVersion: 0,
+            blocks: [
+              { type: "easy_forward", x: 35, y: 45, fields: { COUNT: 1 } },
+            ],
+          },
+        }
+      : undefined,
+  );
+  const [result, setResult] = useState<CourseRunResult | null>(null);
   const [frameIndex, setFrameIndex] = useState(0);
   const [running, setRunning] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -64,7 +96,7 @@ export function Practice({
   const generation = useRef(0);
   const source = mode === "blocks" ? blockCode : code;
   useEffect(() => {
-    if (initialTask || !canUseCloud) return;
+    if (initialTask || course || !canUseCloud) return;
     let current = true;
     api<{ tasks: Task[] }>("/tasks")
       .then((data) => {
@@ -78,7 +110,7 @@ export function Practice({
     return () => {
       current = false;
     };
-  }, [initialTask, canUseCloud, onNotice]);
+  }, [initialTask, course, canUseCloud, onNotice]);
   useEffect(() => {
     try {
       const raw = localStorage.getItem(
@@ -105,9 +137,13 @@ export function Practice({
     setFrameIndex(0);
     setSaved(false);
   }, [source, task.id]);
+  const evaluate = () =>
+    course
+      ? evaluateCourseTask(source, course, mapIndex)
+      : evaluateCode(source, task.world);
   async function run() {
     const current = ++generation.current;
-    const evaluated = evaluateCode(source, task.world);
+    const evaluated = evaluate();
     setResult(evaluated);
     setFrameIndex(0);
     setRunning(true);
@@ -122,7 +158,7 @@ export function Practice({
     generation.current++;
     setRunning(false);
     if (!result) {
-      setResult(evaluateCode(source, task.world));
+      setResult(evaluate());
       setFrameIndex(1);
     } else setFrameIndex((i) => Math.min(i + 1, result.frames.length - 1));
   }
@@ -141,11 +177,21 @@ export function Practice({
       return;
     }
     setBusy(true);
+    const current = generation.current;
     try {
-      const data = await api<{ result: RunResult }>("/submissions", {
-        taskId: task.id,
-        code: source,
-      });
+      const data = await api<{ result: CourseRunResult }>(
+        "/submissions",
+        {
+          taskId: task.id,
+          code: source,
+          editorMode: mode,
+          ...(mode === "blocks" ? { blocksState: blocks } : {}),
+          ...(course ? { lessonId: course.lesson_id } : {}),
+        },
+        supabase ? { expectedUserId: draftOwner } : undefined,
+      );
+      if (current !== generation.current) return;
+      setMapIndex(0);
       setResult(data.result);
       setFrameIndex(data.result.frames.length - 1);
       onNotice(
@@ -185,7 +231,7 @@ export function Practice({
   }
   const frame: Frame = result?.frames[
     Math.min(frameIndex, result.frames.length - 1)
-  ] || { ...task.world.start, command: "Старт" };
+  ] || { ...activeWorld.start, command: "Старт" };
   const finished = result && !running && frameIndex >= result.frames.length - 1;
   return (
     <div className="practice-page page-container">
@@ -229,6 +275,82 @@ export function Practice({
           {t(task.class_id ? "Задание учителя" : "Тренировочное задание")}
         </span>
       </section>
+      {onChooseLesson && !task.class_id && (
+        <label className="practice-topic-picker">
+          {t("Практика темы")}
+          <select
+            aria-label={t("Практика темы")}
+            value={course?.lesson_id || ""}
+            onChange={(event) => onChooseLesson(event.target.value)}
+          >
+            <option value="">{t("Свободная практика")}</option>
+            {courseRobotTasks.map((item) => (
+              <option key={item.id} value={item.lesson_id}>
+                {item.lesson_id} · {t(item.title)}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {course && (
+        <section className="practice-checks" aria-label={t("Условия проверки")}>
+          <h3>{t("Условия проверки")}</h3>
+          <ul>
+            {(
+              result?.checks || [
+                ...[course.world, ...course.variants].map((_, index) => ({
+                  label: course.variants.length
+                    ? `Дойти до флага на карте ${index + 1}`
+                    : "Дойти до флага",
+                  passed: false,
+                })),
+                ...course.rules.map((rule) => ({
+                  label: ruleLabels[rule],
+                  passed: false,
+                })),
+                ...(course.maxSteps
+                  ? [
+                      {
+                        label: `Не более ${course.maxSteps} шагов движения`,
+                        passed: false,
+                      },
+                    ]
+                  : []),
+              ]
+            ).map((check) => (
+              <li
+                key={check.label}
+                className={check.passed ? "success-text" : ""}
+              >
+                {result?.checks
+                  ? t(check.passed ? "Пройдено" : "Не выполнено") + " · "
+                  : ""}
+                {t(check.label)}
+              </li>
+            ))}
+          </ul>
+          {!!course.variants.length && (
+            <label>
+              {t("Карта для просмотра")}
+              <select
+                aria-label={t("Карта для просмотра")}
+                value={mapIndex}
+                disabled={busy}
+                onChange={(event) => {
+                  reset();
+                  setMapIndex(Number(event.target.value));
+                }}
+              >
+                {[course.world, ...course.variants].map((_, index) => (
+                  <option key={index} value={index}>
+                    {t(`Карта ${index + 1}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+        </section>
+      )}
       {t(
         showHelp && (
           <div className="help-panel">
@@ -396,12 +518,12 @@ export function Practice({
               {t("Симуляция")}
             </span>
             <span className="scene-dimensions">
-              {t(task.world.width)} × {t(task.world.height)}
+              {t(activeWorld.width)} × {t(activeWorld.height)}
             </span>
           </div>
           <div className="scene-content">
             <Board
-              world={task.world}
+              world={activeWorld}
               frame={frame}
               frames={result?.frames.slice(0, frameIndex + 1) || []}
             />
@@ -478,7 +600,7 @@ export function Practice({
         <button
           className="secondary-button submit-button"
           onClick={submit}
-          disabled={busy || running}
+          disabled={busy || running || (mode === "blocks" && !blocks)}
         >
           <Check size={16} />
           {t(busy ? "Проверяем…" : "Проверить решение")}
@@ -551,7 +673,7 @@ export function Practice({
     </div>
   );
 }
-function Board({
+export function Board({
   world,
   frame,
   frames,

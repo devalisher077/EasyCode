@@ -4,8 +4,17 @@ import type { AppConfig } from "./config.js";
 import type { World } from "../shared/simulator.js";
 import type { LessonDefinition, LessonProgress } from "../shared/lessons.js";
 import { LessonProgressUnavailable, mergeLessonProgress, type ProgressChange } from "./lessons.js";
+import type { AttemptSummary, ReviewAttempt, SectionGrade } from "../shared/review.js";
+import type { Circuit } from "../shared/electronics.js";
 
 export type Role = "student" | "teacher";
+export class TeacherReviewUnavailable extends Error {
+  readonly statusCode = 503;
+  constructor(missingSchema: boolean) {
+    super(missingSchema ? "Для журнала и сохранения решений примените миграцию 202610140002_teacher_review.sql в Supabase."
+      : "Журнал временно недоступен. Попробуйте ещё раз.");
+  }
+}
 export interface Profile {
   id: string;
   name: string;
@@ -45,6 +54,10 @@ export interface Submission {
   success: boolean;
   steps: number;
   feedback: string;
+  editor_mode?: "code" | "blocks";
+  blocks_state?: object | null;
+  task_snapshot?: ReviewAttempt["task_snapshot"];
+  lesson_id?: string | null;
   created_at: string;
 }
 export const DEMO_TEACHER = "11111111-1111-4111-8111-111111111111";
@@ -77,6 +90,8 @@ export class Store {
   private tasks: Task[] = [];
   private submissions: Submission[] = [];
   private lessonProgress = new Map<string, LessonProgress>();
+  private grades: SectionGrade[] = [];
+  private electronics: (ReviewAttempt & { is_test: boolean })[] = [];
 
   constructor(config: AppConfig) {
     this.supabase = config.demo
@@ -88,6 +103,11 @@ export class Store {
   private check(error: unknown) {
     if (error)
       throw new Error("Ошибка базы данных. Проверьте миграции Supabase.");
+  }
+  private reviewCheck(error: unknown) {
+    if (!error) return;
+    const code = typeof error === "object" && "code" in error ? String(error.code) : "";
+    throw new TeacherReviewUnavailable(["42P01", "42703", "PGRST204", "PGRST205"].includes(code));
   }
   private progressError(error: unknown): LessonProgressUnavailable {
     const code = typeof error === "object" && error !== null && "code" in error ? error.code : null;
@@ -312,6 +332,76 @@ export class Store {
     }
     return task;
   }
+  async listStudents(classId: string): Promise<Profile[]> {
+    if (!this.supabase) return Promise.all(this.members.filter(m => m.class_id === classId)
+      .map(m => this.getProfile(m.student_id))).then(rows => rows.filter((p): p is Profile => p?.role === "student"));
+    const students: Profile[] = [];
+    for (let offset = 0; ; offset += 500) {
+      const { data, error } = await this.supabase.from("class_members").select("student_id")
+        .eq("class_id", classId).order("student_id").range(offset, offset + 499);
+      this.check(error);
+      if (data?.length) {
+        const profiles = await this.supabase.from("profiles").select("id,name,role")
+          .in("id", data.map(m => m.student_id)).eq("role", "student");
+        this.check(profiles.error); students.push(...(profiles.data || []));
+      }
+      if (!data || data.length < 500) return students;
+    }
+  }
+  async listGrades(classId: string, studentId: string): Promise<SectionGrade[]> {
+    if (!this.supabase) return structuredClone(this.grades.filter(g => g.class_id === classId && g.student_id === studentId));
+    const { data, error } = await this.supabase.from("section_grades").select("*")
+      .eq("class_id", classId).eq("student_id", studentId);
+    this.reviewCheck(error); return data || [];
+  }
+  async saveGrade(input: Omit<SectionGrade, "updated_at">): Promise<SectionGrade> {
+    const grade = { ...input, updated_at: new Date().toISOString() };
+    if (!this.supabase) {
+      this.grades = this.grades.filter(g => !(g.class_id === input.class_id && g.student_id === input.student_id && g.section_key === input.section_key));
+      this.grades.push(grade);
+    } else {
+      const { error } = await this.supabase.from("section_grades").upsert(grade, { onConflict: "class_id,student_id,section_key" });
+      this.reviewCheck(error);
+    }
+    return grade;
+  }
+  private reviewRows(kind: "robot" | "electronics"): ReviewAttempt[] {
+    return kind === "electronics" ? this.electronics.filter(s => !s.is_test) : this.submissions.filter(s => !s.is_test).map(s => ({ ...s,
+      kind: "robot", lesson_id: s.lesson_id ?? null, editor_mode: s.editor_mode ?? "code",
+      blocks_state: s.blocks_state ?? null, task_snapshot: s.task_snapshot ?? null }));
+  }
+  async attemptSummaries(classId: string, studentId: string): Promise<AttemptSummary[]> {
+    const rows: AttemptSummary[] = [];
+    for (const kind of ["robot", "electronics"] as const) {
+      if (!this.supabase) {
+        rows.push(...this.reviewRows(kind).filter(s => s.student_id === studentId && (!s.class_id || s.class_id === classId))
+          .map(({ id, task_id, lesson_id, success, created_at }) => ({ id, task_id, lesson_id, success, created_at, kind })));
+        continue;
+      }
+      for (let offset = 0; ; offset += 500) {
+        const { data, error } = await this.supabase.from(kind === "robot" ? "submissions" : "electronics_submissions")
+          .select("id,task_id,lesson_id,success,created_at").eq("student_id", studentId).eq("is_test", false)
+          .or(`class_id.eq.${classId},class_id.is.null`).order("created_at").order("id").range(offset, offset + 499);
+        this.reviewCheck(error); rows.push(...(data || []).map(s => ({ ...s, kind })));
+        if (!data || data.length < 500) break;
+      }
+    }
+    return rows.sort((a, b) => b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id));
+  }
+  async reviewAttempt(id: string, kind: "robot" | "electronics"): Promise<ReviewAttempt | null> {
+    if (!this.supabase) return this.reviewRows(kind).find(s => s.id === id) || null;
+    const { data, error } = await this.supabase.from(kind === "robot" ? "submissions" : "electronics_submissions")
+      .select("*").eq("id", id).eq("is_test", false).maybeSingle();
+    this.reviewCheck(error); return data ? { ...data, kind, task_snapshot: data.task_snapshot ?? null } : null;
+  }
+  async createElectronics(input: { student_id: string; is_test: boolean; task_id: string; code: string;
+    editor_mode: "code" | "blocks"; blocks_state: object | null; lesson_id: string | null;
+    circuit: Circuit; success: boolean; feedback: string }) {
+    const row = { ...input, id: randomUUID(), class_id: null, created_at: new Date().toISOString() };
+    if (!this.supabase) this.electronics.push({ ...row, kind: "electronics", task_snapshot: null });
+    else { const { error } = await this.supabase.from("electronics_submissions").insert(row); this.reviewCheck(error); }
+    return row;
+  }
   async createSubmission(
     input: Omit<Submission, "id" | "created_at">,
   ): Promise<Submission> {
@@ -325,7 +415,7 @@ export class Store {
       const { error } = await this.supabase
         .from("submissions")
         .insert(submission);
-      this.check(error);
+      this.reviewCheck(error);
     }
     return submission;
   }

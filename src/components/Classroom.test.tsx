@@ -16,7 +16,7 @@ const { request, download, upload } = vi.hoisted(() => ({
   download: vi.fn(),
   upload: vi.fn(),
 }));
-vi.mock("../lib/api", () => ({ api: request, downloadMaterial: download, uploadClassMaterial: upload }));
+vi.mock("../lib/api", () => ({ api: request, downloadMaterial: download, uploadClassMaterial: upload, supabase: {} }));
 
 const firstClass: ClassType = {
   id: "class-a",
@@ -58,6 +58,7 @@ let lessonList: CustomSection[];
 let taskList: Task[];
 
 function handleRequest(path: string, body?: Record<string, unknown>) {
+  if (path.endsWith("/my-grades")) return Promise.resolve({ grades: [] });
   if (path === "/classes" && !body)
     return Promise.resolve({ classes: classList });
   if (path.startsWith("/sections?"))

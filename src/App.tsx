@@ -438,8 +438,13 @@ export default function App({
                 onNavigateLesson={(id) => onNavigate(`/learn/topic/${id}`)}
                 onPractice={() =>
                   lessonId?.startsWith("5.")
-                    ? onNavigate("/learn?practice=1&environment=electronics")
-                    : openPractice()
+                    ? onNavigate(
+                        `/learn?practice=1&environment=electronics&lesson=${lessonId}`,
+                      )
+                    : (() => {
+                        setSelectedTask(undefined);
+                        onNavigate(`/learn?practice=1&lesson=${lessonId}`);
+                      })()
                 }
                 onSignIn={openAccount}
                 materials={
@@ -490,19 +495,36 @@ export default function App({
                       }
                     >
                       <Electronics
-                        key={userId || "guest"}
+                        key={`${userId || "guest"}:${routeQuery.get("lesson") || ""}`}
                         draftOwner={userId || "guest"}
                         onNotice={setNotice}
+                        canUseCloud={signedIn || mode === "demo"}
+                        lessonId={
+                          /^5\.[12]$/.test(routeQuery.get("lesson") || "")
+                            ? routeQuery.get("lesson")!
+                            : undefined
+                        }
                       />
                     </Suspense>
                   ) : (
                     <Practice
-                      key={task?.id || "intro-route"}
+                      key={`${userId}:${task?.id || "intro-route"}:${routeQuery.get("lesson") || ""}`}
                       draftOwner={userId || "guest"}
                       initialTask={task}
                       onNotice={setNotice}
                       canUseCloud={signedIn || mode === "demo"}
                       onRequireAuth={openAccount}
+                      onChooseLesson={(id) => {
+                        setSelectedTask(undefined);
+                        onNavigate(
+                          `/learn?practice=1${id ? `&lesson=${id}` : ""}`,
+                        );
+                      }}
+                      lessonId={
+                        /^[1-6]\.[12]$/.test(routeQuery.get("lesson") || "")
+                          ? routeQuery.get("lesson")!
+                          : undefined
+                      }
                     />
                   ),
                 )}

@@ -1,0 +1,129 @@
+.teacher-journal {
+  margin-top: 28px;
+}
+.journal-note {
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 14px 0 22px;
+}
+.journal-student {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+  font-size: 14px;
+}
+.journal-student select {
+  width: 100%;
+  max-width: 640px;
+  background: #101a28;
+  border: 1px solid #435d7a;
+  border-radius: 8px;
+  padding: 12px;
+  color: #e5efff;
+}
+.journal-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 24px 0;
+}
+.journal-summary span,
+.journal-lesson,
+.journal-grade,
+.journal-solution {
+  background: #141d28;
+  border: 1px solid #364f6b;
+  border-radius: 12px;
+  padding: 20px;
+}
+.journal-lesson {
+  margin: 12px 0;
+}
+.journal-lesson h3 {
+  margin: 0 0 12px;
+}
+.journal-lesson p {
+  line-height: 1.7;
+  margin: 8px 0;
+}
+.journal-lesson progress {
+  width: min(80%, 400px);
+  accent-color: #539dff;
+}
+.journal-grade {
+  max-width: 680px;
+  margin: 24px 0 32px;
+}
+.journal-grade h3,
+.journal-grade p {
+  margin: 0;
+}
+.journal-attempts {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+.journal-attempt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  text-align: left;
+  padding: 16px;
+  background: #141d28;
+  color: #dceaff;
+  border: 1px solid #435d7a;
+  border-radius: 8px;
+}
+.journal-attempt:hover,
+.journal-attempt:focus-visible {
+  border-color: #75adff;
+}
+.journal-solution {
+  margin-top: 24px;
+  overflow: hidden;
+}
+.journal-solution h4 {
+  margin: 24px 0 12px;
+}
+.journal-code {
+  padding: 18px;
+  overflow: auto;
+  background: #0c131f;
+  border-radius: 8px;
+  line-height: 1.6;
+  white-space: pre;
+}
+.journal-solution table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+.journal-solution th,
+.journal-solution td {
+  padding: 10px;
+  border-bottom: 1px solid #364f6b;
+}
+.journal-solution input[type="range"] {
+  width: 100%;
+  margin-top: 12px;
+}
+.journal-grades {
+  margin-top: 32px;
+}
+.journal-circuit {
+  display: block;
+  width: 100%;
+  max-height: 560px;
+  background: #0c131f;
+  border-radius: 10px;
+}
+@media (max-width: 600px) {
+  .journal-summary {
+    flex-direction: column;
+  }
+  .journal-solution {
+    padding: 12px;
+  }
+}

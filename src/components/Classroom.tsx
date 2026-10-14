@@ -10,7 +10,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { api, downloadMaterial, uploadClassMaterial } from "../lib/api";
+import { api, downloadMaterial, uploadClassMaterial, supabase } from "../lib/api";
 import { useDialog } from "../lib/useDialog";
 import type {
   Classroom as ClassType,
@@ -24,6 +24,7 @@ import "./classroom.css";
 import { ClassMaterials } from "./ClassMaterials";
 import type { Material } from "../lib/types";
 import { MAX_MATERIAL_BYTES } from "../../shared/materials";
+import { TeacherJournal, StudentGrades } from "./TeacherJournal";
 type Form = "class" | "section" | "task" | "join" | null;
 export function Classroom({
   role,
@@ -44,6 +45,7 @@ export function Classroom({
   const [tasks, setTasks] = useState<Task[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [form, setForm] = useState<Form>(null);
+  const [journal, setJournal] = useState(false);
   const [taskLessonId, setTaskLessonId] = useState("");
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState("");
@@ -198,7 +200,7 @@ export function Classroom({
           classId: selected,
           title: d.get("title"),
           theory: d.get("theory"),
-        }, ownerId ? { expectedUserId: ownerId } : undefined)).section;
+        }, ownerId && supabase ? { expectedUserId: ownerId } : undefined)).section;
         if (owner !== scope.current) return;
         if (lessonFile) {
           setSavedLesson(lesson);
@@ -378,6 +380,13 @@ export function Classroom({
               </div>
             )}
           </div>
+          {teacher && <div className="class-tabs" aria-label={t("Разделы кабинета учителя")}>
+            <button className={!journal ? "selected" : ""} aria-pressed={!journal} onClick={() => setJournal(false)}>{t("Уроки и материалы")}</button>
+            <button className={journal ? "selected" : ""} aria-pressed={journal} onClick={() => setJournal(true)}>{t("Прогресс и оценки")}</button>
+          </div>}
+          {teacher && journal ? contentLoading ? <p role="status">{t("Загружаем уроки и задания…")}</p>
+            : contentError ? <div role="alert"><p>{t(contentError)}</p><button className="text-button" onClick={() => void loadContent()}>{t("Повторить загрузку")}</button></div>
+            : <TeacherJournal key={`${ownerId}:${selected}`} classId={selected} ownerId={ownerId} sections={sections} tasks={tasks} /> : <>
           <div className="section-heading">
             <h2>{t("Уроки и практика")}</h2>
             {t(
@@ -557,6 +566,7 @@ export function Classroom({
               </div>
               <ClassMaterials key={`${ownerId}:${selected}`} classId={selected} ownerId={ownerId}
                 teacher={teacher} sections={sections} onPreview={onPreview} onNotice={onNotice} />
+              {!teacher && <StudentGrades key={`grades:${ownerId}:${selected}`} classId={selected} sections={sections} />}
               <section className="results-section">
                 <div className="section-heading">
                   <h2>{t(teacher ? "Решения учеников" : "Мои результаты")}</h2>
@@ -631,6 +641,7 @@ export function Classroom({
               </section>
             </>
           )}
+          </>}
         </>
       ) : null}
       {form && (

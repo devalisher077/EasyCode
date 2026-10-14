@@ -1,7 +1,8 @@
 import type { LessonDefinition } from "../../shared/lessons.js";
 
 /** Авторские веб-уроки; ключи мини-проверок предназначены только для сервера. */
-export const lessons: LessonDefinition[] = [
+import { coursePractice } from "../../shared/course-practice.js";
+const lessonDefinitions: LessonDefinition[] = [
   {
     id: "1.1",
     title: "Что такое алгоритм?",
@@ -1442,3 +1443,4 @@ export const lessons: LessonDefinition[] = [
     },
   },
 ];
+export const lessons: LessonDefinition[] = lessonDefinitions.map(lesson => ({ ...lesson, practice: coursePractice(lesson.id) || lesson.practice }));

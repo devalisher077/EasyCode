@@ -8,16 +8,20 @@ import path from "node:path";
 import { frontendOrigins, loadConfig, type AppConfig } from "./config.js";
 import {
   Store,
+  TeacherReviewUnavailable,
   DEMO_STUDENT,
   DEMO_TEACHER,
   type Profile,
   type Task,
 } from "./store.js";
 import { DEFAULT_WORLD, evaluateCode } from "../shared/simulator.js";
+import { courseTaskById, courseElectronics, evaluateCourseTask } from "../shared/course-practice.js";
 import { translate } from '../shared/i18n.js';
 import { assessLesson, findLesson, LessonProgressUnavailable, publicLesson, validQuizAnswers } from "./lessons.js";
 import { MaterialStorage, MaterialStorageError } from "./material-storage.js";
 import { MAX_MATERIAL_BYTES, publicMaterial, type StoredMaterial } from "../shared/materials.js";
+import { blockProgram } from "../shared/block-program.js";
+import { checkElectronics, validateCircuit, type Circuit } from "../shared/electronics.js";
 
 class HttpError extends Error {
   constructor(
@@ -136,6 +140,7 @@ export async function createApp(config: AppConfig = loadConfig()) {
     }
   });
   app.setErrorHandler((error, _request, reply) => {
+    if (error instanceof TeacherReviewUnavailable) return reply.code(503).send({ error: error.message });
     if (error instanceof MaterialStorageError) return reply.code(error.statusCode).send({ error: error.message });
     if (error instanceof LessonProgressUnavailable) return reply.code(503).send({ error: error.message });
     if (error instanceof ZodError)
@@ -258,6 +263,8 @@ export async function createApp(config: AppConfig = loadConfig()) {
   }
   async function requireTask(request: FastifyRequest, taskId: string) {
     if (taskId === builtinTask.id) return builtinTask;
+    const course = courseTaskById(taskId);
+    if (course) return course;
     idSchema.parse(taskId);
     const task = await store.taskById(taskId);
     if (!task?.class_id) throw new HttpError(404, "Задание не найдено.");
@@ -519,12 +526,19 @@ export async function createApp(config: AppConfig = loadConfig()) {
     };
   });
   app.post("/api/submissions", async (request) => {
-    const { taskId, code } = z
-      .object({ taskId: z.string().min(1).max(64), code: codeSchema })
+    const body = z
+      .object({ taskId: z.string().min(1).max(64), code: codeSchema,
+        editorMode: z.enum(["code", "blocks"]).default("code"), blocksState: z.unknown().optional(),
+        lessonId: z.string().regex(/^[1-6]\.[12]$/).optional() })
       .strict()
       .parse(request.body);
-    const task = await requireTask(request, taskId);
-    const result = evaluateCode(code, task.world);
+    const task = await requireTask(request, body.taskId);
+    const course = courseTaskById(task.id);
+    if (body.lessonId && body.lessonId !== course?.lesson_id)
+      throw new HttpError(400, "Практика не относится к указанному уроку.");
+    const program = submittedProgram(body, "robot");
+    const code = program.code;
+    const result = course ? evaluateCourseTask(code, course) : evaluateCode(code, task.world);
     const submission = await store.createSubmission({
       task_id: task.id,
       class_id: task.class_id,
@@ -534,8 +548,91 @@ export async function createApp(config: AppConfig = loadConfig()) {
       success: result.success,
       steps: result.steps,
       feedback: result.message,
+      editor_mode: body.editorMode, blocks_state: program.state,
+      task_snapshot: { title: task.title, description: task.description, world: task.world, ...(course ? { courseTask: course } : {}) },
+      lesson_id: course?.lesson_id || null,
     });
     return { submission, result };
+  });
+  function submittedProgram(body: { code: string; editorMode: "code" | "blocks"; blocksState?: unknown }, variant: "robot" | "electronics") {
+    if (body.editorMode === "code") {
+      if (body.blocksState != null) throw new HttpError(400, "Блоки не соответствуют режиму решения.");
+      return { code: body.code, state: null };
+    }
+    try {
+      const program = blockProgram(body.blocksState, variant);
+      // Evaluate exactly the saved blocks, not an unrelated client-supplied solution.
+      if (program.code.trim() !== body.code.trim()) throw new Error();
+      return program;
+    } catch { throw new HttpError(400, "Блоки не соответствуют коду или слишком сложны. Повторите отправку из редактора."); }
+  }
+  app.post("/api/electronics-submissions", async (request) => {
+    const body = z.object({ exercise: z.enum(["blink", "button", "night"]), code: codeSchema,
+      editorMode: z.enum(["code", "blocks"]), blocksState: z.unknown().optional(), circuit: z.unknown(),
+      lessonId: z.enum(["5.1", "5.2"]).optional() }).strict().parse(request.body);
+    if (!validateCircuit(body.circuit)) throw new HttpError(400, "Некорректная схема электроники.");
+    if (body.lessonId && courseElectronics[body.lessonId].exercise !== body.exercise)
+      throw new HttpError(400, "Практика не относится к указанному уроку.");
+    const circuit: Circuit = { parts: body.circuit.parts.map(({ kind, x, y }) => ({ kind, x, y })),
+      wires: body.circuit.wires.map(({ from, to }) => ({ from, to })) };
+    const program = submittedProgram(body, "electronics");
+    const result = checkElectronics(program.code, circuit, body.exercise);
+    const submission = await store.createElectronics({ student_id: who(request).id, is_test: who(request).role === "teacher",
+      task_id: body.exercise, code: program.code, blocks_state: program.state, editor_mode: body.editorMode,
+      lesson_id: body.lessonId || null, circuit, success: result.success, feedback: result.message });
+    return { submission, result };
+  });
+  const studentParams = z.object({ classId: idSchema, studentId: idSchema });
+  async function requireStudent(request: FastifyRequest, classId: string, studentId: string) {
+    teacher(request);
+    await requireClass(request, classId, true);
+    if (!(await store.isMember(classId, studentId)) || (await store.getProfile(studentId))?.role !== "student")
+      throw new HttpError(404, "Ученик не найден в этом классе.");
+  }
+  app.get("/api/classes/:classId/students", async (request, reply) => {
+    teacher(request);
+    const { classId } = z.object({ classId: idSchema }).parse(request.params);
+    await requireClass(request, classId, true);
+    reply.header("Cache-Control", "private, no-store");
+    return { students: await store.listStudents(classId) };
+  });
+  app.get("/api/classes/:classId/students/:studentId/progress", async (request, reply) => {
+    const { classId, studentId } = studentParams.parse(request.params);
+    await requireStudent(request, classId, studentId);
+    const [progress, attempts, grades] = await Promise.all([store.getLessonProgress(studentId),
+      store.attemptSummaries(classId, studentId), store.listGrades(classId, studentId)]);
+    reply.header("Cache-Control", "private, no-store");
+    return { progress, attempts, grades, lessons: catalog.sections.flatMap(section => section.topics.map(topic => {
+      const lesson = findLesson(topic.number)!;
+      return { id: lesson.id, title: lesson.title, sectionNumber: lesson.sectionNumber, sectionTitle: lesson.sectionTitle,
+        stepIds: lesson.steps.map(step => step.id), stepTitles: lesson.steps.map(step => step.title), quizTotal: lesson.quiz.length };
+    })) };
+  });
+  app.get("/api/classes/:classId/students/:studentId/attempts/:attemptId", async (request, reply) => {
+    const { classId, studentId, attemptId } = studentParams.extend({ attemptId: idSchema }).parse(request.params);
+    const { kind } = z.object({ kind: z.enum(["robot", "electronics"]) }).parse(request.query);
+    await requireStudent(request, classId, studentId);
+    const attempt = await store.reviewAttempt(attemptId, kind);
+    if (!attempt || attempt.student_id !== studentId || (attempt.class_id !== null && attempt.class_id !== classId))
+      throw new HttpError(404, "Решение не найдено.");
+    reply.header("Cache-Control", "private, no-store");
+    return { attempt };
+  });
+  app.post("/api/classes/:classId/students/:studentId/grades", async (request) => {
+    const { classId, studentId } = studentParams.parse(request.params);
+    await requireStudent(request, classId, studentId);
+    const body = z.object({ sectionKey: z.string().regex(/^(course:[1-6]|custom:[0-9a-f-]{36})$/),
+      score: z.number().int().min(0).max(10), comment: z.string().trim().max(2000).default("") }).strict().parse(request.body);
+    if (body.sectionKey.startsWith("custom:") && !(await store.listSections(classId)).some(s => `custom:${s.id}` === body.sectionKey))
+      throw new HttpError(400, "Раздел не принадлежит выбранному классу.");
+    return { grade: await store.saveGrade({ class_id: classId, student_id: studentId, teacher_id: who(request).id,
+      section_key: body.sectionKey, score: body.score, comment: body.comment }) };
+  });
+  app.get("/api/classes/:classId/my-grades", async (request, reply) => {
+    const { classId } = z.object({ classId: idSchema }).parse(request.params);
+    await requireClass(request, classId);
+    reply.header("Cache-Control", "private, no-store");
+    return { grades: await store.listGrades(classId, who(request).id) };
   });
   app.get("/api/submissions", async (request) => {
     const { classId } = z
@@ -562,7 +659,8 @@ export async function createApp(config: AppConfig = loadConfig()) {
         .strict()
         .parse(request.body);
       const task = await requireTask(request, taskId || builtinTask.id);
-      const result = evaluateCode(code, task.world);
+      const course = courseTaskById(task.id);
+      const result = course ? evaluateCourseTask(code, course) : evaluateCode(code, task.world);
       const localHint = translate(result.success
         ? "Маршрут пройден! Можно ли сократить программу, объединив повторяющиеся команды в цикл?"
         : `Проверь направление машины и порядок команд. ${result.message} Сначала представь маршрут по клеткам, затем запиши первый шаг.`, language);

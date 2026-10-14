@@ -3,11 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import * as Blockly from "blockly/core";
 import * as Ru from "blockly/msg/ru";
 import * as En from "blockly/msg/en";
+import { blockProgram } from "../../shared/block-program";
 
 export type BlockEditorProps = {
   variant?: "robot" | "electronics";
   initialState?: object;
   onChange: (code: string, state: object) => void;
+  readOnly?: boolean;
 };
 
 // The ESM locale contains named strings; some TS interop configurations also
@@ -313,77 +315,18 @@ const circuitBlocks = {
   },
 };
 
-function workspaceCode(workspace: Blockly.WorkspaceSvg): string {
-  let visited = 0;
-  function chain(first: Blockly.Block | null, indent = 0): string {
-    const lines: string[] = [];
-    for (let block = first; block; block = block.getNextBlock()) {
-      if (++visited > 400 || indent > 8)
-        throw new Error("Программа из блоков слишком сложная.");
-      if (!block.isEnabled()) continue;
-      const prefix = "    ".repeat(indent);
-      const count = Number(block.getFieldValue("COUNT"));
-      const child = (name: string) =>
-        chain(block!.getInputTargetBlock(name), indent + 1) ||
-        `${prefix}    pass\n`;
-      switch (block.type) {
-        case "circuit_led":
-          lines.push(`${prefix}led.${block.getFieldValue("STATE")}()\n`);
-          break;
-        case "circuit_wait":
-          lines.push(`${prefix}wait(${Number(block.getFieldValue("MS"))})\n`);
-          break;
-        case "circuit_if":
-          lines.push(
-            `${prefix}if ${block.getFieldValue("INPUT")}():\n${child("BODY")}${prefix}else:\n${child("ELSE")}`,
-          );
-          break;
-        case "easy_forward":
-          lines.push(`${prefix}robot.forward(${count})\n`);
-          break;
-        case "easy_backward":
-          lines.push(`${prefix}robot.backward(${count})\n`);
-          break;
-        case "easy_left":
-          lines.push(`${prefix}robot.turn_left()\n`);
-          break;
-        case "easy_right":
-          lines.push(`${prefix}robot.turn_right()\n`);
-          break;
-        case "easy_stop":
-          lines.push(`${prefix}robot.stop()\n`);
-          break;
-        case "easy_repeat":
-        case "circuit_repeat":
-          lines.push(`${prefix}for i in range(${count}):\n${child("BODY")}`);
-          break;
-        case "easy_if":
-          lines.push(
-            `${prefix}if robot.obstacle_ahead():\n${child("BODY")}${prefix}else:\n${child("ELSE")}`,
-          );
-          break;
-        default:
-          throw new Error("Неизвестный учебный блок.");
-      }
-    }
-    return lines.join("");
-  }
-  return workspace
-    .getTopBlocks(true)
-    .map((block) => chain(block))
-    .join("\n");
-}
-
 export function BlockEditor({
   initialState,
   onChange,
   variant = "robot",
+  readOnly = false,
 }: BlockEditorProps) {
   const language = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const onChangeRef = useRef(onChange);
   const stateRef = useRef(initialState);
   const [compact, setCompact] = useState<boolean | null>(null);
+  const [loadError, setLoadError] = useState(false);
   onChangeRef.current = onChange;
 
   useEffect(() => {
@@ -422,8 +365,9 @@ export function BlockEditor({
     }));
     const defaults = variant === "electronics" ? circuitBlocks : initialBlocks;
     const workspace = Blockly.inject(container, {
+      readOnly,
       toolbox:
-        variant === "electronics"
+        readOnly ? undefined : variant === "electronics"
           ? {
               kind: "categoryToolbox",
               contents: [
@@ -489,7 +433,7 @@ export function BlockEditor({
         scaleSpeed: 1.1,
       },
       move: { scrollbars: true, drag: true, wheel: true },
-      trashcan: true,
+      trashcan: !readOnly,
       sounds: false,
       maxBlocks: 120,
     });
@@ -500,7 +444,8 @@ export function BlockEditor({
       );
     } catch {
       workspace.clear();
-      Blockly.serialization.workspaces.load(defaults, workspace);
+      if (readOnly) setLoadError(true);
+      else Blockly.serialization.workspaces.load(defaults, workspace);
     }
     if (compact) {
       const flyout = workspace.getFlyout();
@@ -508,9 +453,10 @@ export function BlockEditor({
       workspace.getToolbox()?.clearSelection();
     }
     const changed = () => {
+      if (readOnly) return;
       let code: string;
       try {
-        code = workspaceCode(workspace);
+        code = blockProgram(Blockly.serialization.workspaces.save(workspace), variant).code;
       } catch {
         code =
           "# Слишком сложная программа: убери лишние блоки.\ninvalid_program";
@@ -530,15 +476,15 @@ export function BlockEditor({
       stateRef.current = Blockly.serialization.workspaces.save(workspace);
       workspace.dispose();
     };
-  }, [compact, variant, language]);
+  }, [compact, variant, language, readOnly]);
 
   return (
-    <div
+    <><div
       ref={containerRef}
       className="blockly-editor"
-      aria-label={t("Редактор блочной программы")}
-      style={{ width: "100%", height: "100%", minHeight: 410 }}
-    />
+      aria-label={t(readOnly ? "Блоки отправленного решения" : "Редактор блочной программы")}
+      style={{ position: "relative", width: "100%", height: readOnly ? 410 : "100%", minHeight: 410 }}
+    />{loadError && <p role="alert">{t("Не удалось отобразить сохранённые блоки. Текст решения доступен ниже.")}</p>}</>
   );
 }
 
