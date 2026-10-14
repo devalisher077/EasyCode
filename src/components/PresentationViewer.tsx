@@ -61,11 +61,11 @@ export function PresentationViewer({
   const [text, setText] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
-  const title =
+  const title = material.title ||
     material.path
       .split("/")
       .at(-1)
-      ?.replace(/\.pptx?$/i, "") || "Презентация";
+      ?.replace(/\.(pptx?|pdf)$/i, "") || "Презентация";
 
   // The portal and dialog are mounted synchronously, before this hook's effect.
   useDialog(true, onClose, dialogRef);

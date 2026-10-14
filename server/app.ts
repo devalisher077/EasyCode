@@ -16,6 +16,8 @@ import {
 import { DEFAULT_WORLD, evaluateCode } from "../shared/simulator.js";
 import { translate } from '../shared/i18n.js';
 import { assessLesson, findLesson, LessonProgressUnavailable, publicLesson, validQuizAnswers } from "./lessons.js";
+import { MaterialStorage, MaterialStorageError } from "./material-storage.js";
+import { MAX_MATERIAL_BYTES, publicMaterial, type StoredMaterial } from "../shared/materials.js";
 
 class HttpError extends Error {
   constructor(
@@ -92,6 +94,7 @@ export async function createApp(config: AppConfig = loadConfig()) {
     throw new Error("Деморежим доступен только локально.");
   const app = Fastify({ bodyLimit: 64 * 1024, logger: false });
   const store = new Store(config);
+  const materialStorage = store.supabase ? new MaterialStorage(store.supabase) : null;
   const profiles = new WeakMap<FastifyRequest, Profile>();
   const catalog = JSON.parse(
     await readFile(path.join(materialRoot, "catalog.json"), "utf8"),
@@ -133,6 +136,7 @@ export async function createApp(config: AppConfig = loadConfig()) {
     }
   });
   app.setErrorHandler((error, _request, reply) => {
+    if (error instanceof MaterialStorageError) return reply.code(error.statusCode).send({ error: error.message });
     if (error instanceof LessonProgressUnavailable) return reply.code(503).send({ error: error.message });
     if (error instanceof ZodError)
       return reply
@@ -313,6 +317,10 @@ export async function createApp(config: AppConfig = loadConfig()) {
   });
   app.get("/api/materials", async (request, reply) => {
     const query = z.object({ path: z.string().max(500) }).parse(request.query);
+    if (materialStorage) {
+      const row = await accessibleMaterial(request, query.path);
+      return reply.header("Cache-Control", "private, no-store").send({ url: await materialStorage.link(row, false) });
+    }
     const material = materialMap.get(query.path);
     if (!material) throw new HttpError(404, "Материал не найден.");
     if (material.audience === "teacher" && who(request).role !== "teacher")
@@ -333,6 +341,10 @@ export async function createApp(config: AppConfig = loadConfig()) {
   });
   app.get("/api/materials/preview", async (request, reply) => {
     const { path: originalPath } = z.object({ path: z.string().min(1).max(500) }).strict().parse(request.query);
+    if (materialStorage) {
+      const row = await accessibleMaterial(request, originalPath);
+      return reply.header("Cache-Control", "private, no-store").send({ url: await materialStorage.link(row, true) });
+    }
     const material = materialMap.get(originalPath);
     if (!material) throw new HttpError(404, "Материал не найден.");
     if (material.audience === "teacher" && who(request).role !== "teacher")
@@ -359,6 +371,49 @@ export async function createApp(config: AppConfig = loadConfig()) {
     reply.header("Cache-Control", "private, no-store");
     reply.header("X-Content-Type-Options", "nosniff");
     return reply.send(bytes);
+  });
+  async function accessibleMaterial(request: FastifyRequest, key: string): Promise<StoredMaterial> {
+    if (!materialStorage) throw new HttpError(409, "Загрузка файлов доступна после подключения Supabase.");
+    const cloud = /^cloud\/([0-9a-f-]{36})\/[^/]+$/i.exec(key);
+    if (!cloud && !materialMap.has(key)) throw new HttpError(404, "Материал не найден.");
+    const row = await materialStorage.find(cloud ? idSchema.parse(cloud[1]) : key, !cloud);
+    if (!row || row.status !== "ready") throw new HttpError(404, "Материал ещё не загружен в хранилище.");
+    if (cloud && (!row.class_id || key !== publicMaterial(row).path)) throw new HttpError(404, "Материал не найден.");
+    if (row.class_id) await requireClass(request, row.class_id);
+    if ((row.audience === "teacher" || materialMap.get(key)?.audience === "teacher") && who(request).role !== "teacher")
+      throw new HttpError(403, "Этот материал доступен только учителю.");
+    return row;
+  }
+  app.get("/api/class-materials", async (request) => {
+    const { classId } = classQuery.parse(request.query);
+    await requireClass(request, classId);
+    const rows = materialStorage ? await materialStorage.list(classId) : [];
+    return { materials: rows.filter(row => row.audience !== "teacher" || who(request).role === "teacher").map(publicMaterial) };
+  });
+  app.post("/api/class-materials/uploads", { config: { rateLimit: { max: 8, timeWindow: "1 minute" } } }, async (request) => {
+    const profile = teacher(request);
+    const body = z.object({ classId: idSchema, sectionId: idSchema.nullable().default(null),
+      title: z.string().trim().min(1).max(150),
+      filename: z.string().min(1).max(180).regex(/^[^/\\\x00-\x1f\x7f]+$/),
+      extension: z.enum(["pdf", "pptx", "docx"]), size: z.number().int().min(1).max(MAX_MATERIAL_BYTES),
+      previewSize: z.number().int().min(1).max(MAX_MATERIAL_BYTES).optional() }).strict().parse(request.body);
+    await requireClass(request, body.classId, true);
+    if (body.sectionId && !(await store.listSections(body.classId)).some(section => section.id === body.sectionId))
+      throw new HttpError(400, "Урок не принадлежит выбранному классу.");
+    if (!body.filename.toLowerCase().endsWith(`.${body.extension}`) ||
+      (body.extension === "pptx") !== (body.previewSize !== undefined))
+      throw new HttpError(400, "Для PowerPoint загрузите оригинал PPTX и PDF-копию для просмотра.");
+    if (!materialStorage) throw new HttpError(409, "Загрузка файлов доступна после подключения Supabase.");
+    return materialStorage.prepare({ ...body, ownerId: profile.id });
+  });
+  app.post("/api/class-materials/:id/complete", async (request) => {
+    const profile = teacher(request);
+    const { id } = z.object({ id: idSchema }).parse(request.params);
+    if (!materialStorage) throw new HttpError(409, "Загрузка файлов доступна после подключения Supabase.");
+    const row = await materialStorage.find(id);
+    if (!row?.class_id || row.owner_id !== profile.id) throw new HttpError(404, "Материал не найден.");
+    await requireClass(request, row.class_id, true);
+    return { material: publicMaterial(await materialStorage.finish(row)) };
   });
   app.get("/api/classes", async (request) => ({
     classes: (await store.listClasses(who(request))).map((c) => ({

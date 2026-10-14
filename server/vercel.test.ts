@@ -127,11 +127,13 @@ describe("Vercel API entry point", () => {
     expect((await inject(handler, { url: "/api/health" })).statusCode).toBe(200);
   });
 
-  it("bundles private materials with the API and separates API from SPA rewrites", () => {
+  it("bundles only the catalog and keeps Storage files and API query parameters private", () => {
     expect(deployment.framework).toBe("vite");
     expect(deployment.outputDirectory).toBe("dist");
-    expect(deployment.functions["api/index.ts"].includeFiles).toBe("content/materials/**");
-    expect(deployment.rewrites[0]).toEqual({ source: "/api/:path*", destination: "/api" });
+    expect(deployment.functions["api/index.ts"].includeFiles).toBe("content/materials/catalog.json");
+    expect(deployment.functions["api/index.ts"].excludeFiles).toContain("content/materials/**/*.pdf");
+    // An unnamed capture must not overwrite the material's ?path= query.
+    expect(deployment.rewrites[0]).toEqual({ source: "/api/(.*)", destination: "/api" });
     expect(deployment.rewrites.slice(1).every(route => route.destination === "/index.html")).toBe(true);
     expect(deployment.rewrites.some(route => route.source.startsWith("/content"))).toBe(false);
   });

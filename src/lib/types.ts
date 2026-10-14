@@ -1,7 +1,7 @@
 import type { World } from "../../shared/simulator";
 export type Role = "student" | "teacher";
 export type Profile = { id: string; name: string; role: Role };
-export type Material = { type: string; audience: string; path: string };
+export type Material = { type: string; audience: string; path: string; title?: string; filename?: string };
 export type Topic = {
   number: string;
   title: string;

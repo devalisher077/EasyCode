@@ -5,13 +5,13 @@
   "outputDirectory": "dist",
   "functions": {
     "api/index.ts": {
-      "includeFiles": "content/materials/**",
-      "excludeFiles": "{.env,.env.*,**/*.test.*,**/*.spec.*}",
+      "includeFiles": "content/materials/catalog.json",
+      "excludeFiles": "{.env,.env.*,**/*.test.*,**/*.spec.*,content/materials/**/*.pdf,content/materials/**/*.pptx,content/materials/**/*.docx}",
       "maxDuration": 60
     }
   },
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api" },
+    { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/login", "destination": "/index.html" },
     { "source": "/register", "destination": "/index.html" },
     { "source": "/learn/:path*", "destination": "/index.html" }

@@ -32,6 +32,25 @@ afterEach(() => {
 });
 
 describe("loadMaterialPreview", () => {
+  it("fetches a signed Storage URL without forwarding account headers or cookies", async () => {
+    const signed = "https://example.supabase.co/storage/v1/object/sign/easycode-materials/course/test/preview.pdf?token=temporary";
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ url: signed }), { headers: { "content-type": "application/json" } }))
+      .mockResolvedValueOnce(pdfResponse());
+    const controller = new AbortController();
+    const bytes = await api.loadMaterialPreview("lesson.pptx", { signal: controller.signal, expectedUserId: "student-1" });
+    expect(String.fromCharCode(...bytes.subarray(0, 5))).toBe("%PDF-");
+    expect(fetchMock).toHaveBeenNthCalledWith(2, signed, { credentials: "omit", cache: "no-store", signal: controller.signal });
+    expect(mocks.getSession).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects a signed-link response pointing outside the configured private bucket", async () => {
+    for (const url of ["https://attacker.example/file.pdf", "https://example.supabase.co/storage/v1/object/public/other/file.pdf"]) {
+      fetchMock.mockReset().mockResolvedValueOnce(new Response(JSON.stringify({ url }), { headers: { "content-type": "application/json" } }));
+      await expect(api.loadMaterialPreview("lesson.pptx", { signal: new AbortController().signal, expectedUserId: "student-1" }))
+        .rejects.toThrow("Недопустимый адрес материала.");
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    }
+  });
   it("uses a protected same-origin request without credentials in the URL or browser cache", async () => {
     const abort = new AbortController();
     const bytes = await api.loadMaterialPreview("1.1/Алгоритм.pptx", {

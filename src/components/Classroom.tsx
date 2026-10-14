@@ -21,15 +21,21 @@ import type {
 } from "../lib/types";
 import { DEFAULT_WORLD } from "../../shared/simulator";
 import "./classroom.css";
+import { ClassMaterials } from "./ClassMaterials";
+import type { Material } from "../lib/types";
 type Form = "class" | "section" | "task" | "join" | null;
 export function Classroom({
   role,
   onNotice,
   onPractice,
+  ownerId = "",
+  onPreview = () => {},
 }: {
   role: Role;
   onNotice: (message: string) => void;
   onPractice: (task: Task) => void;
+  ownerId?: string;
+  onPreview?: (material: Material) => void;
 }) {
   const [classes, setClasses] = useState<ClassType[]>([]);
   const [selected, setSelected] = useState("");
@@ -511,6 +517,8 @@ export function Classroom({
                   )}
                 </section>
               </div>
+              <ClassMaterials key={`${ownerId}:${selected}`} classId={selected} ownerId={ownerId}
+                teacher={teacher} sections={sections} onPreview={onPreview} onNotice={onNotice} />
               <section className="results-section">
                 <div className="section-heading">
                   <h2>{t(teacher ? "Решения учеников" : "Мои результаты")}</h2>

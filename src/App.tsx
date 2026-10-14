@@ -532,6 +532,9 @@ export default function App({
           {t(
             page === "classroom" && identityReady && signedIn && (
               <Classroom
+                key={userId}
+                ownerId={userId}
+                onPreview={openPresentation}
                 role={role}
                 onNotice={setNotice}
                 onPractice={openPractice}

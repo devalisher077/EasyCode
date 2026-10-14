@@ -61,3 +61,10 @@
   font-weight: 400;
   line-height: 1.6;
 }
+.class-materials { margin-top: 32px; }
+.class-material-list { display: grid; gap: 12px; }
+.class-material-card { display: flex; align-items: center; gap: 16px; padding: 18px; border: 1px solid #435d7a; background: #141d28; border-radius: 12px; }
+.class-material-card > div:first-of-type { flex: 1; min-width: 0; }
+.class-material-card h3 { margin: 0 0 6px; overflow-wrap: anywhere; }
+.class-material-card p { margin: 4px 0; color: #aebdce; overflow-wrap: anywhere; font-size: 13px; }
+@media (max-width: 600px) { .class-material-card { flex-wrap: wrap; } .class-material-card .button-row { width: 100%; } }
