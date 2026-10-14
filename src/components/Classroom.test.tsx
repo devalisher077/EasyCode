@@ -11,11 +11,12 @@ import type {
 } from "../lib/types";
 import { Classroom } from "./Classroom";
 
-const { request, download } = vi.hoisted(() => ({
+const { request, download, upload } = vi.hoisted(() => ({
   request: vi.fn(),
   download: vi.fn(),
+  upload: vi.fn(),
 }));
-vi.mock("../lib/api", () => ({ api: request, downloadMaterial: download }));
+vi.mock("../lib/api", () => ({ api: request, downloadMaterial: download, uploadClassMaterial: upload }));
 
 const firstClass: ClassType = {
   id: "class-a",
@@ -67,10 +68,10 @@ function handleRequest(path: string, body?: Record<string, unknown>) {
   return Promise.resolve({});
 }
 
-async function render(role: Role = "teacher") {
+async function render(role: Role = "teacher", ownerId = "") {
   await act(async () => {
     root.render(
-      <Classroom role={role} onNotice={notices} onPractice={practice} />,
+      <Classroom role={role} ownerId={ownerId} onNotice={notices} onPractice={practice} />,
     );
   });
 }
@@ -104,6 +105,23 @@ async function submit() {
   });
 }
 
+async function chooseFile(name: string, file: File) {
+  const input = container.querySelector<HTMLInputElement>(`[name="${name}"]`)!;
+  Object.defineProperty(input, "files", { configurable: true, value: [file] });
+  await act(async () => input.dispatchEvent(new Event("change", { bubbles: true })));
+}
+
+function prepareLessonCreation() {
+  request.mockImplementation((path: string, body?: Record<string, unknown>) => {
+    if (path === "/sections" && body) {
+      const section = { ...firstLesson, id: "lesson-new", title: String(body.title), theory: String(body.theory) };
+      lessonList.push(section);
+      return Promise.resolve({ section });
+    }
+    return handleRequest(path, body);
+  });
+}
+
 function deferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((finish) => {
@@ -117,6 +135,7 @@ beforeEach(() => {
   request.mockReset();
   request.mockImplementation(handleRequest);
   download.mockReset();
+  upload.mockReset().mockResolvedValue({ material: { id: "new-material" } });
   classList = [firstClass];
   lessonList = [firstLesson];
   taskList = [firstTask];
@@ -230,7 +249,7 @@ describe("Classroom", () => {
       classId: "class-a",
       title: "Повторяем команды",
       theory: "Цикл повторяет команды несколько раз.",
-    });
+    }, undefined);
     expect(container.textContent).toContain(
       "Цикл повторяет команды несколько раз.",
     );
@@ -238,6 +257,89 @@ describe("Classroom", () => {
     expect(notices).toHaveBeenCalledWith(
       expect.stringContaining("Урок создан"),
     );
+  });
+
+  it("attaches a presentation to the newly created lesson and refreshes materials", async () => {
+    prepareLessonCreation();
+    await render("teacher", "teacher-1");
+    await click("Новый урок");
+    fill("title", "Урок с презентацией");
+    fill("theory", "Объяснение темы");
+    const pdf = new File(["%PDF-test"], "slides.pdf", { type: "application/pdf" });
+    await chooseFile("lessonFile", pdf);
+    const readsBefore = request.mock.calls.filter(([path]) => path.startsWith("/class-materials?")).length;
+    await submit();
+    expect(request).toHaveBeenCalledWith("/sections", { classId: "class-a", title: "Урок с презентацией", theory: "Объяснение темы" }, { expectedUserId: "teacher-1" });
+    expect(upload).toHaveBeenCalledWith({ classId: "class-a", sectionId: "lesson-new", expectedUserId: "teacher-1", title: "Урок с презентацией", file: pdf, preview: undefined });
+    expect(container.querySelector('[role="dialog"]')).toBeNull();
+    expect(notices).toHaveBeenCalledWith("Урок и презентация доступны ученикам класса.");
+    expect(request.mock.calls.filter(([path]) => path.startsWith("/class-materials?")).length).toBeGreaterThan(readsBefore);
+  });
+
+  it("requires and uploads a PDF companion for PowerPoint", async () => {
+    prepareLessonCreation();
+    await render("teacher", "teacher-1");
+    await click("Новый урок");
+    fill("title", "Алгоритмы"); fill("theory", "Теория");
+    const pptx = new File(["PK-test"], "slides.pptx");
+    const pdf = new File(["%PDF-test"], "slides.pdf");
+    await chooseFile("lessonFile", pptx);
+    expect(button("Создать урок").disabled).toBe(true);
+    await submit(); // Validation also guards programmatic submission.
+    expect(request.mock.calls.some(([path]) => path === "/sections")).toBe(false);
+    expect(upload).not.toHaveBeenCalled();
+    await chooseFile("lessonPreview", pdf);
+    await submit();
+    expect(upload).toHaveBeenCalledWith(expect.objectContaining({ file: pptx, preview: pdf, sectionId: "lesson-new" }));
+  });
+
+  it("retries a failed presentation upload without creating a duplicate lesson", async () => {
+    prepareLessonCreation();
+    upload.mockRejectedValueOnce(new Error("Ошибка загрузки"));
+    await render("teacher", "teacher-1");
+    await click("Новый урок");
+    fill("title", "Алгоритмы"); fill("theory", "Теория");
+    const pdf = new File(["%PDF-test"], "slides.pdf");
+    await chooseFile("lessonFile", pdf);
+    await submit();
+    expect(container.querySelector('[role="dialog"] [role="alert"]')?.textContent).toContain("Ошибка загрузки");
+    expect(container.querySelector('[role="dialog"]')?.textContent).toContain("Урок уже сохранён");
+    expect(container.querySelector<HTMLInputElement>('[name="title"]')?.readOnly).toBe(true);
+    expect(container.querySelector<HTMLTextAreaElement>('[name="theory"]')?.value).toBe("Теория");
+    expect(button("Повторить загрузку презентации").disabled).toBe(false);
+    await submit();
+    expect(request.mock.calls.filter(([path]) => path === "/sections")).toHaveLength(1);
+    expect(upload).toHaveBeenCalledTimes(2);
+    expect(upload.mock.calls.every(([input]) => input.sectionId === "lesson-new")).toBe(true);
+    expect(container.querySelector('[role="dialog"]')).toBeNull();
+  });
+
+  it("rejects invalid or oversized attachments before saving lesson theory", async () => {
+    prepareLessonCreation();
+    await render(); await click("Новый урок");
+    fill("title", "Алгоритмы"); fill("theory", "Теория");
+    const large = new File(["test"], "large.pdf");
+    Object.defineProperty(large, "size", { value: 20 * 1024 * 1024 + 1 });
+    for (const file of [new File(["test"], "slides.exe"), new File([], "empty.pdf"), large]) {
+      await chooseFile("lessonFile", file); await submit();
+      expect(container.querySelector('[role="dialog"] [role="alert"]')).not.toBeNull();
+    }
+    expect(request.mock.calls.some(([path]) => path === "/sections")).toBe(false);
+    expect(upload).not.toHaveBeenCalled();
+  });
+
+  it("does not upload under another account when lesson creation resolves late", async () => {
+    const pending = deferred<{ section: CustomSection }>();
+    request.mockImplementation((path, body) => path === "/sections" ? pending.promise : handleRequest(path, body));
+    await render("teacher", "teacher-1"); await click("Новый урок");
+    fill("title", "Алгоритмы"); fill("theory", "Теория");
+    await chooseFile("lessonFile", new File(["%PDF-test"], "slides.pdf"));
+    await submit();
+    await render("teacher", "teacher-2");
+    await act(async () => pending.resolve({ section: firstLesson }));
+    expect(upload).not.toHaveBeenCalled();
+    expect(notices).not.toHaveBeenCalled();
+    expect(container.querySelector('[role="dialog"]')).toBeNull();
   });
 
   it("preselects the lesson when adding its practice task", async () => {

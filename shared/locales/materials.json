@@ -1,4 +1,12 @@
 [
+  ["Презентация к уроку (необязательно)", "Lesson presentation (optional)", "Сабақ презентациясы (міндетті емес)"],
+  ["PDF можно смотреть на сайте. Для PPTX приложите PDF-копию. Презентация будет привязана к этому уроку. До 20 МБ на файл.", "PDF can be viewed on the site. Include a PDF copy for PPTX. The presentation will be linked to this lesson. Up to 20 MB per file.", "PDF файлын сайтта қарауға болады. PPTX үшін PDF көшірмесін қосыңыз. Презентация осы сабаққа тіркеледі. Әр файл 20 МБ-қа дейін."],
+  ["Выберите презентацию в формате PDF или PPTX.", "Choose a presentation in PDF or PPTX format.", "PDF немесе PPTX пішіміндегі презентацияны таңдаңыз."],
+  ["Сократите имя файла до 180 символов и уберите специальные символы.", "Shorten the filename to 180 characters and remove special characters.", "Файл атауын 180 таңбаға дейін қысқартып, арнайы таңбаларды алып тастаңыз."],
+  ["Сохранение урока и загрузка презентации…", "Saving the lesson and uploading the presentation…", "Сабақ сақталуда және презентация жүктелуде…"],
+  ["Повторить загрузку презентации", "Retry presentation upload", "Презентацияны қайта жүктеу"],
+  ["Урок и презентация доступны ученикам класса.", "The lesson and presentation are available to students in this class.", "Сабақ пен презентация сынып оқушыларына қолжетімді."],
+  ["Урок уже сохранён. Если презентация не загрузилась, повторите загрузку. При закрытии окна урок останется без презентации; её можно добавить через «Материалы класса».", "The lesson is already saved. If the presentation upload failed, retry it. Closing this window leaves the lesson without a presentation; you can add it through Class materials.", "Сабақ сақталды. Презентация жүктелмесе, қайта жүктеп көріңіз. Терезені жапсаңыз, сабақ презентациясыз қалады; оны «Сынып материалдары» арқылы қосуға болады."],
   ["Материалы класса", "Class materials", "Сынып материалдары"],
   ["Загрузить материал", "Upload material", "Материал жүктеу"],
   ["Загрузка материалов…", "Loading materials…", "Материалдар жүктелуде…"],

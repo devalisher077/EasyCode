@@ -10,7 +10,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { api, downloadMaterial } from "../lib/api";
+import { api, downloadMaterial, uploadClassMaterial } from "../lib/api";
 import { useDialog } from "../lib/useDialog";
 import type {
   Classroom as ClassType,
@@ -23,6 +23,7 @@ import { DEFAULT_WORLD } from "../../shared/simulator";
 import "./classroom.css";
 import { ClassMaterials } from "./ClassMaterials";
 import type { Material } from "../lib/types";
+import { MAX_MATERIAL_BYTES } from "../../shared/materials";
 type Form = "class" | "section" | "task" | "join" | null;
 export function Classroom({
   role,
@@ -46,6 +47,10 @@ export function Classroom({
   const [taskLessonId, setTaskLessonId] = useState("");
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState("");
+  const [lessonFile, setLessonFile] = useState<File>();
+  const [lessonPreview, setLessonPreview] = useState<File>();
+  const lessonPreviewInput = useRef<HTMLInputElement>(null);
+  const [savedLesson, setSavedLesson] = useState<CustomSection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [contentLoading, setContentLoading] = useState(false);
@@ -131,13 +136,17 @@ export function Classroom({
       classRequest.current += 1;
       contentRequest.current += 1;
     };
-  }, [role]);
+  }, [role, ownerId]);
   useEffect(() => {
     void loadContent();
   }, [selected]);
   useEffect(() => {
     setFormError("");
+    setLessonFile(undefined);
+    setLessonPreview(undefined);
+    setSavedLesson(null);
   }, [form]);
+  const lessonPowerpoint = lessonFile?.name.toLowerCase().endsWith(".pptx");
   function openTask(lessonId = "") {
     setTaskLessonId(lessonId);
     setForm("task");
@@ -169,15 +178,44 @@ export function Classroom({
         await loadClasses(data.class.id);
       }
       if (form === "section") {
-        await api("/sections", {
+        // Validate attachments before creating the lesson. A saved lesson is
+        // reused if only the subsequent Storage upload needs to be retried.
+        if (savedLesson && !lessonFile)
+          throw new Error("Выберите презентацию в формате PDF или PPTX.");
+        if (lessonFile) {
+          if (!/\.(pdf|pptx)$/i.test(lessonFile.name))
+            throw new Error("Выберите презентацию в формате PDF или PPTX.");
+          if (lessonPowerpoint && (!lessonPreview || !/\.pdf$/i.test(lessonPreview.name)))
+            throw new Error("Для PowerPoint загрузите оригинал PPTX и PDF-копию для просмотра.");
+          for (const file of [lessonFile, ...(lessonPowerpoint && lessonPreview ? [lessonPreview] : [])]) {
+            if (file.size < 1 || file.size > MAX_MATERIAL_BYTES)
+              throw new Error("Размер каждого файла должен быть от 1 байта до 20 МБ.");
+          }
+          if (lessonFile.name.length > 180 || /[/\\\x00-\x1f\x7f]/.test(lessonFile.name))
+            throw new Error("Сократите имя файла до 180 символов и уберите специальные символы.");
+        }
+        const lesson = savedLesson ?? (await api<{ section: CustomSection }>("/sections", {
           classId: selected,
           title: d.get("title"),
           theory: d.get("theory"),
-        });
+        }, ownerId ? { expectedUserId: ownerId } : undefined)).section;
         if (owner !== scope.current) return;
+        if (lessonFile) {
+          setSavedLesson(lesson);
+          try {
+            await uploadClassMaterial({ classId: selected, sectionId: lesson.id,
+              title: lesson.title, file: lessonFile,
+              preview: lessonPowerpoint ? lessonPreview : undefined, expectedUserId: ownerId });
+          } catch (error) {
+            if (owner === scope.current) await loadContent();
+            throw error;
+          }
+          if (owner !== scope.current) return;
+        }
         setForm(null);
         onNotice(
-          "Урок создан и доступен ученикам этого класса. Теперь можно добавить задание.",
+          lessonFile ? "Урок и презентация доступны ученикам класса."
+            : "Урок создан и доступен ученикам этого класса. Теперь можно добавить задание.",
         );
         await loadContent();
       }
@@ -643,6 +681,11 @@ export function Classroom({
                   </p>
                 ),
               )}
+              {form === "section" && savedLesson && !busy && (
+                <p className="form-note" role="status">
+                  {t("Урок уже сохранён. Если презентация не загрузилась, повторите загрузку. При закрытии окна урок останется без презентации; её можно добавить через «Материалы класса».")}
+                </p>
+              )}
               {t(
                 form === "join" ? (
                   <label>
@@ -673,6 +716,7 @@ export function Classroom({
                     {t("Название")}
                     <input
                       name="title"
+                      readOnly={form === "section" && (busy || Boolean(savedLesson))}
                       required
                       minLength={2}
                       maxLength={form === "class" ? 100 : 150}
@@ -694,6 +738,7 @@ export function Classroom({
                     {t("Теория урока")}
                     <textarea
                       name="theory"
+                      readOnly={busy || Boolean(savedLesson)}
                       required
                       maxLength={20000}
                       rows={7}
@@ -703,6 +748,30 @@ export function Classroom({
                     />
                   </label>
                 ),
+              )}
+              {form === "section" && (
+                <>
+                  <label>
+                    {t("Презентация к уроку (необязательно)")}
+                    <input type="file" name="lessonFile" accept=".pdf,.pptx" disabled={busy}
+                      required={Boolean(savedLesson)}
+                      onChange={event => {
+                        setLessonFile(event.target.files?.[0]); setLessonPreview(undefined);
+                        if (lessonPreviewInput.current) lessonPreviewInput.current.value = "";
+                      }} />
+                  </label>
+                  {lessonPowerpoint && (
+                    <label>
+                      {t("PDF-копия для просмотра")}
+                      <input type="file" name="lessonPreview" accept=".pdf" required disabled={busy}
+                        ref={lessonPreviewInput}
+                        onChange={event => setLessonPreview(event.target.files?.[0])} />
+                    </label>
+                  )}
+                  <p className="classroom-code-hint">
+                    {t("PDF можно смотреть на сайте. Для PPTX приложите PDF-копию. Презентация будет привязана к этому уроку. До 20 МБ на файл.")}
+                  </p>
+                </>
               )}
               {form === "task" && (
                 <>
@@ -749,14 +818,15 @@ export function Classroom({
                   </p>
                 </>
               )}
-              <button className="primary-button" disabled={busy}>
+              <button className="primary-button" disabled={busy || (form === "section" &&
+                ((Boolean(savedLesson) && !lessonFile) || (lessonPowerpoint && !lessonPreview)))}>
                 {t(
                   busy
-                    ? "Сохраняем…"
+                    ? (form === "section" && lessonFile ? "Сохранение урока и загрузка презентации…" : "Сохраняем…")
                     : form === "join"
                       ? "Присоединиться"
                       : form === "section"
-                        ? "Создать урок"
+                        ? (savedLesson ? "Повторить загрузку презентации" : "Создать урок")
                         : form === "class"
                           ? "Создать класс"
                           : "Создать задание",
