@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import {
   BookOpen,
   CircuitBoard,
+  Box,
   ChevronRight,
   GraduationCap,
   Menu,
@@ -26,6 +27,7 @@ import { useLessonProgress } from "./lib/useLessonProgress";
 import "./components/electronics.css";
 
 const Electronics = lazy(() => import("./components/Electronics"));
+const DroneLab = lazy(() => import("./components/DroneLab"));
 
 const PresentationViewer = lazy(() =>
   import("./components/PresentationViewer").then((module) => ({
@@ -466,7 +468,9 @@ export default function App({
                 >
                   <button
                     aria-pressed={
-                      routeQuery.get("environment") !== "electronics"
+                      !["electronics", "drone"].includes(
+                        routeQuery.get("environment") || "",
+                      )
                     }
                     onClick={() => onNavigate("/learn?practice=1")}
                   >
@@ -484,9 +488,32 @@ export default function App({
                     <CircuitBoard size={17} />
                     {t("Электроника")}
                   </button>
+                  <button
+                    aria-pressed={routeQuery.get("environment") === "drone"}
+                    onClick={() =>
+                      onNavigate("/learn?practice=1&environment=drone")
+                    }
+                  >
+                    <Box size={17} />
+                    {t("3D-лаборатория")}
+                  </button>
                 </nav>
                 {t(
-                  routeQuery.get("environment") === "electronics" ? (
+                  routeQuery.get("environment") === "drone" ? (
+                    <Suspense
+                      fallback={
+                        <div className="empty-state">
+                          {t("Загружаем лабораторию…")}
+                        </div>
+                      }
+                    >
+                      <DroneLab
+                        key={userId || "guest"}
+                        draftOwner={userId || "guest"}
+                        onNotice={setNotice}
+                      />
+                    </Suspense>
+                  ) : routeQuery.get("environment") === "electronics" ? (
                     <Suspense
                       fallback={
                         <div className="empty-state">

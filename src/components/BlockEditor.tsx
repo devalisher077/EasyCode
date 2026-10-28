@@ -4,9 +4,10 @@ import * as Blockly from "blockly/core";
 import * as Ru from "blockly/msg/ru";
 import * as En from "blockly/msg/en";
 import { blockProgram } from "../../shared/block-program";
+import { droneBlocks } from "../../shared/drone";
 
 export type BlockEditorProps = {
-  variant?: "robot" | "electronics";
+  variant?: "robot" | "electronics" | "drone";
   initialState?: object;
   onChange: (code: string, state: object) => void;
   readOnly?: boolean;
@@ -19,6 +20,45 @@ for (const [key, value] of Object.entries(Ru)) {
   if (typeof value === "string") russianMessages[key] = value;
 }
 const blockDefinitions = [
+  ...[
+    ["takeoff", "взлететь"],
+    ["land", "приземлиться"],
+    ["turn_left", "дрон: поворот налево"],
+    ["turn_right", "дрон: поворот направо"],
+    ["pickup", "забрать груз"],
+    ["drop", "выгрузить груз"],
+  ].map(([name, label]) => ({
+    type: `drone_${name}`,
+    message0: label,
+    previousStatement: null,
+    nextStatement: null,
+    colour: "#3b82f6",
+  })),
+  ...[
+    ["forward", "дрон: вперёд %1"],
+    ["up", "дрон: выше на %1"],
+    ["down", "дрон: ниже на %1"],
+    ["repeat", "повторить %1 раз"],
+  ].map(([name, label]) => ({
+    type: `drone_${name}`,
+    message0: label,
+    args0: [
+      {
+        type: "field_number",
+        name: "COUNT",
+        value: 1,
+        min: 1,
+        max: name === "repeat" ? 20 : 8,
+        precision: 1,
+      },
+    ],
+    ...(name === "repeat"
+      ? { message1: "%1", args1: [{ type: "input_statement", name: "BODY" }] }
+      : {}),
+    previousStatement: null,
+    nextStatement: null,
+    colour: name === "repeat" ? "#d38e36" : "#3b82f6",
+  })),
   {
     type: "circuit_led",
     message0: "светодиод %1",
@@ -363,61 +403,96 @@ export function BlockEditor({
       kind: "block",
       type,
     }));
-    const defaults = variant === "electronics" ? circuitBlocks : initialBlocks;
+    const defaults =
+      variant === "electronics"
+        ? circuitBlocks
+        : variant === "drone"
+          ? droneBlocks
+          : initialBlocks;
     const workspace = Blockly.inject(container, {
       readOnly,
-      toolbox:
-        readOnly ? undefined : variant === "electronics"
+      toolbox: readOnly
+        ? undefined
+        : variant === "drone"
           ? {
               kind: "categoryToolbox",
               contents: [
                 {
                   kind: "category",
-                  name: t("Свет"),
+                  name: t("Движение"),
                   colour: "#3b82f6",
                   contents: [
-                    { kind: "block", type: "circuit_led" },
-                    { kind: "block", type: "circuit_wait" },
-                  ],
+                    "takeoff",
+                    "forward",
+                    "up",
+                    "down",
+                    "turn_left",
+                    "turn_right",
+                    "land",
+                  ].map((name) => ({ kind: "block", type: `drone_${name}` })),
                 },
                 {
                   kind: "category",
                   name: t("Логика"),
-                  colour: "#498ccc",
-                  contents: [
-                    { kind: "block", type: "circuit_if" },
-                    { kind: "block", type: "circuit_repeat" },
-                  ],
+                  colour: "#d38e36",
+                  contents: ["repeat", "pickup", "drop"].map((name) => ({
+                    kind: "block",
+                    type: `drone_${name}`,
+                  })),
                 },
               ],
             }
-          : compact
+          : variant === "electronics"
             ? {
                 kind: "categoryToolbox",
                 contents: [
                   {
                     kind: "category",
-                    name: t("Движение"),
+                    name: t("Свет"),
                     colour: "#3b82f6",
-                    contents: movementBlocks,
+                    contents: [
+                      { kind: "block", type: "circuit_led" },
+                      { kind: "block", type: "circuit_wait" },
+                    ],
                   },
                   {
                     kind: "category",
                     name: t("Логика"),
-                    colour: "#d38e36",
-                    contents: logicBlocks,
+                    colour: "#498ccc",
+                    contents: [
+                      { kind: "block", type: "circuit_if" },
+                      { kind: "block", type: "circuit_repeat" },
+                    ],
                   },
                 ],
               }
-            : {
-                kind: "flyoutToolbox",
-                contents: [
-                  { kind: "label", text: t("ДВИЖЕНИЕ") },
-                  ...movementBlocks,
-                  { kind: "label", text: t("ЛОГИКА") },
-                  ...logicBlocks,
-                ],
-              },
+            : compact
+              ? {
+                  kind: "categoryToolbox",
+                  contents: [
+                    {
+                      kind: "category",
+                      name: t("Движение"),
+                      colour: "#3b82f6",
+                      contents: movementBlocks,
+                    },
+                    {
+                      kind: "category",
+                      name: t("Логика"),
+                      colour: "#d38e36",
+                      contents: logicBlocks,
+                    },
+                  ],
+                }
+              : {
+                  kind: "flyoutToolbox",
+                  contents: [
+                    { kind: "label", text: t("ДВИЖЕНИЕ") },
+                    ...movementBlocks,
+                    { kind: "label", text: t("ЛОГИКА") },
+                    ...logicBlocks,
+                  ],
+                },
       horizontalLayout: compact,
       toolboxPosition: "start",
       theme,
@@ -456,7 +531,10 @@ export function BlockEditor({
       if (readOnly) return;
       let code: string;
       try {
-        code = blockProgram(Blockly.serialization.workspaces.save(workspace), variant).code;
+        code = blockProgram(
+          Blockly.serialization.workspaces.save(workspace),
+          variant,
+        ).code;
       } catch {
         code =
           "# Слишком сложная программа: убери лишние блоки.\ninvalid_program";
@@ -479,12 +557,30 @@ export function BlockEditor({
   }, [compact, variant, language, readOnly]);
 
   return (
-    <><div
-      ref={containerRef}
-      className="blockly-editor"
-      aria-label={t(readOnly ? "Блоки отправленного решения" : "Редактор блочной программы")}
-      style={{ position: "relative", width: "100%", height: readOnly ? 410 : "100%", minHeight: 410 }}
-    />{loadError && <p role="alert">{t("Не удалось отобразить сохранённые блоки. Текст решения доступен ниже.")}</p>}</>
+    <>
+      <div
+        ref={containerRef}
+        className="blockly-editor"
+        aria-label={t(
+          readOnly
+            ? "Блоки отправленного решения"
+            : "Редактор блочной программы",
+        )}
+        style={{
+          position: "relative",
+          width: "100%",
+          height: readOnly ? 410 : "100%",
+          minHeight: 410,
+        }}
+      />
+      {loadError && (
+        <p role="alert">
+          {t(
+            "Не удалось отобразить сохранённые блоки. Текст решения доступен ниже.",
+          )}
+        </p>
+      )}
+    </>
   );
 }
 

@@ -24,7 +24,22 @@ const circuitTypes = [
   "circuit_repeat",
   "circuit_if",
 ];
-export function blockProgram(value: unknown, variant: "robot" | "electronics") {
+const droneTypes = [
+  "drone_takeoff",
+  "drone_land",
+  "drone_forward",
+  "drone_up",
+  "drone_down",
+  "drone_turn_left",
+  "drone_turn_right",
+  "drone_pickup",
+  "drone_drop",
+  "drone_repeat",
+];
+export function blockProgram(
+  value: unknown,
+  variant: "robot" | "electronics" | "drone",
+) {
   const fail = (): never => {
     throw new Error("Некорректная или слишком сложная блочная программа.");
   };
@@ -42,9 +57,31 @@ export function blockProgram(value: unknown, variant: "robot" | "electronics") {
     if (!input || typeof input !== "object" || ++count > 120 || depth > 30)
       return fail();
     const b = input as Record<string, any>;
-    if (!(variant === "robot" ? robotTypes : circuitTypes).includes(b.type))
+    if (
+      !(
+        variant === "robot"
+          ? robotTypes
+          : variant === "drone"
+            ? droneTypes
+            : circuitTypes
+      ).includes(b.type)
+    )
       return fail();
     const result: Block = { type: b.type };
+    if (
+      ["drone_forward", "drone_up", "drone_down", "drone_repeat"].includes(
+        b.type,
+      )
+    ) {
+      const n = b.fields?.COUNT;
+      if (
+        !Number.isInteger(n) ||
+        n < 1 ||
+        n > (b.type === "drone_repeat" ? 20 : 8)
+      )
+        return fail();
+      result.fields = { COUNT: n };
+    }
     for (const axis of ["x", "y"] as const)
       if (typeof b[axis] === "number" && Number.isFinite(b[axis]))
         result[axis] = Math.max(-10000, Math.min(10000, b[axis]));
@@ -108,6 +145,15 @@ export function blockProgram(value: unknown, variant: "robot" | "electronics") {
         chain(b!.inputs?.[name]?.block, indent + 1) || `${pad}    pass\n`;
       const n = b.fields?.COUNT;
       const simple: Record<string, string> = {
+        drone_takeoff: "drone.takeoff()",
+        drone_land: "drone.land()",
+        drone_forward: `drone.forward(${n})`,
+        drone_up: `drone.up(${n})`,
+        drone_down: `drone.down(${n})`,
+        drone_turn_left: "drone.turn_left()",
+        drone_turn_right: "drone.turn_right()",
+        drone_pickup: "drone.pickup()",
+        drone_drop: "drone.drop()",
         easy_forward: `robot.forward(${n})`,
         easy_backward: `robot.backward(${n})`,
         easy_left: "robot.turn_left()",

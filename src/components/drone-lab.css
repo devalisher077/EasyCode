@@ -1,0 +1,324 @@
+.drone-lab {
+  --drone-border: #2b405e;
+}
+.drone-lab .page-heading {
+  align-items: center;
+}
+.drone-badge {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 12px;
+  border: 1px solid var(--drone-border);
+  border-radius: 8px;
+  color: #aac4e7;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.drone-missions {
+  display: flex;
+  gap: 10px;
+  margin: 24px 0 18px;
+  flex-wrap: wrap;
+}
+.drone-lab button {
+  cursor: pointer;
+}
+.drone-missions button {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: #111f34;
+  border: 1px solid var(--drone-border);
+  color: #b7cbe5;
+  border-radius: 9px;
+  padding: 13px 18px;
+}
+.drone-missions button span {
+  font:
+    12px "Geist Mono",
+    monospace;
+  color: #729cce;
+}
+.drone-missions button[aria-pressed="true"] {
+  border-color: #6198ed;
+  background: #19345b;
+  color: #fff;
+}
+.drone-brief {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+.drone-brief h2 {
+  font-size: 18px;
+  margin: 0 0 6px;
+}
+.drone-brief p {
+  margin: 0;
+  color: #a7bdd7;
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 780px;
+}
+.drone-brief > span {
+  white-space: nowrap;
+  font:
+    13px "Geist Mono",
+    monospace;
+  color: #8cacd5;
+}
+.drone-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(330px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.drone-viewport,
+.drone-editor {
+  border: 1px solid var(--drone-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #101c2f;
+  min-width: 0;
+}
+.drone-scene-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--drone-border);
+}
+.drone-scene-toolbar > span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: #c0d4eb;
+}
+.drone-scene-toolbar i {
+  width: 6px;
+  height: 6px;
+  background: #57dcb2;
+  border-radius: 50%;
+}
+.drone-scene-toolbar button,
+.drone-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #375475;
+  background: #1b304c;
+  color: #daeaff;
+  border-radius: 6px;
+  min-width: 34px;
+  min-height: 34px;
+}
+.drone-scene {
+  height: 390px;
+  position: relative;
+  touch-action: none;
+}
+.drone-scene canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.drone-webgl-error {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  background: #12243e;
+  padding: 30px;
+  z-index: 1;
+  line-height: 1.7;
+}
+.drone-telemetry {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 14px 16px;
+  gap: 12px;
+  border-top: 1px solid var(--drone-border);
+}
+.drone-telemetry span {
+  display: block;
+  font-size: 11px;
+  color: #94adce;
+  margin-bottom: 5px;
+}
+.drone-telemetry strong {
+  font:
+    14px "Geist Mono",
+    monospace;
+  color: #e2eeff;
+}
+.drone-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 4px 16px;
+  color: #b3c9e1;
+  font-size: 11px;
+}
+.drone-legend span {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.drone-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.drone-camera-help,
+.drone-local-note {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #93accb;
+  padding: 0 16px;
+}
+.drone-flight-status {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  background: #142941;
+  font-size: 13px;
+  min-height: 72px;
+  line-height: 1.5;
+}
+.drone-flight-status code {
+  font-size: 11px;
+  color: #a9c5e8;
+}
+.drone-flight-status.success {
+  background: #103a33;
+  color: #9ff0cb;
+}
+.drone-flight-status.warning {
+  background: #392d20;
+  color: #f4ce93;
+}
+.drone-editor-tabs {
+  display: flex;
+  padding: 8px;
+  gap: 6px;
+  border-bottom: 1px solid var(--drone-border);
+}
+.drone-editor-tabs button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 5px;
+  color: #a5bedc;
+  background: transparent;
+}
+.drone-editor-tabs button[aria-pressed="true"] {
+  background: #29466e;
+  color: #fff;
+}
+.drone-editor-tabs .drone-to-code {
+  margin-left: auto;
+}
+.drone-block-workspace {
+  height: 430px;
+}
+.drone-editor textarea {
+  width: 100%;
+  height: 430px;
+  display: block;
+  resize: vertical;
+  padding: 20px;
+  background: #0e192a;
+  color: #c6e3ff;
+  border: none;
+  font:
+    13px/1.9 "Geist Mono",
+    monospace;
+  tab-size: 4;
+}
+.drone-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--drone-border);
+}
+.drone-actions button.primary {
+  background: #3478d5;
+  color: white;
+  padding: 0 14px;
+  margin-right: auto;
+}
+.drone-actions button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.drone-lab button:focus-visible,
+.drone-reference summary:focus-visible {
+  outline: 2px solid #8ac9ff;
+  outline-offset: 3px;
+}
+.drone-reference {
+  margin-top: 20px;
+  padding: 17px 20px;
+  border: 1px solid var(--drone-border);
+  border-radius: 10px;
+  background: #101c2f;
+}
+.drone-reference summary {
+  cursor: pointer;
+  font-size: 14px;
+  color: #cee2ff;
+}
+.drone-reference p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #a5bedb;
+}
+.drone-reference > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 24px;
+}
+.drone-reference code {
+  display: block;
+  color: #8fd1f3;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1100px) {
+  .drone-layout {
+    grid-template-columns: 1fr;
+  }
+  .drone-scene {
+    height: 420px;
+  }
+}
+@media (max-width: 600px) {
+  .drone-lab .page-heading {
+    align-items: start;
+    gap: 12px;
+    flex-direction: column;
+  }
+  .drone-missions {
+    gap: 6px;
+  }
+  .drone-missions button {
+    flex: 1 1 100%;
+    padding: 10px 12px;
+  }
+  .drone-scene {
+    height: 300px;
+  }
+  .drone-brief > span {
+    display: none;
+  }
+  .drone-telemetry {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .drone-reference > div {
+    grid-template-columns: 1fr;
+  }
+}
