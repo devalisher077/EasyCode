@@ -15,6 +15,7 @@ import {
   Repeat2,
   Route,
   Terminal,
+  Box,
 } from "lucide-react";
 import type { Catalog, Topic } from "../lib/types";
 import { lessonPercent, type LessonProgress } from "../../shared/lessons";
@@ -44,6 +45,7 @@ export function Course({
   progress,
   storage,
   storageError,
+  droneCourse = false,
 }: {
   catalog: Catalog | null;
   query: string;
@@ -52,6 +54,7 @@ export function Course({
   progress: Record<string, LessonProgress>;
   storage: "loading" | "cloud" | "local" | "unavailable";
   storageError: string;
+  droneCourse?: boolean;
 }) {
   const topics = catalog?.sections.flatMap((section) => section.topics) || [];
   const topicPercent = (topic: Topic) =>
@@ -87,12 +90,18 @@ export function Course({
         <div className="hero-copy">
           <span className="eyebrow">
             <span className="purple-dash" />
-            {t("ОСНОВЫ ПРОГРАММИРОВАНИЯ")}
+            {t(
+              droneCourse
+                ? "ДРОНЫ И 3D-ЛАБОРАТОРИЯ"
+                : "ОСНОВЫ ПРОГРАММИРОВАНИЯ",
+            )}
           </span>
-          <h1>{t("Учебный курс")}</h1>
+          <h1>{t(droneCourse ? "Дроны" : "Учебный курс")}</h1>
           <p>
             {t(
-              "Теория, примеры и практические задания по основам программирования. Создание алгоритмов с помощью блоков и текстового кода.",
+              droneCourse
+                ? "Устройство дронов, координаты и программирование полётов. Первые три раздела уже доступны; материалы разделов 4–6 готовятся."
+                : "Теория, примеры и практические задания по основам программирования. Создание алгоритмов с помощью блоков и текстового кода.",
             )}
           </p>
           <div className="hero-actions">
@@ -128,7 +137,7 @@ export function Course({
             </span>
             <span>
               <Layers3 size={14} />
-              {t("12 тем")}
+              {t(droneCourse ? "6 доступных тем" : "12 тем")}
             </span>
             <span>
               <Braces size={14} />
@@ -136,80 +145,103 @@ export function Course({
             </span>
           </div>
         </div>
-        <div
-          className="hero-visual"
-          aria-label={t("Иллюстрация: команды управляют машиной")}
-        >
-          <div className="floating-label">
-            <span className="status-dot" />
-            {t("Пример программы")}
+        {droneCourse ? (
+          <div className="drone-course-hero" aria-hidden="true">
+            <Box size={96} strokeWidth={1} />
+            <code>
+              drone.takeoff()
+              <br />
+              drone.forward(4)
+              <br />
+              drone.land()
+            </code>
           </div>
-          <div className="visual-grid">
-            <svg viewBox="0 0 420 310" className="route-art" aria-hidden="true">
-              <defs>
-                <linearGradient id="route-gradient" x1="0" y1="1" x2="1" y2="0">
-                  <stop stopColor="#3b82f6" />
-                  <stop offset="1" stopColor="#d4e8ff" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M72 241 H275 Q298 241 298 218 V90"
-                fill="none"
-                stroke="#3b82f6"
-                strokeWidth="36"
-                opacity=".08"
-              />
-              <path
-                d="M72 241 H275 Q298 241 298 218 V90"
-                fill="none"
-                stroke="url(#route-gradient)"
-                strokeWidth="3"
-                strokeDasharray="7 7"
-              />
-              <circle cx="72" cy="241" r="7" fill="#3b82f6" />
-              <rect
-                x="284"
-                y="71"
-                width="29"
-                height="29"
-                rx="9"
-                fill="#263649"
-                stroke="#79b6fc"
-              />
-              <path
-                d="m292 85 5 5 8-10"
-                fill="none"
-                stroke="#a8d1ff"
-                strokeWidth="2"
-              />
-            </svg>
-            <div className="hero-car">
-              <div className="car-body">
-                <i />
-                <i />
-                <span />
+        ) : (
+          <div
+            className="hero-visual"
+            aria-label={t("Иллюстрация: команды управляют машиной")}
+          >
+            <div className="floating-label">
+              <span className="status-dot" />
+              {t("Пример программы")}
+            </div>
+            <div className="visual-grid">
+              <svg
+                viewBox="0 0 420 310"
+                className="route-art"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="route-gradient"
+                    x1="0"
+                    y1="1"
+                    x2="1"
+                    y2="0"
+                  >
+                    <stop stopColor="#3b82f6" />
+                    <stop offset="1" stopColor="#d4e8ff" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M72 241 H275 Q298 241 298 218 V90"
+                  fill="none"
+                  stroke="#3b82f6"
+                  strokeWidth="36"
+                  opacity=".08"
+                />
+                <path
+                  d="M72 241 H275 Q298 241 298 218 V90"
+                  fill="none"
+                  stroke="url(#route-gradient)"
+                  strokeWidth="3"
+                  strokeDasharray="7 7"
+                />
+                <circle cx="72" cy="241" r="7" fill="#3b82f6" />
+                <rect
+                  x="284"
+                  y="71"
+                  width="29"
+                  height="29"
+                  rx="9"
+                  fill="#263649"
+                  stroke="#79b6fc"
+                />
+                <path
+                  d="m292 85 5 5 8-10"
+                  fill="none"
+                  stroke="#a8d1ff"
+                  strokeWidth="2"
+                />
+              </svg>
+              <div className="hero-car">
+                <div className="car-body">
+                  <i />
+                  <i />
+                  <span />
+                </div>
               </div>
             </div>
-          </div>
-          <div className="code-float">
-            <div>
-              <span />
-              <span />
-              <span />
-              <small>hello_world.py</small>
+            <div className="code-float">
+              <div>
+                <span />
+                <span />
+                <span />
+                <small>hello_world.py</small>
+              </div>
+              <code>
+                <em>robot</em>.forward(<b>5</b>)<br />
+                <em>robot</em>.turn_left()
+                <br />
+                <em>robot</em>.forward(<b>3</b>)
+              </code>
+              <span className="code-caption">
+                <Play size={10} fill="currentColor" />
+                {t(" Управление движением")}
+              </span>
             </div>
-            <code>
-              <em>robot</em>.forward(<b>5</b>)<br />
-              <em>robot</em>.turn_left()
-              <br />
-              <em>robot</em>.forward(<b>3</b>)
-            </code>
-            <span className="code-caption">
-              <Play size={10} fill="currentColor" />
-              {t(" Управление движением")}
-            </span>
           </div>
-        </div>
+        )}
       </section>
       <section className="course-progress" aria-label={t("Прогресс обучения")}>
         <div className="course-progress-heading">
@@ -221,7 +253,7 @@ export function Course({
             <h2>
               {t(completed)}
               {t(" из ")}
-              {t(topics.length || 12)}
+              {t(topics.length || (droneCourse ? 6 : 12))}
               {t(" тем пройдено")}
             </h2>
           </div>
@@ -262,7 +294,8 @@ export function Course({
                 onClick={() => onTopic(continueTopic)}
               >
                 {t("Тема ")}
-                {t(continueTopic.number)} <ArrowRight size={14} />
+                {t(continueTopic.number.replace(/^drone-/, ""))}{" "}
+                <ArrowRight size={14} />
               </button>
             ),
           )}
@@ -299,7 +332,7 @@ export function Course({
           <span className="count-chip">
             {t("6 разделов ")}
             <span>·</span>
-            {t(" 12 тем")}
+            {t(droneCourse ? "6 доступных тем" : " 12 тем")}
           </span>
         </div>
         {t(
@@ -319,8 +352,10 @@ export function Course({
         <div className="course-grid">
           {t(
             filtered?.map((section) => {
-              const Icon = icons[section.number - 1];
-              const available = section.topics.every((t) => t.lesson);
+              const Icon = droneCourse ? Box : icons[section.number - 1];
+              const available =
+                section.topics.length > 0 &&
+                section.topics.every((t) => t.lesson);
               const sectionDone = section.topics.filter(
                 (topic) => topicPercent(topic) === 100,
               ).length;
@@ -328,7 +363,7 @@ export function Course({
                 section.topics.reduce(
                   (sum, topic) => sum + topicPercent(topic),
                   0,
-                ) / section.topics.length,
+                ) / (section.topics.length || 1),
               );
               return (
                 <article
@@ -341,7 +376,18 @@ export function Course({
                       {t("БЛОКИ / PYTHON")}
                     </span>
                     <Icon size={48} strokeWidth={1.5} />
-                    <code>{coverCommands[section.number - 1]}</code>
+                    <code>
+                      {droneCourse
+                        ? [
+                            "drone → task → operator",
+                            "X / Y / Z",
+                            "takeoff → forward → land",
+                            "",
+                            "",
+                            "",
+                          ][section.number - 1]
+                        : coverCommands[section.number - 1]}
+                    </code>
                     <span className="course-cover-number">
                       {t(String(section.number).padStart(2, "0"))}
                     </span>
@@ -355,7 +401,8 @@ export function Course({
                       className={`availability ${available ? "ready" : ""}`}
                     >
                       {t(
-                        sectionDone === section.topics.length
+                        section.topics.length > 0 &&
+                          sectionDone === section.topics.length
                           ? "Пройдено"
                           : available
                             ? "Доступно"
@@ -364,16 +411,29 @@ export function Course({
                     </span>
                   </div>
                   <h3>{t(section.title)}</h3>
-                  <p>{t(descriptions[section.number - 1])}</p>
+                  <p>
+                    {t(
+                      droneCourse
+                        ? [
+                            "Устройство дрона и его применение.",
+                            "Интерфейс лаборатории, координаты и направление.",
+                            "Взлёт, посадка, изменение высоты и повороты.",
+                            "Материалы раздела готовятся.",
+                            "Материалы раздела готовятся.",
+                            "Материалы раздела готовятся.",
+                          ][section.number - 1]
+                        : descriptions[section.number - 1],
+                    )}
+                  </p>
                   <div className="topic-links">
                     {t(
                       section.topics.map((topic) => (
                         <button
                           key={topic.number}
-                          aria-label={`${topic.number} ${t(topic.title)}`}
+                          aria-label={`${topic.number.replace(/^drone-/, "")} ${t(topic.title)}`}
                           onClick={() => onTopic(topic)}
                         >
-                          <span>{t(topic.number)}</span>
+                          <span>{t(topic.number.replace(/^drone-/, ""))}</span>
                           {t(topic.title)}
                           {t(
                             topicPercent(topic) === 100 ? (
@@ -407,6 +467,7 @@ export function Course({
                       {t(" пройдено")}
                     </span>
                     <button
+                      disabled={!section.topics.length}
                       onClick={() =>
                         onTopic(
                           section.topics.find(
@@ -416,9 +477,12 @@ export function Course({
                       }
                     >
                       {t(
-                        sectionDone > 0 && sectionDone < section.topics.length
-                          ? "Продолжить"
-                          : "Открыть раздел",
+                        !section.topics.length
+                          ? "Материалы готовятся"
+                          : sectionDone > 0 &&
+                              sectionDone < section.topics.length
+                            ? "Продолжить"
+                            : "Открыть раздел",
                       )}
                       {t(" ")}
                       <ArrowRight size={14} />

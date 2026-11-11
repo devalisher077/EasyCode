@@ -129,3 +129,29 @@
     transition: none;
   }
 }
+.drone-course-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  min-width: 280px;
+  color: #a6ceff;
+  padding: 24px;
+  background: radial-gradient(ellipse at center, #20457380, transparent 70%);
+}
+.drone-course-hero code {
+  font:
+    15px/2.1 "Geist Mono",
+    monospace;
+  color: #c4defc;
+}
+.course-card button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+@media (max-width: 700px) {
+  .drone-course-hero {
+    display: none;
+  }
+}

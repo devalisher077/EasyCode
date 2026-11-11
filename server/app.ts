@@ -92,6 +92,7 @@ interface Catalog {
 }
 // npm scripts run from the repository root, including the bundled production API.
 const materialRoot = path.resolve(process.cwd(), "content/materials");
+const droneMaterialRoot = path.resolve(process.cwd(), "content/drone-materials");
 
 export async function createApp(config: AppConfig = loadConfig()) {
   if (config.demo && !["127.0.0.1", "localhost", "::1"].includes(config.host))
@@ -103,15 +104,24 @@ export async function createApp(config: AppConfig = loadConfig()) {
   const catalog = JSON.parse(
     await readFile(path.join(materialRoot, "catalog.json"), "utf8"),
   ) as Catalog;
+  const droneCatalog = JSON.parse(
+    await readFile(path.join(droneMaterialRoot, "catalog.json"), "utf8"),
+  ) as Catalog;
   const materialMap = new Map(
     catalog.sections
       .flatMap((s) => s.topics.flatMap((t) => t.materials))
-      .map((m) => [m.path, m]),
+      .map((m) => [m.path, { ...m, sourceRoot: materialRoot, sourcePath: m.path }]),
   );
+  for (const material of droneCatalog.sections.flatMap(s => s.topics.flatMap(t => t.materials))) {
+    if (!material.path.startsWith("drones/")) throw new Error("Drone materials need a distinct course namespace.");
+    materialMap.set(material.path, { ...material, sourceRoot: droneMaterialRoot, sourcePath: material.path.slice("drones/".length) });
+  }
   materialMap.set("course-plan/План разделов.docx", {
     type: "teacher_notes",
     audience: "teacher",
     path: "course-plan/План разделов.docx",
+    sourceRoot: materialRoot,
+    sourcePath: "course-plan/План разделов.docx",
   });
   const origins = frontendOrigins(config);
   await app.register(cors, {
@@ -279,9 +289,11 @@ export async function createApp(config: AppConfig = loadConfig()) {
   app.get("/api/catalog", async (request, reply) => {
     // Avoid a shared cache reusing a teacher's response for another viewer.
     reply.header("Cache-Control", "private, no-store");
+    const { course } = z.object({ course: z.enum(["programming", "drones"]).optional() }).parse(request.query);
+    const selectedCatalog = course === "drones" ? droneCatalog : catalog;
     return {
-      ...catalog,
-      sections: catalog.sections.map((s) => ({
+      ...selectedCatalog,
+      sections: selectedCatalog.sections.map((s) => ({
         ...s,
         topics: s.topics.map((t) => ({
           ...t,
@@ -333,7 +345,9 @@ export async function createApp(config: AppConfig = loadConfig()) {
     if (material.audience === "teacher" && who(request).role !== "teacher")
       throw new HttpError(403, "Этот материал доступен только учителю.");
     // Exact catalog allowlist; raw user paths are never resolved without matching it.
-    const bytes = await readFile(path.join(materialRoot, material.path));
+    const sourcePath = path.resolve(material.sourceRoot, material.sourcePath);
+    if (!sourcePath.startsWith(`${material.sourceRoot}${path.sep}`)) throw new HttpError(404, "Материал не найден.");
+    const bytes = await readFile(sourcePath);
     reply.header("Cache-Control", "private, no-store");
     reply.header(
       "Content-Disposition",
@@ -360,8 +374,8 @@ export async function createApp(config: AppConfig = loadConfig()) {
       throw new HttpError(404, "Предпросмотр доступен только для презентаций PPTX.");
     // Only a catalog PPTX can select a preview. Neither a user PDF path nor an
     // external URL is accepted; the corresponding PDF stays beside its original.
-    const previewPath = path.resolve(materialRoot, material.path.slice(0, -5) + ".pdf");
-    if (!previewPath.startsWith(`${materialRoot}${path.sep}`))
+    const previewPath = path.resolve(material.sourceRoot, material.sourcePath.slice(0, -5) + ".pdf");
+    if (!previewPath.startsWith(`${material.sourceRoot}${path.sep}`))
       throw new HttpError(404, "Материал не найден.");
     let bytes: Buffer;
     try {
@@ -602,7 +616,8 @@ export async function createApp(config: AppConfig = loadConfig()) {
     const [progress, attempts, grades] = await Promise.all([store.getLessonProgress(studentId),
       store.attemptSummaries(classId, studentId), store.listGrades(classId, studentId)]);
     reply.header("Cache-Control", "private, no-store");
-    return { progress, attempts, grades, lessons: catalog.sections.flatMap(section => section.topics.map(topic => {
+    const journalLessonIds = new Set(catalog.sections.flatMap(section => section.topics.map(topic => topic.number)));
+    return { progress: progress.filter(row => journalLessonIds.has(row.lessonId)), attempts, grades, lessons: catalog.sections.flatMap(section => section.topics.map(topic => {
       const lesson = findLesson(topic.number)!;
       return { id: lesson.id, title: lesson.title, sectionNumber: lesson.sectionNumber, sectionTitle: lesson.sectionTitle,
         stepIds: lesson.steps.map(step => step.id), stepTitles: lesson.steps.map(step => step.title), quizTotal: lesson.quiz.length };

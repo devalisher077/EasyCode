@@ -17,6 +17,8 @@ export default defineConfig({
         "**/.git/**",
         "**/content/materials/**",
         "**/content/lessons/**",
+        "**/content/drone-materials/**",
+        "**/content/drone-lessons/**",
         "**/server/**",
         "**/supabase/**",
       ],

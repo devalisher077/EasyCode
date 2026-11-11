@@ -140,6 +140,8 @@ export class Store {
         p_step_id: change.stepId ?? null, p_score: change.score ?? null,
         p_total: change.score === undefined ? null : lesson.quiz.length,
       });
+      if (error && lesson.id.startsWith("drone-") && ["23514", "P0001", "42P01", "42883", "PGRST202", "PGRST205"].includes(error.code))
+        throw new LessonProgressUnavailable(false, true);
       if (error) throw this.progressError(error);
       if (!data?.[0]) throw new LessonProgressUnavailable();
       return toLessonProgress(data[0]);

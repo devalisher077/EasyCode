@@ -5,8 +5,8 @@
   "outputDirectory": "dist",
   "functions": {
     "api/index.ts": {
-      "includeFiles": "content/materials/catalog.json",
-      "excludeFiles": "{.env,.env.*,**/*.test.*,**/*.spec.*,content/materials/**/*.pdf,content/materials/**/*.pptx,content/materials/**/*.docx}",
+      "includeFiles": "content/{materials,drone-materials}/catalog.json",
+      "excludeFiles": "{.env,.env.*,**/*.test.*,**/*.spec.*,content/{materials,drone-materials}/**/*.pdf,content/{materials,drone-materials}/**/*.pptx,content/{materials,drone-materials}/**/*.docx}",
       "maxDuration": 60
     }
   },

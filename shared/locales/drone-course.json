@@ -1,0 +1,37 @@
+[
+  ["Выбор курса", "Choose a course", "Курсты таңдау"],
+  ["Дроны", "Drones", "Дрондар"],
+  ["ДРОНЫ И 3D-ЛАБОРАТОРИЯ", "DRONES AND 3D LAB", "ДРОНДАР ЖӘНЕ 3D ЗЕРТХАНА"],
+  [
+    "Устройство дронов, координаты и программирование полётов. Первые три раздела уже доступны; материалы разделов 4–6 готовятся.",
+    "Drone components, coordinates and flight programming. The first three sections are available; sections 4–6 are being prepared.",
+    "Дрон құрылысы, координаттар және ұшуды бағдарламалау. Алғашқы үш бөлім қолжетімді; 4–6 бөлімдердің материалдары дайындалуда."
+  ],
+  ["6 доступных тем", "6 available topics", "6 қолжетімді тақырып"],
+  [
+    "Устройство дрона и его применение.",
+    "Drone components and applications.",
+    "Дрон құрылысы және қолданылуы."
+  ],
+  [
+    "Интерфейс лаборатории, координаты и направление.",
+    "Lab interface, coordinates and heading.",
+    "Зертхана интерфейсі, координаттар және бағыт."
+  ],
+  [
+    "Взлёт, посадка, изменение высоты и повороты.",
+    "Takeoff, landing, altitude changes and turns.",
+    "Ұшу, қону, биіктікті өзгерту және бұрылу."
+  ],
+  [
+    "Материалы раздела готовятся.",
+    "Section materials are being prepared.",
+    "Бөлім материалдары дайындалуда."
+  ],
+  ["Материалы готовятся", "Materials coming soon", "Материалдар дайындалуда"],
+  [
+    "Прогресс курса дронов не сохранён: примените миграцию 202611110001_drone_lesson_progress.sql в Supabase.",
+    "Drone course progress was not saved: apply 202611110001_drone_lesson_progress.sql in Supabase.",
+    "Дрондар курсының үлгерімі сақталмады: Supabase жүйесінде 202611110001_drone_lesson_progress.sql миграциясын орындаңыз."
+  ]
+]

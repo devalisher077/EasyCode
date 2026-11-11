@@ -95,6 +95,9 @@ test("course, block editor, code execution and private file restrictions", async
   for (const path of [
     "/content/materials/catalog.json",
     "/content/materials/section-01/topic-01/Конспект для учителя.docx",
+    "/content/drone-materials/catalog.json",
+    "/content/drone-materials/section-01/topic-01/Конспект для учителя.docx",
+    "/content/drone-lessons/index.ts",
     "/.env",
     "/server/config.ts",
   ]) {

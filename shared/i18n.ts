@@ -7,6 +7,9 @@ import materials from "./locales/materials.json" with { type: "json" };
 import journal from "./locales/journal.json" with { type: "json" };
 import coursePractice from "./locales/course-practice.json" with { type: "json" };
 import drone from "./locales/drone.json" with { type: "json" };
+import droneCourse from "./locales/drone-course.json" with { type: "json" };
+import dronePractice from "./locales/drone-practice.json" with { type: "json" };
+import droneTitles from "./locales/drone-lesson-titles.json" with { type: "json" };
 
 export type Language = "ru" | "kk" | "en";
 export const languages: readonly Language[] = ["ru", "kk", "en"];
@@ -24,6 +27,9 @@ export const messages = [
   ...journal,
   ...coursePractice,
   ...drone,
+  ...droneCourse,
+  ...dronePractice,
+  ...droneTitles,
 ];
 const dictionary = new Map(
   messages.map(([ru, en, kk]) => [normalize(ru), { en, kk }]),

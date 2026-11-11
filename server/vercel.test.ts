@@ -130,8 +130,8 @@ describe("Vercel API entry point", () => {
   it("bundles only the catalog and keeps Storage files and API query parameters private", () => {
     expect(deployment.framework).toBe("vite");
     expect(deployment.outputDirectory).toBe("dist");
-    expect(deployment.functions["api/index.ts"].includeFiles).toBe("content/materials/catalog.json");
-    expect(deployment.functions["api/index.ts"].excludeFiles).toContain("content/materials/**/*.pdf");
+    expect(deployment.functions["api/index.ts"].includeFiles).toBe("content/{materials,drone-materials}/catalog.json");
+    expect(deployment.functions["api/index.ts"].excludeFiles).toContain("content/{materials,drone-materials}/**/*.pdf");
     // An unnamed capture must not overwrite the material's ?path= query.
     expect(deployment.rewrites[0]).toEqual({ source: "/api/(.*)", destination: "/api" });
     expect(deployment.rewrites.slice(1).every(route => route.destination === "/index.html")).toBe(true);

@@ -92,14 +92,16 @@ export default function DroneLab({
   );
 }
 
-function DroneWorkspace({
+export function DroneWorkspace({
   mission,
   draftOwner,
   onNotice,
+  localNote = "Свободная практика. Черновик сохраняется кнопкой в этом браузере; в журнал курса результат не отправляется.",
 }: {
   mission: DroneMission;
   draftOwner: string;
   onNotice: (message: string) => void;
+  localNote?: string;
 }) {
   const draftKey = `easycode:drone:v1:${draftOwner}:${mission.id}`;
   const [draft] = useState(() => readDraft(draftKey));
@@ -336,11 +338,7 @@ function DroneWorkspace({
             </button>
           </div>
           <p className="drone-local-note" role="status">
-            {t(
-              saved
-                ? "Черновик сохранён в этом браузере."
-                : "Свободная практика. Черновик сохраняется кнопкой в этом браузере; в журнал курса результат не отправляется.",
-            )}
+            {t(saved ? "Черновик сохранён в этом браузере." : localNote)}
           </p>
         </section>
       </div>

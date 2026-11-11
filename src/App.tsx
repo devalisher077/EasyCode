@@ -28,6 +28,9 @@ import "./components/electronics.css";
 
 const Electronics = lazy(() => import("./components/Electronics"));
 const DroneLab = lazy(() => import("./components/DroneLab"));
+const DroneCoursePractice = lazy(
+  () => import("./components/DroneCoursePractice"),
+);
 
 const PresentationViewer = lazy(() =>
   import("./components/PresentationViewer").then((module) => ({
@@ -53,6 +56,9 @@ export default function App({
   const lessonId = routePath.startsWith("/learn/topic/")
     ? routePath.slice("/learn/topic/".length)
     : null;
+  const droneCourse =
+    routeQuery.get("course") === "drones" ||
+    (lessonId || routeQuery.get("lesson") || "").startsWith("drone-");
   const page: Page =
     lessonId !== null
       ? "lesson"
@@ -147,7 +153,7 @@ export default function App({
     setCatalog(null);
     if (!mode || !identityReady || account.error) return;
     let current = true;
-    api<Catalog>("/catalog")
+    api<Catalog>(droneCourse ? "/catalog?course=drones" : "/catalog")
       .then((data) => {
         if (current) setCatalog(data);
       })
@@ -163,7 +169,7 @@ export default function App({
     return () => {
       current = false;
     };
-  }, [mode, userId, role, identityReady, account.error]);
+  }, [mode, userId, role, identityReady, account.error, droneCourse]);
   useEffect(() => {
     if (notice) {
       const timer = setTimeout(() => setNotice(""), 6500);
@@ -177,7 +183,9 @@ export default function App({
         ? "/learn?practice=1"
         : next === "classroom"
           ? "/learn?view=classroom"
-          : "/learn",
+          : droneCourse
+            ? "/learn?course=drones"
+            : "/learn",
     );
     setMobileMenu(false);
     setQuery("");
@@ -314,7 +322,7 @@ export default function App({
                 page === "course"
                   ? "Мой курс"
                   : page === "lesson"
-                    ? `Тема ${lessonId}`
+                    ? `Тема ${lessonId?.replace(/^drone-/, "")}`
                     : page === "practice"
                       ? "Практическая среда"
                       : role === "teacher"
@@ -413,17 +421,49 @@ export default function App({
         <main key={`${userId}-${role}-${page}`}>
           {t(
             page === "course" && (
-              <Course
-                catalog={catalog}
-                query={query}
-                onTopic={(selected) =>
-                  onNavigate(`/learn/topic/${selected.number}`)
-                }
-                onPractice={() => openPractice()}
-                progress={learning.progress}
-                storage={learning.storage}
-                storageError={learning.error}
-              />
+              <>
+                <nav
+                  className="practice-environments"
+                  aria-label={t("Выбор курса")}
+                >
+                  <button
+                    aria-pressed={!droneCourse}
+                    onClick={() => {
+                      setQuery("");
+                      onNavigate("/learn");
+                    }}
+                  >
+                    {t("Основы программирования")}
+                  </button>
+                  <button
+                    aria-pressed={droneCourse}
+                    onClick={() => {
+                      setQuery("");
+                      onNavigate("/learn?course=drones");
+                    }}
+                  >
+                    {t("Дроны")}
+                  </button>
+                </nav>
+                <Course
+                  droneCourse={droneCourse}
+                  catalog={catalog}
+                  query={query}
+                  onTopic={(selected) =>
+                    onNavigate(`/learn/topic/${selected.number}`)
+                  }
+                  onPractice={() =>
+                    droneCourse
+                      ? onNavigate(
+                          "/learn?practice=1&environment=drone&course=drones",
+                        )
+                      : openPractice()
+                  }
+                  progress={learning.progress}
+                  storage={learning.storage}
+                  storageError={learning.error}
+                />
+              </>
             ),
           )}
           {t(
@@ -439,14 +479,18 @@ export default function App({
                 onBack={() => navigate("course")}
                 onNavigateLesson={(id) => onNavigate(`/learn/topic/${id}`)}
                 onPractice={() =>
-                  lessonId?.startsWith("5.")
+                  lessonId?.startsWith("drone-")
                     ? onNavigate(
-                        `/learn?practice=1&environment=electronics&lesson=${lessonId}`,
+                        `/learn?practice=1&environment=drone&lesson=${lessonId}`,
                       )
-                    : (() => {
-                        setSelectedTask(undefined);
-                        onNavigate(`/learn?practice=1&lesson=${lessonId}`);
-                      })()
+                    : lessonId?.startsWith("5.")
+                      ? onNavigate(
+                          `/learn?practice=1&environment=electronics&lesson=${lessonId}`,
+                        )
+                      : (() => {
+                          setSelectedTask(undefined);
+                          onNavigate(`/learn?practice=1&lesson=${lessonId}`);
+                        })()
                 }
                 onSignIn={openAccount}
                 materials={
@@ -507,11 +551,31 @@ export default function App({
                         </div>
                       }
                     >
-                      <DroneLab
-                        key={userId || "guest"}
-                        draftOwner={userId || "guest"}
-                        onNotice={setNotice}
-                      />
+                      {/^drone-[1-3]\.[12]$/.test(
+                        routeQuery.get("lesson") || "",
+                      ) ? (
+                        <DroneCoursePractice
+                          lessonId={routeQuery.get("lesson")!}
+                          draftOwner={userId || "guest"}
+                          onNotice={setNotice}
+                          onBack={() =>
+                            onNavigate(
+                              `/learn/topic/${routeQuery.get("lesson")}`,
+                            )
+                          }
+                          onFreePractice={() =>
+                            onNavigate(
+                              "/learn?practice=1&environment=drone&course=drones",
+                            )
+                          }
+                        />
+                      ) : (
+                        <DroneLab
+                          key={userId || "guest"}
+                          draftOwner={userId || "guest"}
+                          onNotice={setNotice}
+                        />
+                      )}
                     </Suspense>
                   ) : routeQuery.get("environment") === "electronics" ? (
                     <Suspense

@@ -2,6 +2,8 @@ import type { Lesson, QuizResult } from "./lessons";
 import { translate, type Language } from "./i18n";
 import en from "./locales/lessons-en.json" with { type: "json" };
 import kk from "./locales/lessons-kk.json" with { type: "json" };
+import droneEn from "./locales/drone-lessons-en.json" with { type: "json" };
+import droneKk from "./locales/drone-lessons-kk.json" with { type: "json" };
 
 export interface LessonCopy {
   description: string;
@@ -14,11 +16,17 @@ export const lessonCopies = { en, kk } as unknown as Record<
   "en" | "kk",
   Record<string, LessonCopy>
 >;
+const droneCopies = {
+  en: droneEn,
+  kk: droneKk,
+} as unknown as typeof lessonCopies;
 
 /** Presentation-only adaptation. IDs, code, grading and progress remain unchanged. */
 export function localizeLesson(lesson: Lesson, language: Language): Lesson {
   if (language === "ru") return lesson;
-  const copy = lessonCopies[language][lesson.id];
+  const copy = (lesson.id.startsWith("drone-") ? droneCopies : lessonCopies)[
+    language
+  ][lesson.id];
   if (!copy) return lesson;
   return {
     ...lesson,
@@ -44,10 +52,12 @@ export function localizeLesson(lesson: Lesson, language: Language): Lesson {
     })),
     practice: {
       ...lesson.practice,
-      title: translate(lesson.practice.title, language),
-      instructions: lesson.practice.instructions.map((text) =>
-        translate(text, language),
-      ),
+      title: lesson.id.startsWith("drone-")
+        ? copy.practice[0]
+        : translate(lesson.practice.title, language),
+      instructions: lesson.id.startsWith("drone-")
+        ? copy.practice[1]
+        : lesson.practice.instructions.map((text) => translate(text, language)),
     },
     source: {
       ...lesson.source,
@@ -64,7 +74,9 @@ export function localizeQuizResult(
   language: Language,
 ): QuizResult {
   if (language === "ru") return result;
-  const copy = lessonCopies[language][lesson.id];
+  const copy = (lesson.id.startsWith("drone-") ? droneCopies : lessonCopies)[
+    language
+  ][lesson.id];
   if (!copy) return result;
   return {
     ...result,

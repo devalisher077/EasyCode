@@ -1,17 +1,21 @@
 import { lessons } from "../content/lessons/index.js";
+import { droneLessons } from "../content/drone-lessons/index.js";
+import { droneFeedback } from "../content/drone-lessons/feedback.js";
 import localizedFeedback from './locales/lesson-feedback.json' with { type: "json" };
 import type { Lesson, LessonDefinition, LessonProgress, QuizResult } from "../shared/lessons.js";
 
 export class LessonProgressUnavailable extends Error {
   readonly statusCode = 503;
-  constructor(migrationMissing = false) {
-    super(migrationMissing
+  constructor(migrationMissing = false, droneCourse = false) {
+    super(droneCourse
+      ? "Прогресс курса дронов не сохранён: примените миграцию 202611110001_drone_lesson_progress.sql в Supabase."
+      : migrationMissing
       ? "Прогресс не сохранён: примените миграцию 202610070001_lesson_progress.sql в Supabase."
       : "Хранилище прогресса временно недоступно. Результат не сохранён; попробуйте ещё раз.");
   }
 }
 
-export const findLesson = (id: string): LessonDefinition | undefined => lessons.find(lesson => lesson.id === id);
+export const findLesson = (id: string): LessonDefinition | undefined => [...lessons, ...droneLessons].find(lesson => lesson.id === id);
 
 /** Answer keys and explanations stay on the server until an assessment is submitted. */
 export function publicLesson(lesson: LessonDefinition): Lesson {
@@ -26,7 +30,7 @@ export function validQuizAnswers(lesson: LessonDefinition, answers: Record<strin
 
 export function assessLesson(lesson: LessonDefinition, answers: Record<string, string>): QuizResult {
   if (!validQuizAnswers(lesson, answers)) throw new Error("Ответьте на все вопросы и выберите существующие варианты.");
-  const feedback = lesson.quiz.map(question => ({ questionId: question.id, correct: answers[question.id] === question.correctOptionId, explanation: question.explanation, translations: (localizedFeedback as Record<string, { en: string; kk: string }>)[question.id] }));
+  const feedback = lesson.quiz.map(question => ({ questionId: question.id, correct: answers[question.id] === question.correctOptionId, explanation: question.explanation, translations: (localizedFeedback as Record<string, { en: string; kk: string }>)[question.id] || droneFeedback[question.id] }));
   const score = feedback.filter(answer => answer.correct).length;
   return { score, total: lesson.quiz.length, passed: score === lesson.quiz.length, feedback };
 }

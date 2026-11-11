@@ -1,0 +1,140 @@
+{
+  "course": {
+    "title": "Дроны",
+    "product": "EasyCode",
+    "target_grades": "3-6",
+    "section_count": 6,
+    "topic_count": 6
+  },
+  "sections": [
+    {
+      "number": 1,
+      "title": "Знакомство с дронами",
+      "topics": [
+        {
+          "number": "drone-1.1",
+          "title": "Что такое дрон и где его используют",
+          "materials": [
+            {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "drones/section-01/topic-01/Презентация.pptx"
+            },
+            {
+              "type": "teacher_notes",
+              "audience": "teacher",
+              "path": "drones/section-01/topic-01/Конспект для учителя.docx"
+            }
+          ]
+        },
+        {
+          "number": "drone-1.2",
+          "title": "Основные части учебного квадрокоптера",
+          "materials": [
+            {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "drones/section-01/topic-02/Презентация.pptx"
+            },
+            {
+              "type": "teacher_notes",
+              "audience": "teacher",
+              "path": "drones/section-01/topic-02/Конспект для учителя.docx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title": "Работа в 3D-лаборатории",
+      "topics": [
+        {
+          "number": "drone-2.1",
+          "title": "Интерфейс 3D-лаборатории и выбор миссии",
+          "materials": [
+            {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "drones/section-02/topic-01/Презентация.pptx"
+            },
+            {
+              "type": "teacher_notes",
+              "audience": "teacher",
+              "path": "drones/section-02/topic-01/Конспект для учителя.docx"
+            }
+          ]
+        },
+        {
+          "number": "drone-2.2",
+          "title": "Координаты, высота и направление на поле",
+          "materials": [
+            {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "drones/section-02/topic-02/Презентация.pptx"
+            },
+            {
+              "type": "teacher_notes",
+              "audience": "teacher",
+              "path": "drones/section-02/topic-02/Конспект для учителя.docx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Первые полётные программы",
+      "topics": [
+        {
+          "number": "drone-3.1",
+          "title": "Взлёт, движение вперёд и посадка",
+          "materials": [
+            {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "drones/section-03/topic-01/Презентация.pptx"
+            },
+            {
+              "type": "teacher_notes",
+              "audience": "teacher",
+              "path": "drones/section-03/topic-01/Конспект для учителя.docx"
+            }
+          ]
+        },
+        {
+          "number": "drone-3.2",
+          "title": "Изменение высоты и повороты на 90°",
+          "materials": [
+            {
+              "type": "presentation",
+              "audience": "student_and_teacher",
+              "path": "drones/section-03/topic-02/Презентация.pptx"
+            },
+            {
+              "type": "teacher_notes",
+              "audience": "teacher",
+              "path": "drones/section-03/topic-02/Конспект для учителя.docx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Раздел 4",
+      "topics": []
+    },
+    {
+      "number": 5,
+      "title": "Раздел 5",
+      "topics": []
+    },
+    {
+      "number": 6,
+      "title": "Раздел 6",
+      "topics": []
+    }
+  ]
+}

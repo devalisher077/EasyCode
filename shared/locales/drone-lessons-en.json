@@ -1,0 +1,380 @@
+{
+  "drone-1.1": {
+    "description": "Discover how drones differ, who controls them and how to choose equipment for a task.",
+    "goals": [
+      "Explain what unmanned means",
+      "Distinguish manual and programmed control",
+      "Match a drone's capabilities to a task"
+    ],
+    "steps": [
+      [
+        "Flying drones and operators",
+        [
+          "Drone is a general name for an unmanned device. This course focuses on flying drones, which have no pilot on board. They may have propellers or wings, so shape alone is not enough to identify one.",
+          "An operator is a person who controls a drone and monitors its task. Even without a pilot on board, a person chooses the goal, prepares the work and evaluates the result."
+        ]
+      ],
+      [
+        "Different designs",
+        [
+          "Multirotor aircraft use several spinning propellers and can hover. A quadcopter has four lifting propellers. An aircraft with six propellers may also be a drone, but it is not a quadcopter.",
+          "Fixed-wing drones need airflow relative to their wings to produce lift. Hybrid designs combine different approaches. Capabilities depend on the design: not every drone can hover."
+        ]
+      ],
+      [
+        "Manual commands and programs",
+        [
+          "With manual control, the operator sends commands from a controller or app during operation. With programmed control, actions are specified in advance, such as taking off, moving forward and landing.",
+          "An exact route needs clear commands and parameters: where to move and how far. EasyCode tests these on a virtual drone. A simulator helps us learn algorithms but does not reproduce every condition of real flight."
+        ]
+      ],
+      [
+        "Choose the task before the device",
+        [
+          "Drones are used for photography, filming, surveying fields and structures, studying areas and education. An overhead stadium picture requires a camera and a suitable viewpoint. Learning programming requires a learning environment and supported commands.",
+          "Every solution has limits. An ordinary camera cannot see through an opaque wall. Size, sensors, battery and operating conditions affect the result. Use real aircraft only according to their model's instructions and your teacher's directions."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "Why is a flying drone called unmanned?",
+        [
+          "It always flies without any human involvement",
+          "There is no pilot on board",
+          "It must have four propellers"
+        ]
+      ],
+      [
+        "What defines a quadcopter?",
+        ["Four lifting propellers", "A mandatory camera", "Fixed wings"]
+      ],
+      [
+        "What should you do first when choosing a drone?",
+        [
+          "Pick the brightest body",
+          "Count the controller buttons",
+          "Define the task and desired result"
+        ]
+      ]
+    ],
+    "practice": [
+      "A drone for a task",
+      [
+        "Read each situation and identify the task.",
+        "Choose a suitable design and capabilities, considering human involvement and operating conditions.",
+        "Check your answers and explain why each choice fits."
+      ]
+    ]
+  },
+  "drone-1.2": {
+    "description": "Explore quadcopter parts and follow a command from the operator to movement.",
+    "goals": [
+      "Name the main quadcopter parts",
+      "Distinguish a motor from a propeller",
+      "Explain the controller and sensors"
+    ],
+    "steps": [
+      [
+        "Frame and power source",
+        [
+          "The frame holds the parts in place, including motors and electronics. The battery stores energy and supplies the motors and electronic system.",
+          "Propeller guards surround the edges and reduce the risk of contact. Not every model has them, and they do not make spinning propellers safe to touch. In this practice we study a model, without assembling or launching real aircraft."
+        ]
+      ],
+      [
+        "The motor spins; the propeller produces thrust",
+        [
+          "The learning quadcopter diagram has four motor–propeller pairs. Each motor receives electrical energy and spins its propeller. The spinning propeller moves air and produces thrust.",
+          "In steady hovering, upward thrust balances the aircraft's weight. To start moving forward, the quadcopter tilts so that part of the thrust points forward. The educational 3D scene simplifies this motion and does not calculate aerodynamics."
+        ]
+      ],
+      [
+        "How a command is carried out",
+        [
+          "The operator sends a command from a controller or app. The flight controller processes it and changes the motors' operation. The motors turn the propellers, thrust changes, and the aircraft moves.",
+          "Sensors report movement and body position. The controller uses their data to make corrections. Reporting information and controlling motors are different roles."
+        ]
+      ],
+      [
+        "Equipment depends on the model",
+        [
+          "A camera records images or video. A distance sensor, if installed, reports how close a surface is in its measurement direction. Do not assume every drone has every possible sensor.",
+          "A learning quadcopter can fly without a camera if its control system does not rely on one. Explain each role: the frame holds, the battery powers, the controller controls, the motors spin and the propellers produce thrust."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "Which part powers the motors and electronics?",
+        ["Frame", "Propeller guards", "Battery"]
+      ],
+      [
+        "How is a motor different from a propeller?",
+        [
+          "A motor spins the propeller; the propeller produces thrust",
+          "They are two names for the same part",
+          "The propeller stores the program"
+        ]
+      ],
+      [
+        "Why does the controller need sensor data?",
+        [
+          "To decorate the body",
+          "To account for motion and adjust motor operation",
+          "To replace the battery"
+        ]
+      ]
+    ],
+    "practice": [
+      "Identify a quadcopter part",
+      [
+        "Read what each part does.",
+        "Match the functions to the propeller, motor, battery, controller and frame.",
+        "Check your answers and explain the difference between energy, data and control."
+      ]
+    ]
+  },
+  "drone-2.1": {
+    "description": "Find the task description, editor, scene and flight data.",
+    "goals": [
+      "Find the main lab areas",
+      "Read all mission requirements",
+      "Distinguish Run, Step and Reset"
+    ],
+    "steps": [
+      [
+        "Commands and results",
+        [
+          "The 3D lab is an educational flight model. A mission sets the goal, the editor is where you build a program, and the scene shows the drone and route. Indicators help you check position, altitude and remaining battery.",
+          "In Blocks, connect commands into a chain. To code copies that chain into the text editor. You can change the text separately, but it is not automatically converted back into blocks."
+        ]
+      ],
+      [
+        "Each mission has its own requirements",
+        [
+          "The free lab has three missions. First flight requires flying four cells and landing on the blue pad. Air route also requires passing two rings at altitude 2. Delivery drone requires picking up the orange cargo and dropping it after landing on the blue pad.",
+          "Read the whole task and find the start, mission objects and landing place. Altitude 0 alone does not mean success: the drone might have landed in the wrong cell or failed to deliver cargo."
+        ]
+      ],
+      [
+        "Checking a program",
+        [
+          "Run executes the whole program. Step shows the next action in the model, so you can trace a long movement cell by cell. Stop interrupts execution, while Reset restores the initial flight state.",
+          "If the result differs from your plan, stop, correct the commands and check again from the start. Save draft keeps the program in this browser. It does not mean the solution has been sent to a teacher."
+        ]
+      ],
+      [
+        "The camera does not control the drone",
+        [
+          "Dragging the scene changes the camera viewpoint so you can inspect the route from another side. The drone's coordinates and heading remain the same.",
+          "A turn command changes the drone's own heading. To check the result, examine coordinates, altitude, checkpoints and the mission message, not just the picture."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "Where do you build commands?",
+        [
+          "In the program editor",
+          "In the battery indicator",
+          "In the mission name"
+        ]
+      ],
+      [
+        "What changes when you rotate the camera?",
+        [
+          "The drone's heading",
+          "Only the scene viewpoint",
+          "The remaining battery"
+        ]
+      ],
+      [
+        "How do you return the drone to the start before another check?",
+        ["Rotate the camera", "Save a draft", "Press Reset"]
+      ]
+    ],
+    "practice": [
+      "Find the lab tool",
+      [
+        "Choose the appropriate interface element or mission for each situation.",
+        "Distinguish changing the viewpoint, stopping and returning to the start.",
+        "After checking, open the free lab and find these elements on screen."
+      ]
+    ]
+  },
+  "drone-2.2": {
+    "description": "Read coordinates and predict where movement and turns will lead.",
+    "goals": [
+      "Read (X, Y, Z)",
+      "Distinguish cell, altitude and heading",
+      "Predict coordinates after commands"
+    ],
+    "steps": [
+      [
+        "Three numbers describe position",
+        [
+          "Coordinates are written in the order (X, Y, Z). X and Z identify the field cell; Y is altitude. At (1, 0, 1), the drone is on the ground in cell X = 1, Z = 1.",
+          "At (2, 3, 4), the cell is X = 2, Z = 4 and altitude is 3. Altitude is the second number, even though the panel also shows it separately."
+        ]
+      ],
+      [
+        "What each command changes",
+        [
+          "Taking off from (1, 0, 1) produces (1, 1, 1). Only Y changes, so the drone remains above the same cell. Flying forward at a fixed altitude changes X or Z.",
+          "Turning in place changes heading but keeps all coordinates. Rotating the camera only changes the view. Position answers where the drone is; heading tells us where forward will take it."
+        ]
+      ],
+      [
+        "Forward depends on heading",
+        [
+          "At the lab start, the drone faces +X, so forward increases X. A right turn of 90° changes its heading to +Z. Forward then increases Z while altitude remains unchanged.",
+          "For example, the drone is at (2, 1, 2), facing +X. After turning right, it is still at (2, 1, 2). After flying forward two cells, it is at (2, 1, 4)."
+        ]
+      ],
+      [
+        "Above a pad and on a pad",
+        [
+          "First flight starts at (1, 0, 1). After takeoff: (1, 1, 1). After four cells along +X: (5, 1, 1). After landing: (5, 0, 1). The distance 4 is added to the starting coordinate 1.",
+          "At (5, 1, 1) the drone is still airborne. Landing requires the correct cell and Y = 0. Predict the coordinates before running, then compare them with the indicators."
+        ]
+      ]
+    ],
+    "quiz": [
+      ["What is the altitude at (2, 3, 4)?", ["2", "4", "3"]],
+      [
+        "What changes when the drone turns in place?",
+        ["Only its heading", "All three coordinates", "Only altitude"]
+      ],
+      [
+        "The drone is at (3, 1, 1), facing +X. It turns right and flies two cells. Where is it?",
+        ["(5, 1, 1)", "(3, 1, 3)", "(3, 3, 1)"]
+      ]
+    ],
+    "practice": [
+      "Predict the coordinates",
+      [
+        "Read the starting coordinates and heading.",
+        "For each movement, decide which number changes. Keep coordinates unchanged during a turn.",
+        "Choose the final coordinates and check your prediction."
+      ]
+    ]
+  },
+  "drone-3.1": {
+    "description": "Build a first flight program and verify landing on the correct pad.",
+    "goals": [
+      "Build a program with three commands",
+      "Calculate the distance to the pad",
+      "Find and fix a route error"
+    ],
+    "steps": [
+      [
+        "From a goal to precise actions",
+        [
+          "An algorithm puts actions in the required order. A program writes them as blocks or code. Here the goal is to land on the blue pad; the actions are takeoff, movement and landing.",
+          "The start is (1, 0, 1), and the destination is (5, 0, 1). The drone already faces +X. The distance is 5 − 1 = 4 cells, so no turn is needed."
+        ]
+      ],
+      [
+        "Three commands",
+        [
+          "drone.takeoff() raises the drone from the ground to altitude 1. drone.forward(4) moves it four cells along its current heading. drone.land() lands it in its current cell.",
+          "Landing does not automatically move the aircraft to the destination. Reach the correct cell first. The number in the movement command specifies distance, not a final coordinate."
+        ]
+      ],
+      [
+        "Checking coordinates",
+        [
+          "After takeoff, expect (1, 1, 1); after the full forward movement, (5, 1, 1); after landing, (5, 0, 1). Step mode displays a four-cell movement one cell at a time.",
+          "Connect blocks from top to bottom or enter code lines in the same order. Predict the position after each action before running, then compare it with flight data."
+        ]
+      ],
+      [
+        "Three common mistakes",
+        [
+          "Movement before takeoff cannot perform this route. Put takeoff first. If you specify three cells instead of four, the drone lands at (4, 0, 1), one cell short.",
+          "Without a landing command, the drone remains above the pad at altitude 1. Find the first difference from the plan, fix the program, reset and run again. Check both the cell and altitude."
+        ]
+      ]
+    ],
+    "quiz": [
+      ["How many cells separate X = 1 and X = 5 along +X?", ["5", "4", "1"]],
+      [
+        "Which command must precede movement from the ground?",
+        ["drone.land()", "drone.turn_right()", "drone.takeoff()"]
+      ],
+      [
+        "The drone is at (5, 1, 1). What is still needed?",
+        ["Land in this cell", "Fly another four cells", "Rotate the camera"]
+      ]
+    ],
+    "practice": [
+      "First programmed flight",
+      [
+        "Build takeoff, forward four cells and landing using blocks or code.",
+        "Trace the coordinates step by step, then run the entire program.",
+        "Land at (5, 0, 1) and obtain a successful mission result."
+      ]
+    ]
+  },
+  "drone-3.2": {
+    "description": "Build a route with a climb and a turn while keeping track of coordinates.",
+    "goals": [
+      "Change altitude relative to its current value",
+      "Distinguish turning and moving",
+      "Check command order in a route"
+    ],
+    "steps": [
+      [
+        "Climbing only changes altitude",
+        [
+          "In (X, Y, Z), Y represents altitude. If a drone at (1, 1, 1) climbs by 1, it reaches (1, 2, 1). X and Z remain unchanged.",
+          "drone.up(1) means climb one unit from the current altitude. If altitude is already 2, it becomes 3. The lab's maximum altitude is 5."
+        ]
+      ],
+      [
+        "A quarter-turn",
+        [
+          "90° is a quarter of a full turn. drone.turn_right() turns right, and drone.turn_left() turns left. A turn neither moves the drone into another cell nor changes its altitude.",
+          "Initially, the heading is +X. A right turn makes it +Z. The next forward command follows this new heading, regardless of the camera viewpoint."
+        ]
+      ],
+      [
+        "A route with a climb and a turn",
+        [
+          "This task starts at (1, 0, 1). Take off, fly forward two cells and climb by 1. At the turning point, the drone must be at (3, 2, 1).",
+          "Turn right, fly one cell along +Z and land. The destination is (3, 0, 2). The checkpoint at altitude 2 verifies that you did not skip the climb."
+        ]
+      ],
+      [
+        "Why order matters",
+        [
+          "Flying an extra cell before turning continues along the old heading +X and misses the destination. Turning afterwards changes only the heading; it cannot return the drone to the required cell.",
+          "After each step, check the cell, altitude and heading. Find the first difference from the plan and reorder the incorrect commands. Reset and check the complete route again."
+        ]
+      ]
+    ],
+    "quiz": [
+      [
+        "Altitude is 2. What happens after drone.up(1)?",
+        ["Altitude becomes 1", "The drone moves along X", "Altitude becomes 3"]
+      ],
+      [
+        "How do coordinates change during a 90° turn in place?",
+        ["They remain unchanged", "X increases by 1", "Y becomes 0"]
+      ],
+      [
+        "The drone must fly along a new heading. Which order is needed?",
+        ["Forward, then turn", "Turn, then forward", "Only rotate the camera"]
+      ]
+    ],
+    "practice": [
+      "Climb and turn",
+      [
+        "Take off from (1, 0, 1), fly two cells and climb to altitude 2 at (3, 2, 1).",
+        "Turn right, fly one cell and land at (3, 0, 2).",
+        "Check the route step by step, then run it all at once."
+      ]
+    ]
+  }
+}

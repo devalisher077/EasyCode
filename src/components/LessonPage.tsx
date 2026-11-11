@@ -56,13 +56,15 @@ type Props = {
 };
 
 function followingLesson(id: string) {
-  const match = /^(\d+)\.([12])$/.exec(id);
+  const drone = id.startsWith("drone-");
+  const prefix = drone ? "drone-" : "";
+  const match = /^(\d+)\.([12])$/.exec(id.replace(/^drone-/, ""));
   if (!match) return null;
   const section = Number(match[1]);
   return match[2] === "1"
-    ? `${section}.2`
-    : section < 6
-      ? `${section + 1}.1`
+    ? `${prefix}${section}.2`
+    : section < (drone ? 3 : 6)
+      ? `${prefix}${section + 1}.1`
       : null;
 }
 
@@ -269,7 +271,8 @@ export function LessonPage({
         <div className="lesson-heading-copy">
           <span className="eyebrow">
             {t("ТЕМА ")}
-            {t(lesson.id)} <span className="lesson-eyebrow-dot">·</span>
+            {t(lesson.id.replace(/^drone-/, ""))}{" "}
+            <span className="lesson-eyebrow-dot">·</span>
             {t(" ")}
             {t("УЧЕБНЫЙ МАТЕРИАЛ")}
           </span>

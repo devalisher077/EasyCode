@@ -5,7 +5,6 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 const bucket = "easycode-materials";
-const root = path.resolve("content/materials");
 const mime = {
   pdf: "application/pdf",
   pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
@@ -13,15 +12,19 @@ const mime = {
 };
 const mode = process.argv[2] || "--dry-run";
 class ImportError extends Error {}
-const topicArg = process.argv[3] === "--topics" ? process.argv[4] : undefined;
-if (
-  !["--dry-run", "--upload"].includes(mode) ||
-  (process.argv.length > 3 &&
-    (process.argv.length !== 5 ||
-      !topicArg ||
-      !/^[1-6]\.[12](,[1-6]\.[12])*$/.test(topicArg)))
-)
-  throw new Error("Use --dry-run or --upload, optionally --topics 2.1,2.2.");
+const options = new Map();
+const args = process.argv.slice(3);
+for (let index = 0; index < args.length; index += 2) {
+  if (!["--topics", "--course"].includes(args[index]) || !args[index + 1] || options.has(args[index]))
+    throw new Error("Use --dry-run or --upload, optionally --course drones and --topics 2.1,2.2.");
+  options.set(args[index], args[index + 1]);
+}
+const course = options.get("--course") || "programming";
+const topicArg = options.get("--topics");
+if (!["--dry-run", "--upload"].includes(mode) || !["programming", "drones"].includes(course)
+  || (topicArg && !/^[1-6]\.[12](,[1-6]\.[12])*$/.test(topicArg)))
+  throw new Error("Use --dry-run or --upload, optionally --course drones and --topics 2.1,2.2.");
+const root = path.resolve(course === "drones" ? "content/drone-materials" : "content/materials");
 const topics = topicArg ? new Set(topicArg.split(",")) : null;
 
 async function main() {
@@ -30,7 +33,7 @@ async function main() {
   );
   const selected = catalog.sections
     .flatMap((section) => section.topics)
-    .filter((topic) => !topics || topics.has(topic.number));
+    .filter((topic) => !topics || topics.has(topic.number.replace(/^drone-/, "")));
   if (topics && selected.length !== topics.size)
     throw new ImportError("Unknown topic selection.");
   const entries = selected.flatMap((topic) =>
@@ -41,7 +44,7 @@ async function main() {
         title: `${topic.number} ${topic.title}`,
       })),
   );
-  if (!topics)
+  if (!topics && course === "programming")
     entries.push({
       path: "course-plan/План разделов.docx",
       title: "План разделов",
@@ -56,7 +59,9 @@ async function main() {
     const extension = entry.path.split(".").at(-1).toLowerCase();
     if (!(extension in mime))
       throw new ImportError("Unsupported material format.");
-    const original = path.resolve(root, entry.path);
+    if (course === "drones" && !entry.path.startsWith("drones/"))
+      throw new ImportError("Drone materials need their own course namespace.");
+    const original = path.resolve(root, course === "drones" ? entry.path.slice("drones/".length) : entry.path);
     if (!original.startsWith(root + path.sep))
       throw new ImportError("Material path outside source folder.");
     const bytes = await readFile(original);

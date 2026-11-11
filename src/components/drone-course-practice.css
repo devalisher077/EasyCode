@@ -1,0 +1,92 @@
+.drone-course-practice .page-heading {
+  margin-top: 22px;
+}
+.drone-course-practice .page-heading p {
+  max-width: 900px;
+  line-height: 1.7;
+}
+.drone-practice-local {
+  color: #9bb6d5;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 12px 0 22px;
+}
+.drone-question-workbench {
+  max-width: 940px;
+  padding: 24px;
+  border: 1px solid #2b405e;
+  border-radius: 12px;
+  background: #101c2f;
+}
+.drone-practice-questions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 24px;
+}
+.drone-practice-questions label {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  color: #dfebfa;
+  line-height: 1.6;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.drone-practice-questions label > span {
+  color: #78a9e0;
+  font-family: "Geist Mono", monospace;
+  font-size: 12px;
+}
+.drone-practice-questions select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px;
+  background: #15263d;
+  color: #e2eeff;
+  border: 1px solid #375475;
+  border-radius: 7px;
+  white-space: normal;
+}
+.drone-practice-questions p {
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  margin-bottom: 0;
+  border-radius: 6px;
+}
+.drone-practice-questions .correct {
+  color: #a3eccb;
+  background: #15382e;
+}
+.drone-practice-questions .needs-work {
+  color: #f0ca94;
+  background: #392d20;
+}
+.drone-practice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 25px;
+}
+.drone-practice-result {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  color: #cce2ff;
+  line-height: 1.6;
+  font-size: 14px;
+}
+.drone-free-link {
+  margin-top: 24px;
+}
+@media (max-width: 600px) {
+  .drone-question-workbench {
+    padding: 16px;
+  }
+  .drone-practice-questions select {
+    font-size: 12px;
+  }
+}
